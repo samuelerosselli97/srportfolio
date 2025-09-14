@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strandbad Restaurant Überwachung - Samuele Rosselli</title>
-    <meta name="description" content="Details zum Projekt Strandbad Restaurant Überwachung von Samuele Rosselli, ein Sicherheitssystem mit 10 Kameras und fortschrittlicher NVR-Konfiguration.">
+    <meta name="description" content="Details zum Strandbad Restaurant Überwachungsprojekt von Samuele Rosselli, ein Sicherheitssystem mit 10 Kameras und fortschrittlicher NVR-Konfiguration.">
     <meta name="keywords" content="Überwachung, Sicherheit, NVR, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -108,10 +108,41 @@
             20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
+        .image-card {
+            cursor: pointer;
+            transition: box-shadow 0.4s ease;
+        }
         .image-card:hover {
-            transform: scale(1.1);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
             box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border: 2px solid #00a8ff;
+            box-shadow: 0 0 20px rgba(0, 168, 255, 0.8);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #00ff9d;
+            font-size: 30px;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
@@ -168,6 +199,10 @@
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
+    <div id="imageModal" class="modal">
+        <span class="modal-close">&times;</span>
+        <img id="modalImage" src="" alt="Vollauflösungsbild">
+    </div>
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
@@ -193,34 +228,34 @@
                     <p class="text-lg text-gray-300 mb-6">
                         Entwicklung und Installation eines umfassenden Sicherheitssystems mit 10 hochauflösenden Kameras und fortschrittlicher NVR-Konfiguration für das Strandbad Restaurant, um die Sicherheit von Personal und Gästen zu gewährleisten.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich gemacht habe</h3>
+                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich getan habe</h3>
                     <ul class="space-y-2 text-gray-300">
                         <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installation und Konfiguration von 10 hochauflösenden Überwachungskameras.</li>
                         <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Einrichtung eines NVR-Systems für Echtzeitüberwachung und sichere Datenspeicherung.</li>
                         <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Optimierung der Kamerapositionen für maximale Abdeckung des Restaurantbereichs.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Schulung des Personals zur Verwaltung und Bedienung des Systems.</li>
+                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Schulung des Personals in der Systemverwaltung und -bedienung.</li>
                     </ul>
                 </div>
                 <div data-aos="zoom-in" data-aos-delay="200">
                     <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektbilder</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera1.jpg" alt="Restaurant Kamera 1" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera1.jpg" alt="Restaurant Kamera 1" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera1.jpg')">
                         </div>
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera2.jpg" alt="Restaurant Kamera 2" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera2.jpg" alt="Restaurant Kamera 2" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera2.jpg')">
                         </div>
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera3.jpg" alt="Restaurant Kamera 3" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera3.jpg" alt="Restaurant Kamera 3" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera3.jpg')">
                         </div>
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera4.jpg" alt="Restaurant Kamera 4" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera4.jpg" alt="Restaurant Kamera 4" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera4.jpg')">
                         </div>
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera5.jpg" alt="Restaurant Kamera 5" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera5.jpg" alt="Restaurant Kamera 5" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera5.jpg')">
                         </div>
                         <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/restaurant-camera6.jpg" alt="Restaurant Kamera 6" class="w-full h-48 object-cover">
+                            <img src="images/restaurant-camera6.jpg" alt="Restaurant Kamera 6" class="w-full h-48 object-cover" onclick="openModal('images/restaurant-camera6.jpg')">
                         </div>
                     </div>
                 </div>
@@ -250,6 +285,28 @@
                 retina_detect: true
             });
 
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalClose = document.querySelector('.modal-close');
+
+            window.openModal = function(src) {
+                modalImage.src = src;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
+
+            modalClose.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
             languageOptions.forEach(option => {
@@ -271,7 +328,9 @@
                         'networking-solutions.html': 'networking-solutions-de.html',
                         'networking-solutions-de.html': 'networking-solutions.html',
                         'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html'
+                        'lulzim-website-de.html': 'lulzim-website.html',
+                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
                     };
                     const currentPage = window.location.pathname.split('/').pop();
                     const newPage = pageMap[currentPage] || 'index.html';
