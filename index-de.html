@@ -1,57 +1,16 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Samuele Rosselli - Spezialist für Cybersicherheit & Netzwerke</title>
-    <meta name="description" content="Portfolio von Samuele Rosselli, Spezialist für Cybersicherheit und Netzwerke in Österreich.">
-    <meta name="keywords" content="Cybersicherheit, Netzwerke, IT-Beratung, Samuele Rosselli">
+    <title>Samuele Rosselli - Cybersecurity & Netzwerkspezialist</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         tailwind.config = {
@@ -186,32 +145,82 @@
             95% { clip: rect(78px, 9999px, 39px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
+        .language-toggle {
+            background: #15151f;
+            border-radius: 9999px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            width: 80px;
+            position: relative;
+            cursor: pointer;
+        }
+        .language-toggle div {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            color: #f8fafc;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .language-toggle .active {
+            background: #00a8ff;
+            border-radius: 9999px;
+            color: #0a0a0f;
+            font-weight: 600;
+        }
+        .language-toggle .slider {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: #00a8ff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+        }
+        .language-toggle.english .slider {
+            transform: translateX(0);
+        }
+        .language-toggle.german .slider {
+            transform: translateX(100%);
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
     </style>
 </head>
 <body class="font-sans bg-dark-bg text-gray-200">
+    <div id="particles-js"></div>
     <!-- Navigation -->
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="index-de.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                <a href="#" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                
                 <div class="hidden md:flex space-x-8">
-                    <a href="#home" class="hover:text-cyber-blue transition-colors">Startseite</a>
+                    <a href="#home" class="hover:text-cyber-blue transition-colors">Home</a>
                     <a href="#about" class="hover:text-cyber-blue transition-colors">Über mich</a>
                     <a href="#experience" class="hover:text-cyber-blue transition-colors">Erfahrung</a>
                     <a href="#portfolio" class="hover:text-cyber-blue transition-colors">Projekte</a>
                     <a href="#skills" class="hover:text-cyber-blue transition-colors">Fähigkeiten</a>
                     <a href="#contact" class="hover:text-cyber-blue transition-colors">Kontakt</a>
                 </div>
+                
                 <div class="flex items-center space-x-4">
-                    <select id="languageSelect" class="bg-dark-bg text-gray-200 cyber-border rounded-md px-2 py-1">
-                        <option value="en">English</option>
-                        <option value="de" selected>Deutsch</option>
-                    </select>
+                    <div class="language-toggle german" id="languageToggle">
+                        <div class="language-option" data-lang="en">EN</div>
+                        <div class="language-option active" data-lang="de">DE</div>
+                        <div class="slider"></div>
+                    </div>
                     <button id="modeToggle" class="mode-toggle p-2 rounded-full hover:bg-gray-800">
                         <i data-feather="moon" class="text-cyber-blue"></i>
                     </button>
                     <a href="/cv.pdf" download class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors flex items-center">
-                        <i data-feather="download" class="mr-2"></i> Lebenslauf
+                        <i data-feather="download" class="mr-2"></i> CV
                     </a>
                     <button class="md:hidden" id="mobileMenuButton">
                         <i data-feather="menu" class="text-cyber-blue"></i>
@@ -219,9 +228,11 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden bg-dark-card py-4 px-6 absolute w-full">
             <div class="flex flex-col space-y-4">
-                <a href="#home" class="hover:text-cyber-blue transition-colors">Startseite</a>
+                <a href="#home" class="hover:text-cyber-blue transition-colors">Home</a>
                 <a href="#about" class="hover:text-cyber-blue transition-colors">Über mich</a>
                 <a href="#experience" class="hover:text-cyber-blue transition-colors">Erfahrung</a>
                 <a href="#portfolio" class="hover:text-cyber-blue transition-colors">Projekte</a>
@@ -238,10 +249,10 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div class="md:w-1/2 mb-12 md:mb-0" data-aos="fade-right">
                     <h1 class="text-4xl md:text-6xl font-bold mb-4">Samuele <span class="text-cyber-blue">Rosselli</span></h1>
-                    <h2 class="text-xl md:text-2xl text-cyber-green mb-6 font-mono">Spezialist für Cybersicherheit & Netzwerke</h2>
-                    <p class="text-lg mb-8 text-gray-300">Sicherung digitaler Umgebungen und Aufbau robuster Netzwerkinfrastrukturen mit Präzision und Expertise.</p>
+                    <h2 class="text-xl md:text-2xl text-cyber-green mb-6 font-mono">Cybersecurity & Netzwerkspezialist</h2>
+                    <p class="text-lg mb-8 text-gray-300">Sicherung digitaler Umgebungen und Aufbau robuster Netzwerkinfrastrukturen mit Präzision und Fachwissen.</p>
                     <div class="flex space-x-4">
-                        <a href="#portfolio" class="px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors">Meine Arbeiten ansehen</a>
+                        <a href="#portfolio" class="px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors">Meine Arbeit ansehen</a>
                         <a href="#contact" class="px-6 py-3 cyber-border text-cyber-blue rounded-md hover:bg-cyber-blue/10 transition-colors">Kontaktieren Sie mich</a>
                     </div>
                 </div>
@@ -259,11 +270,12 @@
     <section id="about" class="py-20 bg-dark-card">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-16 text-cyber-blue" data-aos="fade-up">Über mich</h2>
+            
             <div class="flex flex-col md:flex-row items-center mb-16">
                 <div class="md:w-1/2 mb-8 md:mb-0" data-aos="fade-right">
-                    <p class="text-lg mb-6">Ich bin ein leidenschaftlicher Spezialist für Cybersicherheit und Netzwerke mit einem Antrieb, komplexe technische Herausforderungen zu lösen. Meine Reise in die Technologie begann mit der Neugier, wie Systeme funktionieren, und hat sich zu einer professionellen Karriere entwickelt, die sich der Sicherung digitaler Umgebungen widmet.</p>
-                    <p class="text-lg mb-6">Ich glaube an proaktive Sicherheitsmaßnahmen und robustes Netzwerkdesign, um Probleme zu verhindern, bevor sie auftreten. Mein Ansatz kombiniert technische Expertise mit klarer Kommunikation, um Lösungen zu liefern, die sowohl Sicherheitsanforderungen als auch Geschäftsbedürfnisse erfüllen.</p>
-                    <p class="text-lg">Wenn ich nicht gerade Netzwerke konfiguriere oder Sicherheitsprotokolle analysiere, halte ich mich über die neuesten Trends in der Cybersicherheit auf dem Laufenden und experimentiere mit neuen Technologien.</p>
+                    <p class="text-lg mb-6">Ich bin ein leidenschaftlicher Cybersecurity- und Netzwerkspezialist mit einem Drang, komplexe technische Herausforderungen zu lösen. Meine Reise in der Technologie begann mit der Neugier, wie Systeme funktionieren, und hat sich zu einer professionellen Karriere entwickelt, die sich der Sicherung digitaler Umgebungen widmet.</p>
+                    <p class="text-lg mb-6">Ich glaube an proaktive Sicherheitsmaßnahmen und robustes Netzwerkdesign, um Probleme zu verhindern, bevor sie auftreten. Mein Ansatz kombiniert technisches Fachwissen mit klarer Kommunikation, um Lösungen zu liefern, die sowohl Sicherheitsanforderungen als auch Geschäftsbedürfnisse erfüllen.</p>
+                    <p class="text-lg">Wenn ich nicht gerade Netzwerke konfiguriere oder Sicherheitsprotokolle analysiere, halte ich mich über die neuesten Cybersecurity-Trends auf dem Laufenden und experimentiere mit neuen Technologien.</p>
                 </div>
                 <div class="md:w-1/2 md:pl-12" data-aos="fade-left">
                     <div class="relative pl-8 timeline">
@@ -273,27 +285,30 @@
                             </div>
                             <h3 class="text-xl font-semibold mb-2">Gymnasialausbildung</h3>
                             <p class="text-cyber-green">Sprachstudien</p>
-                            <p class="text-gray-400">Entwicklung starker Kommunikationsfähigkeiten und kulturelles Verständnis</p>
+                            <p class="text-gray-400">Entwicklung starker Kommunikationsfähigkeiten und kulturellem Verständnis</p>
                         </div>
+                        
                         <div class="mb-8 relative">
                             <div class="absolute -left-11 w-8 h-8 rounded-full bg-cyber-green flex items-center justify-center">
                                 <i data-feather="award" class="text-white"></i>
                             </div>
                             <h3 class="text-xl font-semibold mb-2">CompTIA Network+</h3>
-                            <p class="text-cyber-green">Netzwerk-Zertifizierung</p>
-                            <p class="text-gray-400">Bestätigte Expertise in der Konfiguration und Fehlerbehebung von Netzwerken</p>
+                            <p class="text-cyber-green">Netzwerkzertifizierung</p>
+                            <p class="text-gray-400">Bestätigte Fachkenntnisse in der Konfiguration und Fehlerbehebung von Netzwerken</p>
                         </div>
+                        
                         <div class="relative">
                             <div class="absolute -left-11 w-8 h-8 rounded-full bg-cyber-orange flex items-center justify-center">
                                 <i data-feather="shield" class="text-white"></i>
                             </div>
                             <h3 class="text-xl font-semibold mb-2">CompTIA Security+</h3>
-                            <p class="text-cyber-green">Cybersicherheits-Zertifizierung</p>
-                            <p class="text-gray-400">Nachgewiesenes Wissen über Sicherheitsprotokolle und Bedrohungsabwehr</p>
+                            <p class="text-cyber-green">Cybersecurity-Zertifizierung</p>
+                            <p class="text-gray-400">Nachgewiesene Kenntnisse in Sicherheitsprotokollen und Bedrohungsabwehr</p>
                         </div>
                     </div>
                 </div>
             </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-aos="fade-up">
                 <div class="p-6 cyber-border rounded-lg">
                     <h3 class="text-xl font-semibold mb-4 text-cyber-blue flex items-center">
@@ -301,11 +316,12 @@
                     </h3>
                     <ul class="space-y-2">
                         <li class="flex items-center"><i data-feather="check" class="text-cyber-green mr-2"></i> Kritisches Denken & Analyse</li>
-                        <li class="flex items-center"><i data-feather="check" class="text-cyber-green mr-2"></i> Liebe zum Detail</li>
+                        <li class="flex items-center"><i data-feather="check" class="text-cyber-green mr-2"></i> Aufmerksamkeit für Details</li>
                         <li class="flex items-center"><i data-feather="check" class="text-cyber-green mr-2"></i> Systematische Fehlerbehebung</li>
                         <li class="flex items-center"><i data-feather="check" class="text-cyber-green mr-2"></i> Technische Dokumentation</li>
                     </ul>
                 </div>
+                
                 <div class="p-6 cyber-border rounded-lg">
                     <h3 class="text-xl font-semibold mb-4 text-cyber-blue flex items-center">
                         <i data-feather="users" class="mr-2"></i> Soft Skills
@@ -325,22 +341,24 @@
     <section id="experience" class="py-20 bg-dark-bg">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-16 text-cyber-blue" data-aos="fade-up">Berufserfahrung</h2>
+            
             <div class="space-y-12">
                 <div class="flex flex-col md:flex-row" data-aos="fade-up">
                     <div class="md:w-1/4 mb-4 md:mb-0">
-                        <p class="text-cyber-green">Gegenwart</p>
+                        <p class="text-cyber-green">Aktuell</p>
                         <h3 class="text-xl font-semibold">Freiberuflicher Berater</h3>
                     </div>
                     <div class="md:w-3/4 cyber-border-l md:pl-8 pl-0 border-gray-700 md:border-l md:border-t-0 border-t pt-4 md:pt-0">
-                        <p class="mb-4">Bereitstellung maßgeschneiderter technischer Lösungen für private und geschäftliche Kunden mit Fokus auf Cybersicherheit, Netzwerkkonfiguration und technische Fehlerbehebung.</p>
+                        <p class="mb-4">Bereitstellung maßgeschneiderter Technologielösungen für private und geschäftliche Kunden mit Schwerpunkt auf Cybersecurity, Netzwerkkonfiguration und technischer Fehlerbehebung.</p>
                         <ul class="space-y-2">
                             <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Entwicklung und Implementierung sicherer Netzwerkinfrastrukturen für kleine Unternehmen</li>
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Durchführung von Sicherheitsprüfungen und Schwachstellenanalysen</li>
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Bereitstellung fortlaufender technischer Unterstützung und Wartungsdienste</li>
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Entwicklung maßgeschneiderter technologischer Lösungen basierend auf Kundenbedürfnissen</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Durchführung von Sicherheitsaudits und Schwachstellenanalysen</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Bereitstellung fortlaufender technischer Support- und Wartungsdienste</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Entwicklung maßgeschneiderter Technologielösungen basierend auf Kundenbedürfnissen</li>
                         </ul>
                     </div>
                 </div>
+                
                 <div class="flex flex-col md:flex-row" data-aos="fade-up">
                     <div class="md:w-1/4 mb-4 md:mb-0">
                         <p class="text-cyber-green">2022 - 2023</p>
@@ -348,14 +366,15 @@
                         <p class="text-gray-400">Technischer Mitarbeiter</p>
                     </div>
                     <div class="md:w-3/4 cyber-border-l md:pl-8 pl-0 border-gray-700 md:border-l md:border-t-0 border-t pt-4 md:pt-0">
-                        <p class="mb-4">Mitarbeit an einem Razer-Mausprojekt in einer Fertigungsumgebung für Autokomponenten, Anwendung technischer Expertise zur Verbesserung der Produktentwicklung.</p>
+                        <p class="mb-4">Beitrag zu einem Razer-Mausprojekt in einer Produktionsumgebung für Autokomponenten, wobei technisches Fachwissen zur Verbesserung der Produktentwicklung eingesetzt wurde.</p>
                         <ul class="space-y-2">
                             <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Zusammenarbeit mit Ingenieurteams an technischen Spezifikationen</li>
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Unterstützung bei Fehlerbehebung und Qualitätssicherungsprozessen</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Unterstützung bei der Fehlerbehebung und Qualitätssicherung</li>
                             <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Bereitstellung technischer Einblicke zur Produktverbesserung</li>
                         </ul>
                     </div>
                 </div>
+                
                 <div class="flex flex-col md:flex-row" data-aos="fade-up">
                     <div class="md:w-1/4 mb-4 md:mb-0">
                         <p class="text-cyber-green">2017 - 2022</p>
@@ -363,10 +382,10 @@
                         <p class="text-gray-400">Steuerrückerstatter</p>
                     </div>
                     <div class="md:w-3/4 cyber-border-l md:pl-8 pl-0 border-gray-700 md:border-l md:border-t-0 border-t pt-4 md:pt-0">
-                        <p class="mb-4">Arbeit für 5 Jahre bei Europas führendem Steuerrückerstattungsunternehmen, Entwicklung starker analytischer und Kundenservice-Fähigkeiten in einer technischen Umgebung.</p>
+                        <p class="mb-4">Arbeitete fünf Jahre lang beim führenden Steuerrückerstattungsunternehmen in Europa und entwickelte starke analytische und kundenorientierte Fähigkeiten in einer technischen Umgebung.</p>
                         <ul class="space-y-2">
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Präzise Verarbeitung komplexer Steuerrückerstattungsdokumentation</li>
-                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Nutzung proprietärer Softwaresysteme für Datenmanagement</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Präzise Verarbeitung komplexer Steuerrückerstattungsdokumente</li>
+                            <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Nutzung proprietärer Softwaresysteme für das Datenmanagement</li>
                             <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Entwicklung effizienter Arbeitsabläufe für die Verarbeitung hoher Transaktionsvolumen</li>
                             <li class="flex items-start"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1"></i> Bereitstellung technischer Unterstützung für Kollegen bei der Systemnutzung</li>
                         </ul>
@@ -380,6 +399,7 @@
     <section id="portfolio" class="py-20 bg-dark-card">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-16 text-cyber-blue" data-aos="fade-up">Ausgewählte Projekte</h2>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
                     <div class="h-48 bg-gray-800 overflow-hidden">
@@ -399,13 +419,14 @@
                         </a>
                     </div>
                 </div>
+                
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
                     <div class="h-48 bg-gray-800 overflow-hidden">
                         <img src="https://placehold.co/600x400/15151f/00ff9d?text=Restaurant+Sicherheit" alt="Strandbad Restaurant Überwachung" class="w-full h-full object-cover">
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-cyber-green">Strandbad Restaurant Überwachung</h3>
-                        <p class="text-gray-400 mb-4">Entwurf und Implementierung eines 10-Kamera-Sicherheitssystems mit fortschrittlicher NVR-Konfiguration.</p>
+                        <p class="text-gray-400 mb-4">Entwurf und Implementierung eines Überwachungssystems mit 10 Kameras und fortschrittlicher NVR-Konfiguration.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Sicherheit</span>
                             <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Konfiguration</span>
@@ -417,6 +438,7 @@
                         </a>
                     </div>
                 </div>
+                
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
                     <div class="h-48 bg-gray-800 overflow-hidden">
                         <img src="https://placehold.co/600x400/15151f/ff5e00?text=KI+Pizza+App" alt="KI Pizza App" class="w-full h-full object-cover">
@@ -435,15 +457,16 @@
                         </a>
                     </div>
                 </div>
+                
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
                     <div class="h-48 bg-gray-800 overflow-hidden">
-                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Netzwerk+Lösungen" alt="Netzwerk Lösungen" class="w-full h-full object-cover">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Netzwerklösungen" alt="Netzwerklösungen" class="w-full h-full object-cover">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-2 text-cyber-green">Netzwerk Lösungen</h3>
-                        <p class="text-gray-400 mb-4">Umfassende Netzwerkdienste einschließlich Druckereinrichtung, Switch-Konfigurationen und NVR-Implementierungen.</p>
+                        <h3 class="text-xl font-semibold mb-2 text-cyber-green">Netzwerklösungen</h3>
+                        <p class="text-gray-400 mb-4">Umfassende Netzwerkdienste, einschließlich Druckereinrichtung, Switch-Konfigurationen und NVR-Implementierungen.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Netzwerke</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Netzwerk</span>
                             <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Hardware</span>
                             <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Fehlerbehebung</span>
                         </div>
@@ -453,19 +476,39 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
                     <div class="h-48 bg-gray-800 overflow-hidden">
                         <img src="https://placehold.co/600x400/15151f/00ff9d?text=Lulzim.at+Website" alt="Lulzim.at Website" class="w-full h-full object-cover">
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-semibold mb-2 text-cyber-green">Lulzim.at Website</h3>
-                        <p class="text-gray-400 mb-4">Entwicklung einer stark frequentierten Website mit über 10.000 Aufrufen pro Monat und einer Tischreservierungs-App, die über 1.500 Gäste monatlich bedient.</p>
+                        <p class="text-gray-400 mb-4">Entwicklung einer stark frequentierten Website mit über 10.000 Aufrufen pro Monat und einer Tischreservierungs-App für über 1.500 Gäste monatlich.</p>
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Webentwicklung</span>
                             <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Tischreservierung</span>
                             <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Hoher Traffic</span>
                         </div>
                         <a href="lulzim-website-de.html" class="text-cyber-green hover:text-cyber-blue flex items-center">
+                            <span>Details anzeigen</span>
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
+                    <div class="h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Da+Amelia+Überwachung" alt="Da Amelia Restaurant Überwachung" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-cyber-green">Da Amelia Restaurant Überwachung</h3>
+                        <p class="text-gray-400 mb-4">Installation von 15 Überwachungskameras mit einem NVR-System und organisierter Kabelinstallation für eine saubere Einrichtung.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Überwachung</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">NVR</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Kabelmanagement</span>
+                        </div>
+                        <a href="da-amelia-surveillance-de.html" class="text-cyber-blue hover:text-cyber-green flex items-center">
                             <span>Details anzeigen</span>
                             <i data-feather="arrow-right" class="ml-2"></i>
                         </a>
@@ -479,10 +522,11 @@
     <section id="skills" class="py-20 bg-dark-bg">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-16 text-cyber-blue" data-aos="fade-up">Technische Fähigkeiten</h2>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
                 <div data-aos="fade-right">
                     <h3 class="text-xl font-semibold mb-6 text-cyber-blue flex items-center">
-                        <i data-feather="settings" class="mr-2"></i> Netzwerke
+                        <i data-feather="settings" class="mr-2"></i> Netzwerktechnik
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
@@ -492,32 +536,36 @@
                             </div>
                             <p class="text-sm text-gray-400">Entwurf und Implementierung robuster Netzwerkinfrastrukturen</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="wifi" class="text-cyber-blue mr-2"></i>
-                                <h4 class="font-medium">Switch & NVR Einrichtung</h4>
+                                <h4 class="font-medium">Switch- & NVR-Einrichtung</h4>
                             </div>
                             <p class="text-sm text-gray-400">Konfiguration von Netzwerkgeräten für optimale Leistung</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="printer" class="text-cyber-blue mr-2"></i>
                                 <h4 class="font-medium">Drucker-Fehlerbehebung</h4>
                             </div>
-                            <p class="text-sm text-gray-400">Diagnose und Lösung von Drucker-Verbindungsproblemen</p>
+                            <p class="text-sm text-gray-400">Diagnose und Lösung von Druckerverbindungsproblemen</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="bar-chart-2" class="text-cyber-blue mr-2"></i>
                                 <h4 class="font-medium">Netzwerküberwachung</h4>
                             </div>
-                            <p class="text-sm text-gray-400">Implementierung von Überwachungslösungen für Netzwerkgesundheit</p>
+                            <p class="text-sm text-gray-400">Implementierung von Überwachungslösungen für die Netzwerkgesundheit</p>
                         </div>
                     </div>
                 </div>
+                
                 <div data-aos="fade-left">
                     <h3 class="text-xl font-semibold mb-6 text-cyber-green flex items-center">
-                        <i data-feather="shield" class="mr-2"></i> Cybersicherheit
+                        <i data-feather="shield" class="mr-2"></i> Cybersecurity
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
@@ -527,13 +575,15 @@
                             </div>
                             <p class="text-sm text-gray-400">Durchführung umfassender Sicherheitsbewertungen</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="activity" class="text-cyber-green mr-2"></i>
-                                <h4 class="font-medium">Cybersicherheitsoperationen</h4>
+                                <h4 class="font-medium">Cybersecurity-Operationen</h4>
                             </div>
                             <p class="text-sm text-gray-400">Implementierung und Verwaltung von Sicherheitsprotokollen</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="alert-triangle" class="text-cyber-green mr-2"></i>
@@ -541,6 +591,7 @@
                             </div>
                             <p class="text-sm text-gray-400">Erkennung und Abwehr von Sicherheitsbedrohungen</p>
                         </div>
+                        
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
                                 <i data-feather="lock" class="text-cyber-green mr-2"></i>
@@ -551,6 +602,7 @@
                     </div>
                 </div>
             </div>
+            
             <div data-aos="fade-up">
                 <h3 class="text-xl font-semibold mb-6 text-cyber-orange flex items-center">
                     <i data-feather="tool" class="mr-2"></i> Zusätzliche Fähigkeiten
@@ -558,16 +610,19 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
                         <i data-feather="clipboard" class="text-cyber-orange mx-auto mb-2"></i>
-                        <h4 class="font-medium">Technische Beratung</h4>
+                        <h4 class="font-medium">Technologische Beratung</h4>
                     </div>
+                    
                     <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
                         <i data-feather="code" class="text-cyber-orange mx-auto mb-2"></i>
                         <h4 class="font-medium">Problemlösung</h4>
                     </div>
+                    
                     <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
                         <i data-feather="message-square" class="text-cyber-orange mx-auto mb-2"></i>
                         <h4 class="font-medium">Kundenkommunikation</h4>
                     </div>
+                    
                     <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
                         <i data-feather="book-open" class="text-cyber-orange mx-auto mb-2"></i>
                         <h4 class="font-medium">Technische Dokumentation</h4>
@@ -581,6 +636,7 @@
     <section id="contact" class="py-20 bg-dark-card">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-16 text-cyber-blue" data-aos="fade-up">Kontakt aufnehmen</h2>
+            
             <div class="flex flex-col md:flex-row gap-12">
                 <div class="md:w-1/2" data-aos="fade-right">
                     <form id="contactForm" class="space-y-6">
@@ -588,17 +644,21 @@
                             <label for="name" class="block mb-2 text-gray-300">Ihr Name</label>
                             <input type="text" id="name" name="name" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue">
                         </div>
+                        
                         <div>
                             <label for="email" class="block mb-2 text-gray-300">E-Mail-Adresse</label>
                             <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue">
                         </div>
+                        
                         <div>
                             <label for="message" class="block mb-2 text-gray-300">Ihre Nachricht</label>
                             <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue"></textarea>
                         </div>
+                        
                         <button type="submit" class="w-full px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors">Nachricht senden</button>
                     </form>
                 </div>
+                
                 <div class="md:w-1/2" data-aos="fade-left">
                     <div class="space-y-8">
                         <div>
@@ -611,6 +671,7 @@
                                         <a href="mailto:samuele.rosselli97@gmail.com" class="text-gray-400 hover:text-cyber-blue">samuele.rosselli97@gmail.com</a>
                                     </div>
                                 </div>
+                                
                                 <div class="flex items-start">
                                     <i data-feather="phone" class="text-cyber-blue mr-4 mt-1"></i>
                                     <div>
@@ -620,13 +681,15 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <div>
-                            <h3 class="text-xl font-semibold mb-4 text-cyber-green">Antwortzeit</h3>
-                            <p class="text-gray-400">Ich antworte in der Regel innerhalb von 24 Stunden auf E-Mails. Bei dringenden Angelegenheiten rufen Sie mich bitte direkt an oder senden Sie eine SMS.</p>
+                            <h3 class="text-xl font-semibold mb-4 text-cyber-green">Reaktionszeit</h3>
+                            <p class="text-gray-400">Ich antworte in der Regel innerhalb von 24 Stunden auf E-Mails. Für dringende Anliegen rufen Sie mich bitte direkt an oder senden Sie eine SMS.</p>
                         </div>
+                        
                         <div>
                             <h3 class="text-xl font-semibold mb-4 text-cyber-green">Verfügbarkeit</h3>
-                            <p class="text-gray-400">Ich bin derzeit für freiberufliche Beratungsprojekte verfügbar und offen für die Diskussion neuer Möglichkeiten in den Bereichen Cybersicherheit und Netzwerke.</p>
+                            <p class="text-gray-400">Ich bin derzeit für freiberufliche Beratungsprojekte verfügbar und offen für die Diskussion neuer Möglichkeiten in den Bereichen Cybersecurity und Netzwerktechnik.</p>
                         </div>
                     </div>
                 </div>
@@ -641,6 +704,7 @@
                 <div class="mb-6 md:mb-0">
                     <p class="text-gray-400">&copy; 2023 Samuele Rosselli. Alle Rechte vorbehalten.</p>
                 </div>
+                
                 <div class="flex space-x-6">
                     <a href="#" class="text-gray-400 hover:text-cyber-blue">
                         <i data-feather="mail"></i>
@@ -666,17 +730,41 @@
                 easing: 'ease-in-out',
                 once: true
             });
+            
             feather.replace();
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#00a8ff', '#00ff9d', '#ff5e00'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00a8ff', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+            
             const mobileMenuButton = document.getElementById('mobileMenuButton');
             const mobileMenu = document.getElementById('mobileMenu');
+            
             mobileMenuButton.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
             });
+            
             const modeToggle = document.getElementById('modeToggle');
             const html = document.documentElement;
             const modeIcon = modeToggle.querySelector('i');
+            
             modeToggle.addEventListener('click', function() {
                 html.classList.toggle('dark');
+                
                 if (html.classList.contains('dark')) {
                     modeIcon.setAttribute('data-feather', 'moon');
                     feather.replace();
@@ -685,39 +773,49 @@
                     feather.replace();
                 }
             });
+            
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
+                    
                     const targetId = this.getAttribute('href');
                     if (targetId === '#') return;
+                    
                     const targetElement = document.querySelector(targetId);
                     if (targetElement) {
                         window.scrollTo({
                             top: targetElement.offsetTop - 80,
                             behavior: 'smooth'
                         });
+                        
                         mobileMenu.classList.add('hidden');
                     }
                 });
             });
-            emailjs.init("YOUR_PUBLIC_KEY"); // Ersetze mit deinem EmailJS Public Key
+            
+            emailjs.init("YOUR_PUBLIC_KEY"); // Ersetzen Sie dies mit Ihrem EmailJS Public Key
+            
             document.getElementById('contactForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
                 const formData = {
                     name: document.getElementById('name').value,
                     email: document.getElementById('email').value,
                     message: document.getElementById('message').value
                 };
+                
                 emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', formData)
                     .then(function(response) {
                         alert('Nachricht erfolgreich gesendet!');
                         document.getElementById('contactForm').reset();
                     }, function(error) {
-                        alert('Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.');
-                        console.error('EmailJS Fehler:', error);
+                        alert('Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.');
+                        console.error('EmailJS error:', error);
                     });
             });
+            
             const skillCards = document.querySelectorAll('.skill-card');
+            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -726,21 +824,51 @@
                     }
                 });
             }, { threshold: 0.1 });
+            
             skillCards.forEach(card => {
                 card.style.opacity = 0;
                 card.style.transform = 'translateY(20px)';
                 card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 observer.observe(card);
             });
-            const languageSelect = document.getElementById('languageSelect');
-            languageSelect.addEventListener('change', function() {
-                const lang = this.value;
-                if (lang === 'en') {
-                    window.location.href = 'index.html';
-                } else {
-                    window.location.href = 'index-de.html';
-                }
+
+            // Language toggle
+            const languageToggle = document.getElementById('languageToggle');
+            const languageOptions = languageToggle.querySelectorAll('.language-option');
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    languageToggle.classList.remove('english', 'german');
+                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+                    const pageMap = {
+                        'index.html': 'index-de.html',
+                        'index-de.html': 'index.html',
+                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
+                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
+                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
+                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
+                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
+                        'networking-solutions.html': 'networking-solutions-de.html',
+                        'networking-solutions-de.html': 'networking-solutions.html',
+                        'lulzim-website.html': 'lulzim-website-de.html',
+                        'lulzim-website-de.html': 'lulzim-website.html',
+                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
+                    };
+                    const currentPage = window.location.pathname.split('/').pop();
+                    const newPage = pageMap[currentPage] || 'index.html';
+                    document.body.style.opacity = 0;
+                    setTimeout(() => {
+                        window.location.href = newPage;
+                    }, 300);
+                });
             });
+
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
         });
     </script>
 </body>
