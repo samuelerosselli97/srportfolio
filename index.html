@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
@@ -10,7 +11,7 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         tailwind.config = {
@@ -145,9 +146,56 @@
             95% { clip: rect(78px, 9999px, 39px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
+        .language-toggle {
+            background: #15151f;
+            border-radius: 9999px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            width: 80px;
+            position: relative;
+            cursor: pointer;
+        }
+        .language-toggle div {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            color: #f8fafc;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .language-toggle .active {
+            background: #00a8ff;
+            border-radius: 9999px;
+            color: #0a0a0f;
+            font-weight: 600;
+        }
+        .language-toggle .slider {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: #00a8ff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+        }
+        .language-toggle.english .slider {
+            transform: translateX(0);
+        }
+        .language-toggle.german .slider {
+            transform: translateX(100%);
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
     </style>
 </head>
 <body class="font-sans bg-dark-bg text-gray-200">
+    <div id="particles-js"></div>
     <!-- Navigation -->
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
@@ -164,10 +212,11 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <select id="languageToggle" class="p-2 bg-dark-card text-white rounded-md">
-                        <option value="en" selected>EN</option>
-                        <option value="de">DE</option>
-                    </select>
+                    <div class="language-toggle english" id="languageToggle">
+                        <div class="language-option active" data-lang="en">EN</div>
+                        <div class="language-option" data-lang="de">DE</div>
+                        <div class="slider"></div>
+                    </div>
                     <button id="modeToggle" class="mode-toggle p-2 rounded-full hover:bg-gray-800">
                         <i data-feather="moon" class="text-cyber-blue"></i>
                     </button>
@@ -447,6 +496,25 @@
                         </a>
                     </div>
                 </div>
+
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up">
+                    <div class="h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Da+Amelia+Surveillance" alt="Da Amelia Restaurant Surveillance" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2 text-cyber-green">Da Amelia Restaurant Surveillance</h3>
+                        <p class="text-gray-400 mb-4">Installed 15 security cameras with an NVR system and organized cable installations for a clean setup.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Surveillance</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">NVR</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Cable Management</span>
+                        </div>
+                        <a href="da-amelia-surveillance.html" class="text-cyber-blue hover:text-cyber-green flex items-center">
+                            <span>View Details</span>
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -665,6 +733,24 @@
             });
             
             feather.replace();
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#00a8ff', '#00ff9d', '#ff5e00'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00a8ff', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
             
             const mobileMenuButton = document.getElementById('mobileMenuButton');
             const mobileMenu = document.getElementById('mobileMenu');
@@ -749,24 +835,43 @@
 
             // Language toggle
             const languageToggle = document.getElementById('languageToggle');
-            languageToggle.addEventListener('change', function() {
-                const lang = this.value;
-                const currentPath = window.location.pathname;
-                if (lang === 'de') {
-                    if (currentPath.endsWith('.html')) {
-                        window.location.href = currentPath.replace('.html', '-de.html');
-                    } else {
-                        window.location.href = 'index-de.html';
-                    }
-                } else {
-                    if (currentPath.endsWith('-de.html')) {
-                        window.location.href = currentPath.replace('-de.html', '.html');
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                }
+            const languageOptions = languageToggle.querySelectorAll('.language-option');
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    languageToggle.classList.remove('english', 'german');
+                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+                    const pageMap = {
+                        'index.html': 'index-de.html',
+                        'index-de.html': 'index.html',
+                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
+                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
+                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
+                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
+                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
+                        'networking-solutions.html': 'networking-solutions-de.html',
+                        'networking-solutions-de.html': 'networking-solutions.html',
+                        'lulzim-website.html': 'lulzim-website-de.html',
+                        'lulzim-website-de.html': 'lulzim-website.html',
+                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
+                    };
+                    const currentPage = window.location.pathname.split('/').pop();
+                    const newPage = pageMap[currentPage] || 'index.html';
+                    document.body.style.opacity = 0;
+                    setTimeout(() => {
+                        window.location.href = newPage;
+                    }, 300);
+                });
             });
+
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
         });
     </script>
 </body>
 </html>
+```
