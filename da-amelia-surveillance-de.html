@@ -1,0 +1,334 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Da Amelia Restaurant Überwachung - Samuele Rosselli</title>
+    <meta name="description" content="Details zum Projekt Da Amelia Restaurant Überwachung von Samuele Rosselli, ein Sicherheitssystem mit 15 Kameras und NVR-Konfiguration.">
+    <meta name="keywords" content="Überwachung, Sicherheit, NVR, Samuele Rosselli">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-blue': '#00a8ff',
+                        'cyber-green': '#00ff9d',
+                        'cyber-orange': '#ff5e00',
+                        'dark-bg': '#0a0a0f',
+                        'dark-card': '#15151f'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Roboto Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .cyber-glow {
+            box-shadow: 0 0 25px rgba(0, 168, 255, 0.8), 0 0 50px rgba(0, 168, 255, 0.4);
+        }
+        .cyber-border {
+            border: 2px solid rgba(0, 168, 255, 0.5);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(0, 168, 255, 0.3), rgba(0, 255, 157, 0.3));
+            background-size: 200% 200%;
+            animation: gradientShift 20s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5);
+            animation: neonPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(0, 168, 255, 1), 0 0 30px rgba(0, 168, 255, 0.7); }
+        }
+        .glitch-effect {
+            position: relative;
+            animation: glitch 1s linear infinite;
+        }
+        .glitch-effect::before, .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch-effect::before {
+            left: 3px;
+            text-shadow: -3px 0 #00ff9d;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch-effect::after {
+            left: -3px;
+            text-shadow: -3px 0 #ff5e00;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch {
+            2% { transform: translate(1px, -1px); }
+            4% { transform: translate(-1px, 1px); }
+            6% { transform: translate(0, 0); }
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            5% { clip: rect(12px, 9999px, 59px, 0); }
+            10% { clip: rect(48px, 9999px, 29px, 0); }
+            15% { clip: rect(42px, 9999px, 73px, 0); }
+            20% { clip: rect(63px, 9999px, 27px, 0); }
+            100% { clip: rect(32px, 9999px, 92px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            5% { clip: rect(52px, 9999px, 74px, 0); }
+            10% { clip: rect(79px, 9999px, 85px, 0); }
+            15% { clip: rect(75px, 9999px, 5px, 0); }
+            20% { clip: rect(67px, 9999px, 61px, 0); }
+            100% { clip: rect(7px, 9999px, 68px, 0); }
+        }
+        .image-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .image-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
+            z-index: 10;
+        }
+        .back-button:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
+        .language-toggle {
+            background: #15151f;
+            border-radius: 9999px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            width: 80px;
+            position: relative;
+            cursor: pointer;
+        }
+        .language-toggle div {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            color: #f8fafc;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .language-toggle .active {
+            background: #00a8ff;
+            border-radius: 9999px;
+            color: #0a0a0f;
+            font-weight: 600;
+        }
+        .language-toggle .slider {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: #00a8ff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+        }
+        .language-toggle.english .slider {
+            transform: translateX(0);
+        }
+        .language-toggle.german .slider {
+            transform: translateX(100%);
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-200">
+    <div id="particles-js"></div>
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index-de.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                <div class="flex items-center space-x-4">
+                    <div class="language-toggle german" id="languageToggle">
+                        <div class="language-option" data-lang="en">EN</div>
+                        <div class="language-option active" data-lang="de">DE</div>
+                        <div class="slider"></div>
+                    </div>
+                    <a href="index-de.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Da Amelia Restaurant Überwachung" data-aos="fade-up">Da Amelia Restaurant Überwachung</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div data-aos="fade-right" data-aos-delay="100">
+                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektübersicht</h2>
+                    <p class="text-lg text-gray-300 mb-6">
+                        Installation von 15 Sicherheitskameras plus einem NVR für umfassende Überwachung im Ristorante Da Amelia. Auch Organisation der Kabelinstallationen mit Kabelkanälen für eine saubere und professionelle Einrichtung.
+                    </p>
+                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich gemacht habe</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installation und Konfiguration von 15 hochauflösenden Sicherheitskameras.</li>
+                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Einrichtung eines NVR-Systems für Echtzeitüberwachung und sichere Datenspeicherung.</li>
+                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Organisation der Kabelinstallationen mit Kabelkanälen für ein sauberes und professionelles Erscheinungsbild.</li>
+                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Schulung des Personals in der Bedienung und Wartung des Systems.</li>
+                    </ul>
+                </div>
+                <div data-aos="zoom-in" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektbilder</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera1.jpg" alt="Da Amelia Camera 1" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera2.jpg" alt="Da Amelia Camera 2" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera3.jpg" alt="Da Amelia Camera 3" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera4.jpg" alt="Da Amelia Camera 4" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera5.jpg" alt="Da Amelia Camera 5" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                            <img src="images/da-amelia-camera6.jpg" alt="Da Amelia Camera 6" class="w-full h-48 object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
+            feather.replace();
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#00a8ff', '#00ff9d', '#ff5e00'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00a8ff', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+
+            const languageToggle = document.getElementById('languageToggle');
+            const languageOptions = languageToggle.querySelectorAll('.language-option');
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    languageToggle.classList.remove('english', 'german');
+                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+                    const pageMap = {
+                        'index.html': 'index-de.html',
+                        'index-de.html': 'index.html',
+                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
+                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
+                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
+                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
+                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
+                        'networking-solutions.html': 'networking-solutions-de.html',
+                        'networking-solutions-de.html': 'networking-solutions.html',
+                        'lulzim-website.html': 'lulzim-website-de.html',
+                        'lulzim-website-de.html': 'lulzim-website.html',
+                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
+                    };
+                    const currentPage = window.location.pathname.split('/').pop();
+                    const newPage = pageMap[currentPage] || 'index.html';
+                    document.body.style.opacity = 0;
+                    setTimeout(() => {
+                        window.location.href = newPage;
+                    }, 300);
+                });
+            });
+
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
+        });
+    </script>
+</body>
+</html>
