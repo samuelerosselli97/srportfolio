@@ -513,7 +513,16 @@
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
             <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="md:w-1/2 mb-12 md:mb-0" data-aos="fade-right">
+    <!-- Mobile: Image first -->
+    <div class="md:w-1/2 flex justify-center mb-8 md:hidden" data-aos="fade-down">
+        <div class="relative">
+            <div class="w-48 h-48 sm:w-64 sm:h-64 bg-cyber-blue/20 rounded-full absolute -z-10 animate-pulse"></div>
+            <img src="https://placehold.co/400x400/15151f/00a8ff?text=S.Rosselli" alt="Samuele Rosselli" class="w-48 h-48 sm:w-64 sm:h-64 rounded-full object-cover cyber-glow">
+        </div>
+    </div>
+    
+    <!-- Text content -->
+    <div class="md:w-1/2 mb-12 md:mb-0 text-center md:text-left" data-aos="fade-right">
                     <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">Samuele <span class="text-cyber-blue">Rosselli</span></h1>
                     <h2 class="text-base sm:text-lg sm:text-xl md:text-2xl text-cyber-green mb-6 font-mono">Cybersecurity & Networking Specialist</h2>
                     <p class="text-lg mb-8 text-gray-300">Securing digital environments and building robust network infrastructures with precision and expertise.</p>
@@ -522,7 +531,8 @@
                         <a href="#contact" class="px-6 py-3 cyber-border text-cyber-blue rounded-md hover:bg-cyber-blue/10 transition-colors text-center">Contact Me</a>
                     </div>
                 </div>
-                <div class="md:w-1/2 flex justify-center" data-aos="fade-left">
+                <!-- Desktop: Image on right -->
+<div class="md:w-1/2 hidden md:flex justify-center" data-aos="fade-left">
                     <div class="relative">
                         <div class="w-64 h-64 md:w-80 md:h-80 bg-cyber-blue/20 rounded-full absolute -z-10 animate-pulse"></div>
                         <img src="https://placehold.co/400x400/15151f/00a8ff?text=S.Rosselli" alt="Samuele Rosselli" class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover cyber-glow">
@@ -1524,3 +1534,4 @@
     </script>
 </body>
 </html>
+
