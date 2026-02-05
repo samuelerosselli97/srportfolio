@@ -2,16 +2,8 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="description" content="Samuele Rosselli - Cybersecurity & Networking Specialist. Professional IT consulting services.">
-    <meta name="theme-color" content="#0a0a0f">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samuele Rosselli - Cybersecurity & Networking Specialist</title>
-    
-    <!-- Preconnect to external domains for better performance -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://unpkg.com">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -19,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -40,118 +32,74 @@
             }
         }
     </script>
-    
     <style>
-        /* Prevent horizontal scrolling on mobile */
-        html, body {
-            overflow-x: hidden;
-            width: 100%;
-        }
-        
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
         }
-        
-        /* Cyber grid - lighter on mobile for performance */
         .cyber-grid {
             background-image: 
-                linear-gradient(rgba(0, 168, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 168, 255, 0.05) 1px, transparent 1px);
+                linear-gradient(rgba(0, 168, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 168, 255, 0.1) 1px, transparent 1px);
             background-size: 40px 40px;
         }
-        
-        @media (min-width: 768px) {
-            .cyber-grid {
-                background-image: 
-                    linear-gradient(rgba(0, 168, 255, 0.1) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(0, 168, 255, 0.1) 1px, transparent 1px);
-            }
-        }
-        
         .cyber-glow {
             box-shadow: 0 0 15px rgba(0, 168, 255, 0.5);
         }
-        
         .cyber-border {
             border: 1px solid rgba(0, 168, 255, 0.3);
         }
-        
-        /* Improve touch targets for mobile */
-        .skill-card {
-            min-height: 120px;
-            transition: all 0.3s ease;
-        }
-        
-        .skill-card:hover,
-        .skill-card:active {
+        .skill-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 168, 255, 0.2);
         }
-        
         .project-card {
             transition: all 0.3s ease;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
-        
-        .project-card:hover,
-        .project-card:active {
+        .project-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 15px 30px rgba(0, 168, 255, 0.25);
         }
-        
-        /* Certification badges improvements */
-        .cert-badge-container {
-            transition: transform 0.3s ease;
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: linear-gradient(to bottom, #00a8ff, #00ff9d);
         }
-        
-        .cert-badge-container:hover {
-            transform: scale(1.05);
-        }
-        
-        /* Mode toggle */
         .mode-toggle {
             transition: all 0.3s ease;
-            -webkit-tap-highlight-color: transparent;
         }
-        
-        .mode-toggle:active {
+        .mode-toggle:hover {
             transform: rotate(45deg);
         }
-        
-        /* Glitch effect - disabled on mobile for performance */
-        @media (min-width: 768px) {
-            .glitch-effect {
-                position: relative;
-            }
-            
-            .glitch-effect::before, .glitch-effect::after {
-                content: attr(data-text);
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
-            
-            .glitch-effect::before {
-                left: 2px;
-                text-shadow: -2px 0 #00ff9d;
-                clip: rect(44px, 450px, 56px, 0);
-                animation: glitch-anim 5s infinite linear alternate-reverse;
-            }
-            
-            .glitch-effect::after {
-                left: -2px;
-                text-shadow: -2px 0 #ff5e00;
-                clip: rect(44px, 450px, 56px, 0);
-                animation: glitch-anim2 5s infinite linear alternate-reverse;
-            }
+        .glitch-effect {
+            position: relative;
         }
-        
+        .glitch-effect::before, .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch-effect::before {
+            left: 2px;
+            text-shadow: -2px 0 #00ff9d;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch-effect::after {
+            left: -2px;
+            text-shadow: -2px 0 #ff5e00;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
         @keyframes glitch-anim {
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
@@ -175,7 +123,6 @@
             95% { clip: rect(24px, 9999px, 23px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
-        
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
@@ -199,8 +146,6 @@
             95% { clip: rect(78px, 9999px, 39px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
-        
-        /* Language toggle - improved for mobile */
         .language-toggle {
             background: #15151f;
             border-radius: 9999px;
@@ -210,24 +155,20 @@
             width: 80px;
             position: relative;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
         }
-        
         .language-toggle div {
             flex: 1;
             text-align: center;
-            padding: 8px 6px;
+            padding: 6px;
             color: #f8fafc;
-            font-size: 13px;
+            font-size: 14px;
             transition: all 0.3s ease;
-            z-index: 1;
+            z-index: 2;
         }
-        
         .language-toggle .active {
             color: #0a0a0f;
             font-weight: 600;
         }
-        
         .language-toggle .slider {
             position: absolute;
             width: 50%;
@@ -235,19 +176,16 @@
             background: #00a8ff;
             border-radius: 9999px;
             transition: transform 0.3s ease;
+            z-index: 1;
             top: 2px;
             left: 2px;
         }
-        
         .language-toggle.english .slider {
             transform: translateX(0);
         }
-        
         .language-toggle.german .slider {
             transform: translateX(calc(100% - 4px));
         }
-        
-        /* Particles - hidden on mobile for performance */
         #particles-js {
             position: absolute;
             width: 100%;
@@ -255,16 +193,9 @@
             top: 0;
             left: 0;
             z-index: 0;
-            display: none;
         }
         
-        @media (min-width: 768px) {
-            #particles-js {
-                display: block;
-            }
-        }
-        
-        /* Modal improvements for mobile */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -277,67 +208,51 @@
             background-color: rgba(10, 10, 15, 0.95);
             backdrop-filter: blur(8px);
             animation: fadeIn 0.3s ease;
-            -webkit-overflow-scrolling: touch;
         }
         
         .modal.active {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 20px 0;
+            align-items: center;
+            padding: 1rem;
         }
         
         .modal-content {
             background-color: #15151f;
             border: 1px solid rgba(0, 168, 255, 0.3);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 2rem;
             max-width: 600px;
-            width: calc(100% - 2rem);
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
             animation: slideUp 0.3s ease;
             box-shadow: 0 20px 60px rgba(0, 168, 255, 0.3);
-            margin: auto;
-        }
-        
-        @media (min-width: 768px) {
-            .modal-content {
-                padding: 2rem;
-                width: 90%;
-            }
-            
-            .modal.active {
-                align-items: center;
-            }
         }
         
         .close-modal {
-            position: sticky;
-            top: 0;
-            right: 0;
-            float: right;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
             font-size: 28px;
             font-weight: bold;
             color: #00a8ff;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #15151f;
+            background: none;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             z-index: 10;
-            margin-bottom: 1rem;
-            -webkit-tap-highlight-color: transparent;
         }
         
-        .close-modal:active {
-            background-color: rgba(0, 168, 255, 0.2);
+        .close-modal:hover {
+            background-color: rgba(0, 168, 255, 0.1);
             transform: rotate(90deg);
         }
         
@@ -357,82 +272,94 @@
             }
         }
         
-        /* Badge improvements */
-        .notion-badge,
+        .notion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 168, 255, 0.1);
+            color: #00a8ff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
         .project-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.813rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        
-        .notion-badge {
-            background: rgba(0, 168, 255, 0.1);
-            color: #00a8ff;
-        }
-        
-        .project-badge {
             background: rgba(0, 255, 157, 0.1);
             color: #00ff9d;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
-        
-        /* Mobile navigation improvements */
-        .nav-fixed {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
-        
-        /* Improved touch targets */
-        button, a, .language-toggle {
-            min-height: 44px;
-            min-width: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Form improvements for mobile */
-        input, textarea {
-            font-size: 16px; /* Prevents zoom on iOS */
-        }
-        
-        /* Hero image responsive */
-        .hero-image-container {
-            width: 200px;
-            height: 200px;
-        }
-        
-        @media (min-width: 640px) {
-            .hero-image-container {
-                width: 256px;
-                height: 256px;
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .close-modal {
+                right: 0.75rem;
+                top: 0.75rem;
+            }
+            
+            .glitch-effect::before,
+            .glitch-effect::after {
+                display: none;
+            }
+            
+            #particles-js {
+                opacity: 0.3;
             }
         }
-        
-        @media (min-width: 768px) {
-            .hero-image-container {
-                width: 320px;
-                height: 320px;
+
+        /* Certification logo styles */
+        .cert-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: brightness(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .cert-logo:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 640px) {
+            .cert-logo {
+                width: 60px;
+                height: 60px;
             }
         }
-        
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
+
+        /* Hero image styles */
+        .hero-image {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(0, 168, 255, 0.3);
         }
-        
-        /* Loading optimization */
-        img {
-            content-visibility: auto;
+
+        @media (max-width: 768px) {
+            .hero-image {
+                width: 240px;
+                height: 240px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-image {
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
 </head>
@@ -442,7 +369,7 @@
     <!-- Project Modal -->
     <div id="projectModal" class="modal">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()" aria-label="Close modal">&times;</button>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
             <div id="modalBody">
                 <!-- Content will be dynamically inserted here -->
             </div>
@@ -450,79 +377,74 @@
     </div>
     
     <!-- Navigation -->
-    <nav class="nav-fixed w-full border-b border-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="#" class="text-xl sm:text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
                 
                 <div class="hidden md:flex space-x-6 lg:space-x-8">
-                    <a href="#home" class="hover:text-cyber-blue transition-colors">Home</a>
-                    <a href="#about" class="hover:text-cyber-blue transition-colors">About</a>
-                    <a href="#experience" class="hover:text-cyber-blue transition-colors">Experience</a>
-                    <a href="#portfolio" class="hover:text-cyber-blue transition-colors">Projects</a>
-                    <a href="#skills" class="hover:text-cyber-blue transition-colors">Skills</a>
-                    <a href="#contact" class="hover:text-cyber-blue transition-colors">Contact</a>
+                    <a href="#home" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">Home</a>
+                    <a href="#about" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">About</a>
+                    <a href="#experience" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">Experience</a>
+                    <a href="#portfolio" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">Projects</a>
+                    <a href="#skills" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">Skills</a>
+                    <a href="#contact" class="hover:text-cyber-blue transition-colors text-sm lg:text-base">Contact</a>
                 </div>
                 
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <div class="language-toggle english" id="languageToggle">
-                        <div class="slider"></div>
                         <div class="language-option active" data-lang="en">EN</div>
                         <div class="language-option" data-lang="de">DE</div>
+                        <div class="slider"></div>
                     </div>
-                    <button id="modeToggle" class="mode-toggle p-2 rounded-full hover:bg-gray-800" aria-label="Toggle dark mode">
-                        <i data-feather="moon" class="text-cyber-blue w-5 h-5"></i>
+                    <button id="modeToggle" class="mode-toggle p-2 rounded-full hover:bg-gray-800 hidden sm:block">
+                        <i data-feather="moon" class="text-cyber-blue"></i>
                     </button>
-                    <a href="/cv.pdf" download class="hidden sm:flex px-3 lg:px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors items-center text-sm lg:text-base">
-                        <i data-feather="download" class="mr-1 lg:mr-2 w-4 h-4"></i> CV
+                    <a href="/cv.pdf" download class="hidden sm:flex px-3 lg:px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors items-center text-sm">
+                        <i data-feather="download" class="mr-1 lg:mr-2 w-4 h-4"></i> <span class="hidden lg:inline">CV</span>
                     </a>
-                    <button class="md:hidden p-2" id="mobileMenuButton" aria-label="Open menu">
-                        <i data-feather="menu" class="text-cyber-blue w-6 h-6"></i>
+                    <button class="md:hidden p-2" id="mobileMenuButton">
+                        <i data-feather="menu" class="text-cyber-blue"></i>
                     </button>
                 </div>
             </div>
         </div>
         
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-dark-card py-4 px-6 w-full border-t border-gray-800">
+        <div id="mobileMenu" class="hidden md:hidden bg-dark-card py-4 px-6 absolute w-full">
             <div class="flex flex-col space-y-4">
-                <a href="#home" class="hover:text-cyber-blue transition-colors py-2">Home</a>
-                <a href="#about" class="hover:text-cyber-blue transition-colors py-2">About</a>
-                <a href="#experience" class="hover:text-cyber-blue transition-colors py-2">Experience</a>
-                <a href="#portfolio" class="hover:text-cyber-blue transition-colors py-2">Projects</a>
-                <a href="#skills" class="hover:text-cyber-blue transition-colors py-2">Skills</a>
-                <a href="#contact" class="hover:text-cyber-blue transition-colors py-2">Contact</a>
-                <a href="/cv.pdf" download class="flex items-center justify-center px-4 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors">
-                    <i data-feather="download" class="mr-2 w-5 h-5"></i> Download CV
+                <a href="#home" class="hover:text-cyber-blue transition-colors">Home</a>
+                <a href="#about" class="hover:text-cyber-blue transition-colors">About</a>
+                <a href="#experience" class="hover:text-cyber-blue transition-colors">Experience</a>
+                <a href="#portfolio" class="hover:text-cyber-blue transition-colors">Projects</a>
+                <a href="#skills" class="hover:text-cyber-blue transition-colors">Skills</a>
+                <a href="#contact" class="hover:text-cyber-blue transition-colors">Contact</a>
+                <a href="/cv.pdf" download class="flex items-center hover:text-cyber-blue transition-colors">
+                    <i data-feather="download" class="mr-2 w-4 h-4"></i> Download CV
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="min-h-screen flex items-center justify-center cyber-grid relative overflow-hidden pt-20 sm:pt-24">
+    <section id="home" class="min-h-screen flex items-center justify-center cyber-grid relative overflow-hidden pt-20">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-4 sm:px-6 relative z-10">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-                <div class="md:w-1/2 text-center md:text-left order-2 md:order-1" data-aos="fade-right">
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                        Samuele <span class="text-cyber-blue">Rosselli</span>
-                    </h1>
-                    <h2 class="text-lg sm:text-xl md:text-2xl text-cyber-green mb-4 sm:mb-6 font-mono">Cybersecurity & Networking Specialist</h2>
-                    <p class="text-base sm:text-lg mb-6 sm:mb-8 text-gray-300">Securing digital environments and building robust network infrastructures with precision and expertise.</p>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="md:w-1/2 text-center md:text-left" data-aos="fade-right">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Samuele <span class="text-cyber-blue">Rosselli</span></h1>
+                    <h2 class="text-lg sm:text-xl md:text-2xl text-cyber-green mb-6 font-mono">Cybersecurity & Networking Specialist</h2>
+                    <p class="text-base sm:text-lg mb-8 text-gray-300">Securing digital environments and building robust network infrastructures with precision and expertise.</p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                         <a href="#portfolio" class="px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors text-center">View My Work</a>
                         <a href="#contact" class="px-6 py-3 cyber-border text-cyber-blue rounded-md hover:bg-cyber-blue/10 transition-colors text-center">Contact Me</a>
                     </div>
                 </div>
-                <div class="md:w-1/2 flex justify-center order-1 md:order-2" data-aos="fade-left">
+                <div class="md:w-1/2 flex justify-center" data-aos="fade-left">
                     <div class="relative">
-                        <div class="hero-image-container bg-cyber-blue/20 rounded-full absolute -z-10 animate-pulse"></div>
-                        <img src="./images/profile-photo.jpg" 
-                             alt="Samuele Rosselli - Professional Photo" 
-                             class="hero-image-container rounded-full object-cover cyber-glow"
-                             onerror="this.src='https://placehold.co/400x400/15151f/00a8ff?text=S.Rosselli'"
-                             loading="eager">
+                        <div class="w-52 h-52 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-cyber-blue/20 rounded-full absolute -z-10 animate-pulse"></div>
+                        <!-- PLACEHOLDER PER LA TUA FOTO PROFESSIONALE -->
+                        <img src="https://placehold.co/400x400/15151f/00a8ff?text=Your+Photo+Here" alt="Samuele Rosselli" class="hero-image cyber-glow">
                     </div>
                 </div>
             </div>
@@ -530,64 +452,45 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-12 sm:py-16 lg:py-20 bg-dark-card">
+    <section id="about" class="py-12 sm:py-16 md:py-20 bg-dark-card">
         <div class="container mx-auto px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-12 sm:mb-16 text-cyber-blue" data-aos="fade-up">About Me</h2>
             
-            <div class="flex flex-col md:flex-row gap-8 mb-12 sm:mb-16">
+            <div class="flex flex-col md:flex-row items-start gap-8 mb-12 sm:mb-16">
                 <div class="md:w-1/2" data-aos="fade-right">
-                    <p class="text-base sm:text-lg mb-4 sm:mb-6">I'm a passionate cybersecurity and networking specialist with a drive for solving complex technical challenges. My journey in technology began with a curiosity about how systems work and has evolved into a professional career dedicated to securing digital environments.</p>
-                    <p class="text-base sm:text-lg mb-4 sm:mb-6">I believe in proactive security measures and robust network design to prevent issues before they occur. My approach combines technical expertise with clear communication to deliver solutions that meet both security requirements and business needs.</p>
+                    <p class="text-base sm:text-lg mb-6">I'm a passionate cybersecurity and networking specialist with a drive for solving complex technical challenges. My journey in technology began with a curiosity about how systems work and has evolved into a professional career dedicated to securing digital environments.</p>
+                    <p class="text-base sm:text-lg mb-6">I believe in proactive security measures and robust network design to prevent issues before they occur. My approach combines technical expertise with clear communication to deliver solutions that meet both security requirements and business needs.</p>
                     <p class="text-base sm:text-lg">When I'm not configuring networks or analyzing security protocols, I enjoy staying updated with the latest cybersecurity trends and experimenting with new technologies.</p>
                 </div>
-                <div class="md:w-1/2 md:pl-12" data-aos="fade-left">
-                    <div class="space-y-6">
-                        <!-- High School Education -->
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-cyber-blue/20 flex items-center justify-center border-2 border-cyber-blue">
-                                <i data-feather="book" class="text-cyber-blue w-6 h-6 sm:w-8 sm:h-8"></i>
+                <div class="md:w-1/2" data-aos="fade-left">
+                    <div class="relative pl-6 sm:pl-8 timeline">
+                        <div class="mb-8 relative">
+                            <div class="absolute -left-9 sm:-left-11 w-8 h-8 rounded-full bg-cyber-blue flex items-center justify-center">
+                                <i data-feather="book" class="text-white w-4 h-4"></i>
                             </div>
-                            <div class="flex-1 pt-1">
-                                <h3 class="text-lg sm:text-xl font-semibold mb-1">High School Education</h3>
-                                <p class="text-cyber-green text-sm sm:text-base mb-1">Languages Studies</p>
-                                <p class="text-gray-400 text-sm">Developed strong communication skills and cultural understanding</p>
-                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold mb-2">High School Education</h3>
+                            <p class="text-cyber-green text-sm sm:text-base">Languages Studies</p>
+                            <p class="text-gray-400 text-sm sm:text-base">Developed strong communication skills and cultural understanding</p>
                         </div>
                         
-                        <!-- CompTIA Network+ -->
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
-                                <img src="./images/comptia-network-plus.png" 
-                                     alt="CompTIA Network+ Certification" 
-                                     class="w-full h-full object-contain"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-cyber-green/20 items-center justify-center border-2 border-cyber-green" style="display:none;">
-                                    <i data-feather="award" class="text-cyber-green w-6 h-6 sm:w-8 sm:h-8"></i>
-                                </div>
+                        <div class="mb-8 relative">
+                            <div class="absolute -left-9 sm:-left-11 w-8 h-8 rounded-full bg-cyber-green flex items-center justify-center">
+                                <!-- PLACEHOLDER LOGO COMPTIA NETWORK+ -->
+                                <img src="https://placehold.co/32x32/00ff9d/ffffff?text=N+" alt="CompTIA Network+" class="w-5 h-5 rounded-full">
                             </div>
-                            <div class="flex-1 pt-1">
-                                <h3 class="text-lg sm:text-xl font-semibold mb-1">CompTIA Network+</h3>
-                                <p class="text-cyber-green text-sm sm:text-base mb-1">Networking Certification</p>
-                                <p class="text-gray-400 text-sm">Validated expertise in configuring and troubleshooting networks</p>
-                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold mb-2">CompTIA Network+</h3>
+                            <p class="text-cyber-green text-sm sm:text-base">Networking Certification</p>
+                            <p class="text-gray-400 text-sm sm:text-base">Validated expertise in configuring and troubleshooting networks</p>
                         </div>
                         
-                        <!-- CompTIA Security+ -->
-                        <div class="flex gap-4 items-start">
-                            <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
-                                <img src="./images/comptia-security-plus.png" 
-                                     alt="CompTIA Security+ Certification" 
-                                     class="w-full h-full object-contain"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-cyber-orange/20 items-center justify-center border-2 border-cyber-orange" style="display:none;">
-                                    <i data-feather="shield" class="text-cyber-orange w-6 h-6 sm:w-8 sm:h-8"></i>
-                                </div>
+                        <div class="relative">
+                            <div class="absolute -left-9 sm:-left-11 w-8 h-8 rounded-full bg-cyber-orange flex items-center justify-center">
+                                <!-- PLACEHOLDER LOGO COMPTIA SECURITY+ -->
+                                <img src="https://placehold.co/32x32/ff5e00/ffffff?text=S+" alt="CompTIA Security+" class="w-5 h-5 rounded-full">
                             </div>
-                            <div class="flex-1 pt-1">
-                                <h3 class="text-lg sm:text-xl font-semibold mb-1">CompTIA Security+</h3>
-                                <p class="text-cyber-green text-sm sm:text-base mb-1">Cybersecurity Certification</p>
-                                <p class="text-gray-400 text-sm">Demonstrated knowledge in security protocols and threat mitigation</p>
-                            </div>
+                            <h3 class="text-lg sm:text-xl font-semibold mb-2">CompTIA Security+</h3>
+                            <p class="text-cyber-green text-sm sm:text-base">Cybersecurity Certification</p>
+                            <p class="text-gray-400 text-sm sm:text-base">Demonstrated knowledge in security protocols and threat mitigation</p>
                         </div>
                     </div>
                 </div>
@@ -622,56 +525,56 @@
     </section>
 
     <!-- Experience Section -->
-    <section id="experience" class="py-12 sm:py-16 lg:py-20 bg-dark-bg">
+    <section id="experience" class="py-12 sm:py-16 md:py-20 bg-dark-bg">
         <div class="container mx-auto px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-12 sm:mb-16 text-cyber-blue" data-aos="fade-up">Professional Experience</h2>
             
             <div class="space-y-8 sm:space-y-12">
                 <div class="flex flex-col" data-aos="fade-up">
                     <div class="mb-4">
-                        <p class="text-cyber-green text-sm sm:text-base mb-1">Present</p>
-                        <h3 class="text-xl sm:text-2xl font-semibold">Freelance Consultant</h3>
+                        <p class="text-cyber-green text-sm sm:text-base">Present</p>
+                        <h3 class="text-lg sm:text-xl font-semibold">Freelance Consultant</h3>
                     </div>
-                    <div class="border-l-2 border-gray-700 pl-4 sm:pl-6 md:pl-8">
+                    <div class="border-t md:border-l md:border-t-0 border-gray-700 pt-4 md:pl-8 md:pt-0">
                         <p class="mb-4 text-sm sm:text-base">Providing tailored tech solutions for personal and business clients, focusing on cybersecurity, network setup, and technical troubleshooting.</p>
                         <ul class="space-y-2">
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Designed and implemented secure network infrastructures for small businesses</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Conducted security audits and vulnerability assessments</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Provided ongoing technical support and maintenance services</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Developed customized technology solutions based on client needs</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Designed and implemented secure network infrastructures for small businesses</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Conducted security audits and vulnerability assessments</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Provided ongoing technical support and maintenance services</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Developed customized technology solutions based on client needs</li>
                         </ul>
                     </div>
                 </div>
                 
                 <div class="flex flex-col" data-aos="fade-up">
                     <div class="mb-4">
-                        <p class="text-cyber-green text-sm sm:text-base mb-1">2022 - 2023</p>
-                        <h3 class="text-xl sm:text-2xl font-semibold">Stiwa</h3>
+                        <p class="text-cyber-green text-sm sm:text-base">2022 - 2023</p>
+                        <h3 class="text-lg sm:text-xl font-semibold">Stiwa</h3>
                         <p class="text-gray-400 text-sm sm:text-base">Technical Contributor</p>
                     </div>
-                    <div class="border-l-2 border-gray-700 pl-4 sm:pl-6 md:pl-8">
+                    <div class="border-t md:border-l md:border-t-0 border-gray-700 pt-4 md:pl-8 md:pt-0">
                         <p class="mb-4 text-sm sm:text-base">Contributed to a Razer Mouse project in a car component manufacturing environment, applying technical expertise to enhance product development.</p>
                         <ul class="space-y-2">
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Collaborated with engineering teams on technical specifications</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Assisted in troubleshooting and quality assurance processes</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Provided technical insights for product improvement</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Collaborated with engineering teams on technical specifications</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Assisted in troubleshooting and quality assurance processes</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Provided technical insights for product improvement</li>
                         </ul>
                     </div>
                 </div>
                 
                 <div class="flex flex-col" data-aos="fade-up">
                     <div class="mb-4">
-                        <p class="text-cyber-green text-sm sm:text-base mb-1">2017 - 2022</p>
-                        <h3 class="text-xl sm:text-2xl font-semibold">Global Blue</h3>
+                        <p class="text-cyber-green text-sm sm:text-base">2017 - 2022</p>
+                        <h3 class="text-lg sm:text-xl font-semibold">Global Blue</h3>
                         <p class="text-gray-400 text-sm sm:text-base">Tax Refunder</p>
                     </div>
-                    <div class="border-l-2 border-gray-700 pl-4 sm:pl-6 md:pl-8">
+                    <div class="border-t md:border-l md:border-t-0 border-gray-700 pt-4 md:pl-8 md:pt-0">
                         <p class="mb-4 text-sm sm:text-base">Worked for 5 years at the leading tax refund company in Europe, developing strong analytical and customer service skills in a technical environment.</p>
                         <ul class="space-y-2">
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Processed complex tax refund documentation with precision</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Utilized proprietary software systems for data management</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Developed efficient workflows for processing high volumes of transactions</li>
-                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 w-4 h-4 flex-shrink-0"></i> Provided technical support to colleagues on system usage</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Processed complex tax refund documentation with precision</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Utilized proprietary software systems for data management</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Developed efficient workflows for processing high volumes of transactions</li>
+                            <li class="flex items-start text-sm sm:text-base"><i data-feather="chevron-right" class="text-cyber-blue mr-2 mt-1 flex-shrink-0 w-4 h-4"></i> Provided technical support to colleagues on system usage</li>
                         </ul>
                     </div>
                 </div>
@@ -680,7 +583,7 @@
     </section>
 
     <!-- Portfolio Section -->
-    <section id="portfolio" class="py-12 sm:py-16 lg:py-20 bg-dark-card">
+    <section id="portfolio" class="py-12 sm:py-16 md:py-20 bg-dark-card">
         <div class="container mx-auto px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-12 sm:mb-16 text-cyber-blue" data-aos="fade-up">Featured Projects</h2>
             
@@ -688,11 +591,11 @@
                 <!-- Project 1: Active Directory Setup -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('activeDirectory')">
                     <div class="h-40 sm:h-48 bg-gradient-to-br from-cyber-blue/30 to-cyber-green/30 flex items-center justify-center">
-                        <i data-feather="server" class="text-cyber-blue w-12 h-12 sm:w-16 sm:h-16"></i>
+                        <i data-feather="server" class="text-cyber-blue" style="width: 48px; height: 48px;"></i>
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-blue">Active Directory Setup</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-blue">Active Directory Setup</h3>
                             <span class="notion-badge flex-shrink-0">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
@@ -716,11 +619,11 @@
                 <!-- Project 2: Azure Infrastructure -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('azureInfra')">
                     <div class="h-40 sm:h-48 bg-gradient-to-br from-cyber-green/30 to-cyber-orange/30 flex items-center justify-center">
-                        <i data-feather="cloud" class="text-cyber-green w-12 h-12 sm:w-16 sm:h-16"></i>
+                        <i data-feather="cloud" class="text-cyber-green" style="width: 48px; height: 48px;"></i>
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-green">Azure Infrastructure</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Azure Infrastructure Deployment</h3>
                             <span class="notion-badge flex-shrink-0">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
@@ -744,11 +647,11 @@
                 <!-- Project 3: Trading System -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('tradingSystem')">
                     <div class="h-40 sm:h-48 bg-gradient-to-br from-cyber-orange/30 to-cyber-blue/30 flex items-center justify-center">
-                        <i data-feather="trending-up" class="text-cyber-orange w-12 h-12 sm:w-16 sm:h-16"></i>
+                        <i data-feather="trending-up" class="text-cyber-orange" style="width: 48px; height: 48px;"></i>
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-orange">Automated Trading</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-orange">Automated Trading System</h3>
                             <span class="notion-badge flex-shrink-0">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
@@ -772,11 +675,11 @@
                 <!-- Project 4: CCTV Hardening -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('cctvHardening')">
                     <div class="h-40 sm:h-48 bg-gradient-to-br from-cyber-blue/30 to-cyber-orange/30 flex items-center justify-center">
-                        <i data-feather="shield" class="text-cyber-blue w-12 h-12 sm:w-16 sm:h-16"></i>
+                        <i data-feather="shield" class="text-cyber-blue" style="width: 48px; height: 48px;"></i>
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-blue">CCTV Hardening</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-blue">CCTV Network Hardening</h3>
                             <span class="notion-badge flex-shrink-0">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                     <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
@@ -800,13 +703,13 @@
                 <!-- Project 5: Beachbar Surveillance -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('beachbarSurveillance')">
                     <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
-                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Surveillance+System" alt="Beachbar Surveillance" class="w-full h-full object-cover" loading="lazy">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Surveillance+System" alt="Beachbar Surveillance" class="w-full h-full object-cover">
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-green">Beachbar Surveillance</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Beachbar Surveillance</h3>
                             <span class="project-badge flex-shrink-0">
-                                <i data-feather="file-text" class="w-3.5 h-3.5"></i>
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
                                 <span class="hidden sm:inline">Project</span>
                             </span>
                         </div>
@@ -826,13 +729,13 @@
                 <!-- Project 6: Restaurant Surveillance -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('restaurantSurveillance')">
                     <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
-                        <img src="https://placehold.co/600x400/15151f/00ff9d?text=Restaurant+Security" alt="Strandbad Restaurant Surveillance" class="w-full h-full object-cover" loading="lazy">
+                        <img src="https://placehold.co/600x400/15151f/00ff9d?text=Restaurant+Security" alt="Strandbad Restaurant Surveillance" class="w-full h-full object-cover">
                     </div>
                     <div class="p-4 sm:p-6">
                         <div class="flex items-start justify-between mb-2 gap-2">
-                            <h3 class="text-lg sm:text-xl font-semibold text-cyber-green">Strandbad Restaurant</h3>
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Strandbad Restaurant Surveillance</h3>
                             <span class="project-badge flex-shrink-0">
-                                <i data-feather="file-text" class="w-3.5 h-3.5"></i>
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
                                 <span class="hidden sm:inline">Project</span>
                             </span>
                         </div>
@@ -849,27 +752,127 @@
                     </div>
                 </div>
                 
-                <!-- Remaining projects follow same pattern with mobile optimizations... -->
-                <!-- Project 7-10 would continue here with same responsive patterns -->
+                <!-- Project 7: AI Pizza App -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('aiPizzaApp')">
+                    <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/ff5e00?text=AI+Pizza+App" alt="AI Pizza App" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-start justify-between mb-2 gap-2">
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-orange">AI Pizza App</h3>
+                            <span class="project-badge flex-shrink-0">
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                                <span class="hidden sm:inline">Project</span>
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4 text-sm sm:text-base">Built a custom application featuring pizza recipes, tool shop, and AI integration for personalized recommendations.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-xs sm:text-sm">AI</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-xs sm:text-sm">App Development</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-xs sm:text-sm">E-commerce</span>
+                        </div>
+                        <div class="text-cyber-orange hover:text-cyber-green flex items-center text-sm sm:text-base">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
                 
+                <!-- Project 8: Networking Solutions -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('networkingSolutions')">
+                    <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Network+Setup" alt="Networking Solutions" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-start justify-between mb-2 gap-2">
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Networking Solutions</h3>
+                            <span class="project-badge flex-shrink-0">
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                                <span class="hidden sm:inline">Project</span>
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4 text-sm sm:text-base">Comprehensive networking services including printer setups, switch configurations, and NVR implementations.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">Networking</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">Hardware</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">Troubleshooting</span>
+                        </div>
+                        <div class="text-cyber-blue hover:text-cyber-green flex items-center text-sm sm:text-base">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 9: Lulzim Website -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('lulzimWebsite')">
+                    <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/00ff9d?text=Lulzim.at+Website" alt="Lulzim.at Website" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-start justify-between mb-2 gap-2">
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Lulzim.at Website</h3>
+                            <span class="project-badge flex-shrink-0">
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                                <span class="hidden sm:inline">Project</span>
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4 text-sm sm:text-base">Developed a high-traffic website generating over 10,000 views per month, with a table reservation app accommodating 1,500+ guests monthly.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-xs sm:text-sm">Web Development</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-xs sm:text-sm">Table Reservation</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-xs sm:text-sm">High Traffic</span>
+                        </div>
+                        <div class="text-cyber-green hover:text-cyber-blue flex items-center text-sm sm:text-base">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 10: Da Amelia Surveillance -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('daAmeliaSurveillance')">
+                    <div class="h-40 sm:h-48 bg-gray-800 overflow-hidden">
+                        <img src="https://placehold.co/600x400/15151f/00a8ff?text=Da+Amelia+Surveillance" alt="Da Amelia Restaurant Surveillance" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <div class="flex items-start justify-between mb-2 gap-2">
+                            <h3 class="text-base sm:text-xl font-semibold text-cyber-green">Da Amelia Restaurant Surveillance</h3>
+                            <span class="project-badge flex-shrink-0">
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                                <span class="hidden sm:inline">Project</span>
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4 text-sm sm:text-base">Installed 15 security cameras with an NVR system and organized cable installations for a clean setup.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">Surveillance</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">NVR</span>
+                            <span class="px-2 sm:px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-xs sm:text-sm">Cable Management</span>
+                        </div>
+                        <div class="text-cyber-blue hover:text-cyber-green flex items-center text-sm sm:text-base">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Skills Section -->
-    <section id="skills" class="py-12 sm:py-16 lg:py-20 bg-dark-bg">
+    <section id="skills" class="py-12 sm:py-16 md:py-20 bg-dark-bg">
         <div class="container mx-auto px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-12 sm:mb-16 text-cyber-blue" data-aos="fade-up">Technical Skills</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
                 <div data-aos="fade-right">
-                    <h3 class="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-cyber-blue flex items-center">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6 text-cyber-blue flex items-center">
                         <i data-feather="settings" class="mr-2 w-5 h-5"></i> Networking
                     </h3>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="hard-drive" class="text-cyber-blue mr-2 w-5 h-5"></i>
+                                <i data-feather="hard-drive" class="text-cyber-blue mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Network Configuration</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Designing and implementing robust network infrastructures</p>
@@ -877,7 +880,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="wifi" class="text-cyber-blue mr-2 w-5 h-5"></i>
+                                <i data-feather="wifi" class="text-cyber-blue mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Switch & NVR Setup</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Configuring network devices for optimal performance</p>
@@ -885,7 +888,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="printer" class="text-cyber-blue mr-2 w-5 h-5"></i>
+                                <i data-feather="printer" class="text-cyber-blue mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Printer Troubleshooting</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Diagnosing and resolving printer connectivity issues</p>
@@ -893,7 +896,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="bar-chart-2" class="text-cyber-blue mr-2 w-5 h-5"></i>
+                                <i data-feather="bar-chart-2" class="text-cyber-blue mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Network Monitoring</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Implementing monitoring solutions for network health</p>
@@ -902,13 +905,13 @@
                 </div>
                 
                 <div data-aos="fade-left">
-                    <h3 class="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-cyber-green flex items-center">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6 text-cyber-green flex items-center">
                         <i data-feather="shield" class="mr-2 w-5 h-5"></i> Cybersecurity
                     </h3>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="search" class="text-cyber-green mr-2 w-5 h-5"></i>
+                                <i data-feather="search" class="text-cyber-green mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Auditing</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Conducting comprehensive security assessments</p>
@@ -916,7 +919,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="activity" class="text-cyber-green mr-2 w-5 h-5"></i>
+                                <i data-feather="activity" class="text-cyber-green mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Cybersecurity Operations</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Implementing and managing security protocols</p>
@@ -924,7 +927,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="alert-triangle" class="text-cyber-green mr-2 w-5 h-5"></i>
+                                <i data-feather="alert-triangle" class="text-cyber-green mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Threat Detection</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Identifying and mitigating security threats</p>
@@ -932,7 +935,7 @@
                         
                         <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all">
                             <div class="flex items-center mb-2">
-                                <i data-feather="lock" class="text-cyber-green mr-2 w-5 h-5"></i>
+                                <i data-feather="lock" class="text-cyber-green mr-2 w-5 h-5 flex-shrink-0"></i>
                                 <h4 class="font-medium text-sm sm:text-base">Access Control</h4>
                             </div>
                             <p class="text-xs sm:text-sm text-gray-400">Implementing secure authentication systems</p>
@@ -942,28 +945,28 @@
             </div>
             
             <div data-aos="fade-up">
-                <h3 class="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-cyber-orange flex items-center">
+                <h3 class="text-lg sm:text-xl font-semibold mb-6 text-cyber-orange flex items-center">
                     <i data-feather="tool" class="mr-2 w-5 h-5"></i> Additional Capabilities
                 </h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                    <div class="skill-card p-3 sm:p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
-                        <i data-feather="clipboard" class="text-cyber-orange mx-auto mb-2 w-6 h-6 sm:w-8 sm:h-8"></i>
-                        <h4 class="font-medium text-xs sm:text-sm">Tech Consulting</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
+                        <i data-feather="clipboard" class="text-cyber-orange mx-auto mb-2 w-6 h-6"></i>
+                        <h4 class="font-medium text-sm sm:text-base">Tech Consulting</h4>
                     </div>
                     
-                    <div class="skill-card p-3 sm:p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
-                        <i data-feather="code" class="text-cyber-orange mx-auto mb-2 w-6 h-6 sm:w-8 sm:h-8"></i>
-                        <h4 class="font-medium text-xs sm:text-sm">Problem Solving</h4>
+                    <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
+                        <i data-feather="code" class="text-cyber-orange mx-auto mb-2 w-6 h-6"></i>
+                        <h4 class="font-medium text-sm sm:text-base">Problem Solving</h4>
                     </div>
                     
-                    <div class="skill-card p-3 sm:p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
-                        <i data-feather="message-square" class="text-cyber-orange mx-auto mb-2 w-6 h-6 sm:w-8 sm:h-8"></i>
-                        <h4 class="font-medium text-xs sm:text-sm">Client Communication</h4>
+                    <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
+                        <i data-feather="message-square" class="text-cyber-orange mx-auto mb-2 w-6 h-6"></i>
+                        <h4 class="font-medium text-sm sm:text-base">Client Communication</h4>
                     </div>
                     
-                    <div class="skill-card p-3 sm:p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
-                        <i data-feather="book-open" class="text-cyber-orange mx-auto mb-2 w-6 h-6 sm:w-8 sm:h-8"></i>
-                        <h4 class="font-medium text-xs sm:text-sm">Technical Documentation</h4>
+                    <div class="skill-card p-4 cyber-border rounded-lg hover:bg-dark-card transition-all text-center">
+                        <i data-feather="book-open" class="text-cyber-orange mx-auto mb-2 w-6 h-6"></i>
+                        <h4 class="font-medium text-sm sm:text-base">Technical Documentation</h4>
                     </div>
                 </div>
             </div>
@@ -971,7 +974,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-12 sm:py-16 lg:py-20 bg-dark-card">
+    <section id="contact" class="py-12 sm:py-16 md:py-20 bg-dark-card">
         <div class="container mx-auto px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-12 sm:mb-16 text-cyber-blue" data-aos="fade-up">Get In Touch</h2>
             
@@ -980,20 +983,20 @@
                     <form id="contactForm" class="space-y-4 sm:space-y-6">
                         <div>
                             <label for="name" class="block mb-2 text-gray-300 text-sm sm:text-base">Your Name</label>
-                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-base">
+                            <input type="text" id="name" name="name" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-sm sm:text-base">
                         </div>
                         
                         <div>
                             <label for="email" class="block mb-2 text-gray-300 text-sm sm:text-base">Email Address</label>
-                            <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-base">
+                            <input type="email" id="email" name="email" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-sm sm:text-base">
                         </div>
                         
                         <div>
                             <label for="message" class="block mb-2 text-gray-300 text-sm sm:text-base">Your Message</label>
-                            <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-base"></textarea>
+                            <textarea id="message" name="message" rows="5" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-dark-bg cyber-border rounded-md focus:outline-none focus:ring-2 focus:ring-cyber-blue text-sm sm:text-base"></textarea>
                         </div>
                         
-                        <button type="submit" class="w-full px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors text-base sm:text-lg font-semibold">Send Message</button>
+                        <button type="submit" class="w-full px-6 py-3 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors text-sm sm:text-base">Send Message</button>
                     </form>
                 </div>
                 
@@ -1003,7 +1006,7 @@
                             <h3 class="text-lg sm:text-xl font-semibold mb-4 text-cyber-green">Contact Information</h3>
                             <div class="space-y-4">
                                 <div class="flex items-start">
-                                    <i data-feather="mail" class="text-cyber-blue mr-4 mt-1 w-5 h-5 flex-shrink-0"></i>
+                                    <i data-feather="mail" class="text-cyber-blue mr-3 sm:mr-4 mt-1 flex-shrink-0 w-5 h-5"></i>
                                     <div>
                                         <p class="font-medium text-sm sm:text-base">Email</p>
                                         <a href="mailto:samuele.rosselli97@gmail.com" class="text-gray-400 hover:text-cyber-blue text-sm sm:text-base break-all">samuele.rosselli97@gmail.com</a>
@@ -1011,7 +1014,7 @@
                                 </div>
                                 
                                 <div class="flex items-start">
-                                    <i data-feather="phone" class="text-cyber-blue mr-4 mt-1 w-5 h-5 flex-shrink-0"></i>
+                                    <i data-feather="phone" class="text-cyber-blue mr-3 sm:mr-4 mt-1 flex-shrink-0 w-5 h-5"></i>
                                     <div>
                                         <p class="font-medium text-sm sm:text-base">Phone</p>
                                         <a href="tel:+436607733492" class="text-gray-400 hover:text-cyber-blue text-sm sm:text-base">+43 6607733492</a>
@@ -1036,7 +1039,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-8 sm:py-12 bg-dark-bg border-t border-gray-800">
+    <footer class="py-8 sm:py-12 bg-dark-bg cyber-border-t border-gray-800">
         <div class="container mx-auto px-4 sm:px-6">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="text-center md:text-left">
@@ -1044,17 +1047,17 @@
                 </div>
                 
                 <div class="flex space-x-6">
-                    <a href="mailto:samuele.rosselli97@gmail.com" class="text-gray-400 hover:text-cyber-blue" aria-label="Email">
-                        <i data-feather="mail" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <a href="mailto:samuele.rosselli97@gmail.com" class="text-gray-400 hover:text-cyber-blue transition-colors">
+                        <i data-feather="mail" class="w-5 h-5"></i>
                     </a>
-                    <a href="tel:+436607733492" class="text-gray-400 hover:text-cyber-blue" aria-label="Phone">
-                        <i data-feather="phone" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <a href="tel:+436607733492" class="text-gray-400 hover:text-cyber-blue transition-colors">
+                        <i data-feather="phone" class="w-5 h-5"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-cyber-blue" aria-label="LinkedIn">
-                        <i data-feather="linkedin" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <a href="#" class="text-gray-400 hover:text-cyber-blue transition-colors">
+                        <i data-feather="linkedin" class="w-5 h-5"></i>
                     </a>
-                    <a href="#" class="text-gray-400 hover:text-cyber-blue" aria-label="GitHub">
-                        <i data-feather="github" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <a href="#" class="text-gray-400 hover:text-cyber-blue transition-colors">
+                        <i data-feather="github" class="w-5 h-5"></i>
                     </a>
                 </div>
             </div>
@@ -1062,11 +1065,12 @@
     </footer>
 
     <script>
-        // Project Modal Data (same as original)
+        // Project Modal Data
         const projectData = {
+            // NOTION PROJECTS
             activeDirectory: {
                 title: 'Basic Active Directory Setup',
-                description: 'A comprehensive guide to setting up a basic Active Directory environment for domain management and user authentication.',
+                description: 'A comprehensive guide to setting up a basic Active Directory environment for domain management and user authentication. This project covers the essential steps in deploying Active Directory Domain Services (AD DS), configuring DNS, creating organizational units, and managing users and groups.',
                 link: 'https://www.notion.so/Basic-Active-Directory-Setup-Activity-2fd89b86e63180968f12c1e521ee4e62',
                 linkText: 'Open in Notion',
                 color: 'cyber-blue',
@@ -1081,7 +1085,7 @@
             },
             azureInfra: {
                 title: 'Secure & Scalable Azure Infrastructure',
-                description: 'A detailed case study on deploying secure and scalable cloud infrastructure using Microsoft Azure services.',
+                description: 'A detailed case study on deploying secure and scalable cloud infrastructure using Microsoft Azure services. This project demonstrates best practices for cloud architecture, including network segmentation, identity management, and security monitoring.',
                 link: 'https://www.notion.so/Case-Study-Secure-Scalable-Azure-Infrastructure-Deployment-2f889b86e63180ebaa21f7b5134463fb',
                 linkText: 'Open in Notion',
                 color: 'cyber-green',
@@ -1096,7 +1100,7 @@
             },
             tradingSystem: {
                 title: 'Automated Trading System - XAUUSD',
-                description: 'Development of an automated trading system for XAUUSD (Gold) with Telegram signal parsing and cTrader platform integration.',
+                description: 'Development of an automated trading system for XAUUSD (Gold) with Telegram signal parsing and cTrader platform integration. This system demonstrates real-time signal processing, automated order execution, and risk management strategies.',
                 link: 'https://www.notion.so/Automated-Trading-System-XAUUSD-GOLD-Telegram-Signal-Parser-cTrader-Integration-2f989b86e63180f0b8c2ec211290d4f6',
                 linkText: 'Open in Notion',
                 color: 'cyber-orange',
@@ -1111,7 +1115,7 @@
             },
             cctvHardening: {
                 title: 'CCTV Network Analysis & Hardening',
-                description: 'In-depth analysis and security hardening of a CCTV surveillance network infrastructure in Gmunden.',
+                description: 'In-depth analysis and security hardening of a CCTV surveillance network infrastructure in Gmunden. This project focuses on identifying vulnerabilities in the existing network and implementing robust security measures to protect against unauthorized access and potential threats.',
                 link: 'https://www.notion.so/Analysis-and-Hardening-of-a-CCTV-network-in-Gmunden-2f989b86e63180e8baeed06d14c5f296',
                 linkText: 'Open in Notion',
                 color: 'cyber-blue',
@@ -1124,9 +1128,11 @@
                     'Network monitoring and intrusion detection'
                 ]
             },
+            
+            // HTML PROJECTS
             beachbarSurveillance: {
                 title: 'Beachbar Surveillance System',
-                description: 'Installed and configured a comprehensive 7-camera security system with NVR.',
+                description: 'Installed and configured a comprehensive 7-camera security system with NVR for a beachbar establishment. The project included strategic camera placement for optimal coverage, network configuration, and system integration for seamless monitoring.',
                 link: 'beachbar-surveillance.html',
                 linkText: 'View Full Project',
                 color: 'cyber-blue',
@@ -1141,7 +1147,7 @@
             },
             restaurantSurveillance: {
                 title: 'Strandbad Restaurant Surveillance',
-                description: 'Designed and implemented an advanced 10-camera security system for Strandbad Restaurant.',
+                description: 'Designed and implemented an advanced 10-camera security system for Strandbad Restaurant with sophisticated NVR configuration. The system provides complete coverage of all critical areas with advanced features for monitoring and recording.',
                 link: 'restaurant-surveillance.html',
                 linkText: 'View Full Project',
                 color: 'cyber-green',
@@ -1152,6 +1158,66 @@
                     'Multi-zone monitoring coverage',
                     'Night vision and motion detection',
                     'Centralized management system'
+                ]
+            },
+            aiPizzaApp: {
+                title: 'AI-Powered Pizza Application',
+                description: 'Developed a comprehensive pizza application featuring authentic recipes, an integrated tool shop, and AI-powered recommendations. The app combines e-commerce functionality with personalized user experiences through artificial intelligence.',
+                link: 'ai-pizza-app.html',
+                linkText: 'View Full Project',
+                color: 'cyber-orange',
+                type: 'html',
+                highlights: [
+                    'AI-powered recipe recommendations',
+                    'Integrated e-commerce tool shop',
+                    'User preference learning system',
+                    'Interactive recipe database',
+                    'Custom ingredient suggestions'
+                ]
+            },
+            networkingSolutions: {
+                title: 'Comprehensive Networking Solutions',
+                description: 'Provided end-to-end networking services including printer installations, managed switch configurations, and NVR system implementations. The project showcases versatile networking expertise across various hardware and software platforms.',
+                link: 'networking-solutions.html',
+                linkText: 'View Full Project',
+                color: 'cyber-blue',
+                type: 'html',
+                highlights: [
+                    'Enterprise printer setup and configuration',
+                    'Managed network switch deployment',
+                    'NVR system integration',
+                    'Network troubleshooting and optimization',
+                    'Hardware procurement and installation'
+                ]
+            },
+            lulzimWebsite: {
+                title: 'Lulzim.at High-Traffic Website',
+                description: 'Developed and deployed a high-performance website for Lulzim.at, serving over 10,000 monthly visitors. The site features an integrated table reservation system that manages 1,500+ guest bookings per month with real-time availability updates.',
+                link: 'lulzim-website.html',
+                linkText: 'View Full Project',
+                color: 'cyber-green',
+                type: 'html',
+                highlights: [
+                    '10,000+ monthly page views',
+                    '1,500+ monthly table reservations',
+                    'Real-time booking system',
+                    'Mobile-responsive design',
+                    'Performance optimization'
+                ]
+            },
+            daAmeliaSurveillance: {
+                title: 'Da Amelia Restaurant Security System',
+                description: 'Executed a large-scale surveillance installation at Da Amelia Restaurant featuring 15 security cameras with professional NVR system. The project included comprehensive cable management for a clean, professional installation.',
+                link: 'da-amelia-surveillance.html',
+                linkText: 'View Full Project',
+                color: 'cyber-blue',
+                type: 'html',
+                highlights: [
+                    '15 security cameras strategically placed',
+                    'Professional NVR system configuration',
+                    'Organized cable management',
+                    'Complete coverage of dining and kitchen areas',
+                    'High-definition video recording'
                 ]
             }
         };
@@ -1171,10 +1237,10 @@
             const badgeClass = project.type === 'notion' ? 'notion-badge' : 'project-badge';
             
             modalBody.innerHTML = `
-                <div class="mb-4 sm:mb-6">
-                    <div class="flex items-start justify-between mb-3 gap-3">
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
                         <h2 class="text-xl sm:text-2xl font-bold text-${project.color}">${project.title}</h2>
-                        <span class="${badgeClass} flex-shrink-0">
+                        <span class="${badgeClass}">
                             ${badgeIcon}
                             ${badgeText}
                         </span>
@@ -1198,7 +1264,7 @@
                     
                     <div class="flex items-center justify-center pt-6 border-t border-gray-700">
                         <a href="${project.link}" ${project.type === 'notion' ? 'target="_blank" rel="noopener noreferrer"' : ''} 
-                           class="px-6 sm:px-8 py-3 bg-${project.color} text-white rounded-md hover:opacity-90 transition-all flex items-center text-base sm:text-lg font-semibold w-full sm:w-auto justify-center">
+                           class="px-6 sm:px-8 py-3 bg-${project.color} text-white rounded-md hover:opacity-90 transition-all flex items-center text-base sm:text-lg font-semibold">
                             <span>${project.linkText}</span>
                             <i data-feather="${project.type === 'notion' ? 'external-link' : 'arrow-right'}" class="ml-2 w-5 h-5"></i>
                         </a>
@@ -1207,14 +1273,12 @@
             `;
             
             modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
             feather.replace();
         }
 
         function closeModal() {
             const modal = document.getElementById('projectModal');
             modal.classList.remove('active');
-            document.body.style.overflow = ''; // Restore scrolling
         }
 
         // Close modal when clicking outside
@@ -1232,59 +1296,40 @@
             }
         });
 
-        // DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AOS with mobile-friendly settings
             AOS.init({
-                duration: 600,
+                duration: 800,
                 easing: 'ease-in-out',
-                once: true,
-                offset: 50,
-                disable: function() {
-                    return window.innerWidth < 768; // Disable on mobile for performance
-                }
+                once: true
             });
             
             feather.replace();
 
-            // Particles only on desktop
-            if (window.innerWidth >= 768) {
-                particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 60, density: { enable: true, value_area: 800 } },
-                        color: { value: ['#00a8ff', '#00ff9d', '#ff5e00'] },
-                        shape: { type: 'circle' },
-                        opacity: { value: 0.3, random: true },
-                        size: { value: 3, random: true },
-                        line_linked: { enable: true, distance: 150, color: '#00a8ff', opacity: 0.2, width: 1 },
-                        move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
-                    },
-                    interactivity: {
-                        detect_on: 'canvas',
-                        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
-                        modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
-                    },
-                    retina_detect: true
-                });
-            }
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#00a8ff', '#00ff9d', '#ff5e00'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00a8ff', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
             
-            // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobileMenuButton');
             const mobileMenu = document.getElementById('mobileMenu');
             
-            mobileMenuButton.addEventListener('click', function(e) {
-                e.stopPropagation();
+            mobileMenuButton.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
             });
             
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-            
-            // Mode toggle
             const modeToggle = document.getElementById('modeToggle');
             const html = document.documentElement;
             const modeIcon = modeToggle.querySelector('i');
@@ -1294,13 +1339,13 @@
                 
                 if (html.classList.contains('dark')) {
                     modeIcon.setAttribute('data-feather', 'moon');
+                    feather.replace();
                 } else {
                     modeIcon.setAttribute('data-feather', 'sun');
+                    feather.replace();
                 }
-                feather.replace();
             });
             
-            // Smooth scroll with offset for fixed nav
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1310,71 +1355,93 @@
                     
                     const targetElement = document.querySelector(targetId);
                     if (targetElement) {
-                        const navHeight = 80;
-                        const targetPosition = targetElement.offsetTop - navHeight;
-                        
                         window.scrollTo({
-                            top: targetPosition,
+                            top: targetElement.offsetTop - 80,
                             behavior: 'smooth'
                         });
                         
-                        // Close mobile menu
                         mobileMenu.classList.add('hidden');
                     }
                 });
             });
             
-            // Form submission (placeholder - add your email service)
+            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+            
             document.getElementById('contactForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Add your form submission logic here
-                alert('Thank you for your message! I will get back to you soon.');
-                this.reset();
-            });
-            
-            // Language toggle
-            const languageToggle = document.getElementById('languageToggle');
-            const languageOptions = languageToggle.querySelectorAll('.language-option');
-            
-            languageOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    languageOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    languageToggle.classList.remove('english', 'german');
-                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
-                    
-                    // Add language switching logic here
-                });
-            });
-
-            // Lazy load images
-            if ('IntersectionObserver' in window) {
-                const imageObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.dataset.src || img.src;
-                            observer.unobserve(img);
-                        }
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    message: document.getElementById('message').value
+                };
+                
+                emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', formData)
+                    .then(function(response) {
+                        alert('Message sent successfully!');
+                        document.getElementById('contactForm').reset();
+                    }, function(error) {
+                        alert('Failed to send message. Please try again later.');
+                        console.error('EmailJS error:', error);
                     });
-                });
-
-                document.querySelectorAll('img[loading="lazy"]').forEach(img => {
-                    imageObserver.observe(img);
-                });
-            }
+            });
+            
+            const skillCards = document.querySelectorAll('.skill-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1Continua15:33;
+entry.target.style.transform = 'translateY(0)';
+}
+});
+}, { threshold: 0.1 });
+        skillCards.forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
         });
 
-        // Performance: Debounce resize events
-        let resizeTimer;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                feather.replace();
-            }, 250);
+        // Language toggle
+        const languageToggle = document.getElementById('languageToggle');
+        const languageOptions = languageToggle.querySelectorAll('.language-option');
+        languageOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                languageOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                languageToggle.classList.remove('english', 'german');
+                languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+                const pageMap = {
+                    'index.html': 'index-de.html',
+                    'index-de.html': 'index.html',
+                    'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
+                    'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
+                    'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
+                    'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                    'ai-pizza-app.html': 'ai-pizza-app-de.html',
+                    'ai-pizza-app-de.html': 'ai-pizza-app.html',
+                    'networking-solutions.html': 'networking-solutions-de.html',
+                    'networking-solutions-de.html': 'networking-solutions.html',
+                    'lulzim-website.html': 'lulzim-website-de.html',
+                    'lulzim-website-de.html': 'lulzim-website.html',
+                    'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+                    'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
+                };
+                const currentPage = window.location.pathname.split('/').pop();
+                const newPage = pageMap[currentPage] || 'index.html';
+                document.body.style.opacity = 0;
+                setTimeout(() => {
+                    window.location.href = newPage;
+                }, 300);
+            });
         });
-    </script>
+
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = 1;
+    });
+</script>
 </body>
 </html>
+```
