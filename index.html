@@ -306,11 +306,16 @@ nav .container {
         }
         
         /* ========== MOBILE OPTIMIZATIONS ========== */
-        @media (max-width: 768px) {
-            /* Reduce particles on mobile for performance */
-            #particles-js {
-                opacity: 0.5;
-            }
+       @media (max-width: 768px) {
+    /* Disable particles on mobile for performance */
+    #particles-js {
+        display: none !important;
+    }
+    
+    /* Reduce animations */
+    * {
+        animation-duration: 0.3s !important;
+    }
             
             /* Optimize touch targets */
             button, a, .project-card {
@@ -1556,6 +1561,7 @@ nav .container {
     </script>
 </body>
 </html>
+
 
 
 
