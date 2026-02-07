@@ -1440,11 +1440,18 @@ nav .container {
             });
             
             const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-            
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
+const mobileMenu = document.getElementById('mobileMenu');
+
+mobileMenuButton.addEventListener('click', function() {
+    mobileMenu.classList.toggle('hidden');
+});
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+    });
+});
             
             const modeToggle = document.getElementById('modeToggle');
             const html = document.documentElement;
@@ -1561,6 +1568,7 @@ nav .container {
     </script>
 </body>
 </html>
+
 
 
 
