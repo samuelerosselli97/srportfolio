@@ -861,6 +861,34 @@ nav .container {
                     </div>
                 </div>
                 
+                <!-- Project 5.5: Surface Data Recovery -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('surfaceRecovery')">
+                    <div class="h-48 bg-gradient-to-br from-cyber-orange/30 to-cyber-green/30 flex items-center justify-center">
+                        <i data-feather="hard-drive" class="text-cyber-orange" style="width: 64px; height: 64px;"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xl font-semibold text-cyber-orange">Surface Data Recovery</h3>
+                            <span class="notion-badge">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
+                                </svg>
+                                Notion
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4">Advanced data recovery from a critical boot failure on Microsoft Surface using Windows RE, Diskpart, and Robocopy.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">Data Recovery</span>
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">Windows RE</span>
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">CLI</span>
+                        </div>
+                        <div class="text-cyber-orange hover:text-cyber-green flex items-center">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Project 5: Beachbar Surveillance -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('beachbarSurveillance')">
                     <div class="h-48 bg-gray-800 overflow-hidden">
@@ -1289,7 +1317,22 @@ nav .container {
                     'Network monitoring and intrusion detection'
                 ]
             },
-            
+            surfaceRecovery: {
+                title: 'Advanced Surface Data Recovery',
+                description: 'Critical data recovery operation on a Microsoft Surface device with complete boot failure (Error 0xc0000001). Successfully extracted 100% of unbacked-up user data using Windows Recovery Environment, command-line tools, and advanced disk management techniques before performing OS reinstallation.',
+                link: 'https://www.notion.so/Project-Advanced-Surface-Data-Recovery-System-Restoration-30389b86e631804f8ee2c53f5f0b9ff1',
+                linkText: 'Open in Notion',
+                color: 'cyber-orange',
+                type: 'notion',
+                highlights: [
+                    '100% data recovery from unbootable system',
+                    'Windows RE (Recovery Environment) navigation',
+                    'Diskpart volume mapping and assignment',
+                    'Robocopy for robust file system migration',
+                    'Clean OS reinstallation and restoration',
+                    'Hardware preservation (no chassis opening)'
+                ]
+            },
             // HTML PROJECTS
             beachbarSurveillance: {
                 title: 'Beachbar Surveillance System',
@@ -1613,6 +1656,7 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
     </script>
 </body>
 </html>
+
 
 
 
