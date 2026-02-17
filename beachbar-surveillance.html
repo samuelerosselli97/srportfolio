@@ -1,49 +1,10 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beachbar Surveillance - Samuele Rosselli</title>
-    <meta name="description" content="Details about the Beachbar Surveillance project by Samuele Rosselli, a security system with 8 cameras and NVR configuration.">
+    <meta name="description" content="Details about the Beachbar Surveillance project by Samuele Rosselli, a security system with 7 cameras and NVR configuration.">
     <meta name="keywords" content="surveillance, security, NVR, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -135,27 +96,35 @@
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
         .image-card:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateX(5px);
         }
         .language-toggle {
             background: #15151f;
@@ -181,20 +150,6 @@
             color: #0a0a0f;
             font-weight: 600;
         }
-        .language-toggle .slider {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #00a8ff;
-            border-radius: 9999px;
-            transition: transform 0.3s ease;
-        }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
         #particles-js {
             position: absolute;
             width: 100%;
@@ -215,57 +170,160 @@
                     <div class="language-toggle english" id="languageToggle">
                         <div class="language-option active" data-lang="en">EN</div>
                         <div class="language-option" data-lang="de">DE</div>
-                        <div class="slider"></div>
                     </div>
                     <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Back to Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+    
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Beachbar Surveillance" data-aos="fade-up">Beachbar Surveillance</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text text-center" data-text="Beachbar Surveillance System" data-aos="fade-up">Beachbar Surveillance System</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <!-- Left Column: Overview & Details -->
                 <div data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Overview</h2>
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Project Overview</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Developed and installed an advanced security system with 8 high-resolution cameras and NVR configuration for a beachbar, ensuring comprehensive monitoring of the premises.
+                        Designed and installed a comprehensive security surveillance system for a beachbar establishment. The system provides 24/7 monitoring with high-resolution cameras strategically positioned for maximum coverage and security.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">What I Did</h3>
+                    
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">System Specifications</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Cameras:</span> 7x High-Resolution IP Cameras
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">NVR:</span> Network Video Recorder (24/7 Recording)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Network:</span> Dedicated Security Network
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="database" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Storage:</span> 30-Day Rolling Archive
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="eye" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Resolution:</span> 1080p Full HD
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="moon" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Night Vision:</span> IR Illumination
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="smartphone" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Access:</span> Remote Mobile Monitoring
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Coverage Areas</h3>
                     <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installed and configured 7 high-resolution surveillance cameras.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Set up an NVR system for real-time monitoring and secure data storage.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Optimized camera angles for maximum coverage of the beachbar area.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Provided training for staff to manage and operate the system.</li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Main entrance and customer access points</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Bar and service counter area</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Outdoor seating and beach access</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Storage and back-of-house areas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Parking and perimeter security</span>
+                        </li>
                     </ul>
                 </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Images</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera1.jpg" alt="Beachbar Camera 1" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera2.jpg" alt="Beachbar Camera 2" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera3.jpg" alt="Beachbar Camera 3" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera4.jpg" alt="Beachbar Camera 4" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera5.jpg" alt="Beachbar Camera 5" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera6.jpg" alt="Beachbar Camera 6" class="w-full h-48 object-cover">
-                        </div>
+
+                <!-- Right Column: Installation Process -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Installation Process</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="map" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Site Survey:</strong> Conducted comprehensive assessment of premises to determine optimal camera placement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="settings" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Network Setup:</strong> Configured dedicated security VLAN for camera traffic isolation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="tool" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Hardware Installation:</strong> Mounted cameras with weatherproof housing and cable management</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="sliders" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Camera Configuration:</strong> Optimized angles, exposure, and motion detection zones</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="monitor" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">NVR Setup:</strong> Configured recording schedules, storage allocation, and retention policies</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="smartphone" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Remote Access:</strong> Enabled secure mobile and desktop monitoring apps</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="users" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Staff Training:</strong> Provided comprehensive training on system operation and playback</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-square" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Testing & Validation:</strong> Verified coverage, recording quality, and system reliability</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card cyber-border rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Key Features</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="shield" class="inline-block text-cyber-blue mr-2"></i> Weatherproof outdoor cameras</li>
+                            <li><i data-feather="sun" class="inline-block text-cyber-blue mr-2"></i> Wide Dynamic Range (WDR) for varying light</li>
+                            <li><i data-feather="activity" class="inline-block text-cyber-blue mr-2"></i> Motion-triggered alerts</li>
+                            <li><i data-feather="clock" class="inline-block text-cyber-blue mr-2"></i> Continuous 24/7 recording</li>
+                            <li><i data-feather="lock" class="inline-block text-cyber-blue mr-2"></i> Encrypted data transmission</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
+        <!-- Images Section -->
+<div data-aos="zoom-in" data-aos-delay="300">
+    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-6 text-center">Installation Gallery</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera1.jpg" alt="Beachbar Camera 1" class="w-full h-48 object-cover">
         </div>
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera2.jpg" alt="Beachbar Camera 2" class="w-full h-48 object-cover">
+        </div>
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera3.jpg" alt="Beachbar Camera 3" class="w-full h-48 object-cover">
+        </div>
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera4.jpg" alt="Beachbar Camera 4" class="w-full h-48 object-cover">
+        </div>
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera5.jpg" alt="Beachbar Camera 5" class="w-full h-48 object-cover">
+        </div>
+        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+            <img src="images/beachbar-camera6.jpg" alt="Beachbar Camera 6" class="w-full h-48 object-cover">
+        </div>
+    </div>
+</div>
     </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -287,38 +345,6 @@
                     modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
                 },
                 retina_detect: true
-            });
-
-            const languageToggle = document.getElementById('languageToggle');
-            const languageOptions = languageToggle.querySelectorAll('.language-option');
-            languageOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    languageOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    languageToggle.classList.remove('english', 'german');
-                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
-                    const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html'
-                    };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
-                    document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
-                });
             });
 
             document.body.style.transition = 'opacity 0.3s ease';
