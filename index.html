@@ -1076,6 +1076,31 @@ nav .container {
             </div>
         </div>
     </section>
+<!-- Project 11: Custom Gaming PC Build -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('customPCBuild')">
+                    <div class="h-48 bg-gradient-to-br from-cyber-orange/30 to-cyber-blue/30 flex items-center justify-center">
+                        <i data-feather="cpu" class="text-cyber-orange" style="width: 64px; height: 64px;"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xl font-semibold text-cyber-orange">High-Performance PC Build</h3>
+                            <span class="project-badge">
+                                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                                Project
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4">Custom-built high-performance gaming workstation with AMD Ryzen 7 7770X, RTX 4070 Super, and dual 2K 240Hz displays.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">PC Building</span>
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">Hardware</span>
+                            <span class="px-3 py-1 bg-cyber-orange/20 text-cyber-orange rounded-full text-sm">Windows 11</span>
+                        </div>
+                        <div class="text-cyber-orange hover:text-cyber-green flex items-center">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </div>
+                    </div>
+                </div>
 
     <!-- Skills Section -->
     <section id="skills" class="py-20 bg-dark-bg">
@@ -1470,7 +1495,26 @@ nav .container {
                 ]
             }
         };
-
+customPCBuild: {
+                title: 'High-Performance Custom PC Build',
+                description: 'Designed and assembled a custom high-performance gaming and productivity workstation from scratch. Selected components for optimal performance, thermal efficiency, and future upgradability. Completed full assembly, thermal paste application, cable management, BIOS configuration, Windows 11 installation, driver optimization, and performance tuning.',
+                link: '#', // Cambia con pagina HTML dedicata se vuoi
+                linkText: 'View Full Specs',
+                color: 'cyber-orange',
+                type: 'html',
+                highlights: [
+                    'AMD Ryzen 7 7770X (8-core, 16-thread processor)',
+                    'NVIDIA RTX 4070 Super (12GB GDDR6X)',
+                    'ASUS TUF B650-PLUS WiFi motherboard',
+                    '32GB Corsair Vengeance RGB DDR5 RAM',
+                    'Dual Kingston NVMe SSDs (2TB total) + 2TB HDD',
+                    'Arctic Freezer 36 A-RGB cooling system',
+                    'MSI MAG 850W 80+ Gold PSU',
+                    'Dual Samsung 2K curved 240Hz monitors',
+                    'Windows 11 Pro with chipset optimization',
+                    'Professional cable management and thermals'
+                ]
+            }
         function openModal(projectId) {
             const project = projectData[projectId];
             const modal = document.getElementById('projectModal');
