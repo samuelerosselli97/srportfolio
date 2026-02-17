@@ -889,6 +889,34 @@ nav .container {
                         </div>
                     </div>
                 </div>
+
+                <!-- Project 6: pfSense Network Lab -->
+                <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('pfSenselab')">
+                    <div class="h-48 bg-gradient-to-br from-cyber-blue/30 to-cyber-green/30 flex items-center justify-center">
+                        <i data-feather="shield" class="text-cyber-blue" style="width: 64px; height: 64px;"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xl font-semibold text-cyber-blue">pfSense Multi-Zone Lab</h3>
+                            <span class="notion-badge">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M4 3h8a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1z"/>
+                                </svg>
+                                Notion
+                            </span>
+                        </div>
+                        <p class="text-gray-400 mb-4">Built a secure multi-zone network lab using pfSense firewall and VMware virtualization with segmented VLANs and advanced routing.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">pfSense</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">VMware</span>
+                            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">VLANs</span>
+                        </div>
+                        <div class="text-cyber-blue hover:text-cyber-green flex items-center">
+                            <span>Click to view details</span>
+                            <i data-feather="arrow-right" class="ml-2"></i>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Project 5: Beachbar Surveillance -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('beachbarSurveillance')">
@@ -1334,6 +1362,22 @@ nav .container {
                     'Hardware preservation (no chassis opening)'
                 ]
             },
+            pfSenselab: {
+                title: 'Secure Multi-Zone Network Lab with pfSense',
+                description: 'Designed and built a comprehensive multi-zone network laboratory using pfSense firewall and VMware virtualization. Implemented network segmentation with VLANs, firewall rules, routing protocols, and security zones to simulate enterprise network architecture.',
+                link: 'https://www.notion.so/Building-a-Secure-Multi-Zone-Network-Lab-with-pfSense-VMware-30a89b86e6318088a169fca1b8b90c3a',
+                linkText: 'Open in Notion',
+                color: 'cyber-blue',
+                type: 'notion',
+                highlights: [
+                    'pfSense firewall configuration and management',
+                    'VMware ESXi virtualization environment',
+                    'VLAN segmentation and isolation',
+                    'Advanced firewall rules and policies',
+                    'Inter-VLAN routing configuration',
+                    'Network security zones (DMZ, LAN, Guest)'
+                ]
+            },
             // HTML PROJECTS
             beachbarSurveillance: {
                 title: 'Beachbar Surveillance System',
@@ -1657,6 +1701,7 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
     </script>
 </body>
 </html>
+
 
 
 
