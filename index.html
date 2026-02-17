@@ -1075,8 +1075,7 @@ nav .container {
                 </div>
             </div>
         </div>
-    </section>
-<!-- Project 11: Custom Gaming PC Build -->
+        <!-- Project 11: Custom Gaming PC Build -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('customPCBuild')">
                     <div class="h-48 bg-gradient-to-br from-cyber-orange/30 to-cyber-blue/30 flex items-center justify-center">
                         <i data-feather="cpu" class="text-cyber-orange" style="width: 64px; height: 64px;"></i>
@@ -1101,6 +1100,8 @@ nav .container {
                         </div>
                     </div>
                 </div>
+    </section>
+
 
     <!-- Skills Section -->
     <section id="skills" class="py-20 bg-dark-bg">
@@ -1479,23 +1480,7 @@ nav .container {
                     'Performance optimization'
                 ]
             },
-            daAmeliaSurveillance: {
-                title: 'Da Amelia Restaurant Security System',
-                description: 'Executed a large-scale surveillance installation at Da Amelia Restaurant featuring 15 security cameras with professional NVR system. The project included comprehensive cable management for a clean, professional installation.',
-                link: 'da-amelia-surveillance.html',
-                linkText: 'View Full Project',
-                color: 'cyber-blue',
-                type: 'html',
-                highlights: [
-                    '15 security cameras strategically placed',
-                    'Professional NVR system configuration',
-                    'Organized cable management',
-                    'Complete coverage of dining and kitchen areas',
-                    'High-definition video recording'
-                ]
-            }
-        };
-customPCBuild: {
+            customPCBuild: {
                 title: 'High-Performance Custom PC Build',
                 description: 'Designed and assembled a custom high-performance gaming and productivity workstation from scratch. Selected components for optimal performance, thermal efficiency, and future upgradability. Completed full assembly, thermal paste application, cable management, BIOS configuration, Windows 11 installation, driver optimization, and performance tuning.',
                 link: '#', // Cambia con pagina HTML dedicata se vuoi
@@ -1515,6 +1500,23 @@ customPCBuild: {
                     'Professional cable management and thermals'
                 ]
             }
+            daAmeliaSurveillance: {
+                title: 'Da Amelia Restaurant Security System',
+                description: 'Executed a large-scale surveillance installation at Da Amelia Restaurant featuring 15 security cameras with professional NVR system. The project included comprehensive cable management for a clean, professional installation.',
+                link: 'da-amelia-surveillance.html',
+                linkText: 'View Full Project',
+                color: 'cyber-blue',
+                type: 'html',
+                highlights: [
+                    '15 security cameras strategically placed',
+                    'Professional NVR system configuration',
+                    'Organized cable management',
+                    'Complete coverage of dining and kitchen areas',
+                    'High-definition video recording'
+                ]
+            }
+        };
+
         function openModal(projectId) {
             const project = projectData[projectId];
             const modal = document.getElementById('projectModal');
@@ -1745,6 +1747,7 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
     </script>
 </body>
 </html>
+
 
 
 
