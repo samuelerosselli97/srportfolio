@@ -1,51 +1,11 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Da Amelia Restaurant Surveillance - Samuele Rosselli</title>
-    <meta name="description" content="Details about the Da Amelia Restaurant Surveillance project by Samuele Rosselli, a security system with 15 cameras and NVR configuration.">
-    <meta name="keywords" content="surveillance, security, NVR, Samuele Rosselli">
+    <meta name="description" content="Details about the Da Amelia Restaurant Surveillance project by Samuele Rosselli, a 4K security system with 15 WiFi cameras and NVR configuration.">
+    <meta name="keywords" content="surveillance, security, NVR, 4K, WiFi, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -136,58 +96,35 @@
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
-        .image-card {
-            cursor: pointer;
-            transition: box-shadow 0.4s ease;
-        }
         .image-card:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-        }
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border: 2px solid #00a8ff;
-            box-shadow: 0 0 20px rgba(0, 168, 255, 0.8);
-        }
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #00ff9d;
-            font-size: 30px;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
+            transform: scale(1.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateX(5px);
         }
         .language-toggle {
             background: #15151f;
@@ -213,20 +150,6 @@
             color: #0a0a0f;
             font-weight: 600;
         }
-        .language-toggle .slider {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #00a8ff;
-            border-radius: 9999px;
-            transition: transform 0.3s ease;
-        }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
         #particles-js {
             position: absolute;
             width: 100%;
@@ -239,10 +162,6 @@
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img id="modalImage" src="" alt="Full resolution image">
-    </div>
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
@@ -251,57 +170,169 @@
                     <div class="language-toggle english" id="languageToggle">
                         <div class="language-option active" data-lang="en">EN</div>
                         <div class="language-option" data-lang="de">DE</div>
-                        <div class="slider"></div>
                     </div>
                     <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Back to Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+    
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Da Amelia Restaurant Surveillance" data-aos="fade-up">Da Amelia Restaurant Surveillance</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text text-center" data-text="Da Amelia Restaurant - 4K WiFi Surveillance" data-aos="fade-up">Da Amelia Restaurant - 4K WiFi Surveillance</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <!-- Left Column: Overview & Specs -->
                 <div data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Overview</h2>
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Project Overview</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Installed 15 security cameras plus an NVR for comprehensive monitoring at Ristorante Da Amelia. Also organized cable installations using cable channels for a clean and professional setup.
+                        Deployed a state-of-the-art 4K WiFi surveillance system at Ristorante Da Amelia featuring 15 wireless cameras with professional cable management. The system provides ultra-high-definition monitoring with the flexibility of wireless connectivity.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">What I Did</h3>
+                    
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">System Specifications</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Cameras:</span> 15x 4K UHD WiFi IP Cameras
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="monitor" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Resolution:</span> 4K Ultra HD (3840 x 2160)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Connectivity:</span> Full WiFi 5GHz Network
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">NVR:</span> 16-Channel 4K Network Video Recorder
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="database" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Storage:</span> 60-Day 4K Recording Archive
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="moon" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Night Vision:</span> Advanced IR (30m range)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="smartphone" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Remote Access:</span> Mobile & Desktop Apps
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="activity" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">AI Features:</span> Motion Detection & Alerts
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Coverage Areas</h3>
                     <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installed and configured 15 high-resolution security cameras.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Set up an NVR system for real-time monitoring and secure data storage.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Organized cable installations using cable channels for a clean and professional look.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Trained staff on system operation and maintenance.</li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Main dining room and customer seating</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Kitchen and food preparation areas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Bar and cashier stations</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Entrance, exit, and emergency routes</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Storage rooms and back areas</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Outdoor patio and parking area</span>
+                        </li>
                     </ul>
                 </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Images</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera1.jpg" alt="Da Amelia Camera 1" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera1.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera2.jpg" alt="Da Amelia Camera 2" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera2.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera3.jpg" alt="Da Amelia Camera 3" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera3.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera4.jpg" alt="Da Amelia Camera 4" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera4.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera5.jpg" alt="Da Amelia Camera 5" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera5.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera6.jpg" alt="Da Amelia Camera 6" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera6.jpg')">
-                        </div>
+
+                <!-- Right Column: Installation Process -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Installation Process</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="map" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Site Assessment:</strong> Comprehensive survey of restaurant layout and WiFi signal strength analysis</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="wifi" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Network Optimization:</strong> Deployed dedicated 5GHz WiFi network for camera traffic</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="tool" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Camera Installation:</strong> Mounted 15 4K WiFi cameras at strategic locations</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="package" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Cable Management:</strong> Professional cable channels for clean, organized power routing</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="settings" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">System Configuration:</strong> Paired all cameras to NVR with optimized 4K recording settings</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="sliders" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Fine-Tuning:</strong> Adjusted angles, exposure, and motion zones for each camera</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="smartphone" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Remote Setup:</strong> Configured mobile app access for manager oversight</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="users" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Staff Training:</strong> Comprehensive training on playback, export, and system management</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card cyber-border rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Key Advantages</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="award" class="inline-block text-cyber-blue mr-2"></i> 4K Ultra HD crystal-clear footage</li>
+                            <li><i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i> Wireless installation - minimal drilling</li>
+                            <li><i data-feather="zap" class="inline-block text-cyber-blue mr-2"></i> Easy camera relocation if needed</li>
+                            <li><i data-feather="package" class="inline-block text-cyber-blue mr-2"></i> Professional cable channel management</li>
+                            <li><i data-feather="cloud" class="inline-block text-cyber-blue mr-2"></i> 60-day rolling video archive</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images Section -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-6 text-center">Installation Gallery</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera1.jpg" alt="Da Amelia Camera 1" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera2.jpg" alt="Da Amelia Camera 2" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera3.jpg" alt="Da Amelia Camera 3" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera4.jpg" alt="Da Amelia Camera 4" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera5.jpg" alt="Da Amelia Camera 5" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera6.jpg" alt="Da Amelia Camera 6" class="w-full h-48 object-cover">
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -323,62 +354,6 @@
                     modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
                 },
                 retina_detect: true
-            });
-
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalClose = document.querySelector('.modal-close');
-
-            window.openModal = function(src) {
-                modalImage.src = src;
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            };
-
-            modalClose.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-
-            const languageToggle = document.getElementById('languageToggle');
-            const languageOptions = languageToggle.querySelectorAll('.language-option');
-            languageOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const lang = this.getAttribute('data-lang');
-                    languageOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    languageToggle.classList.remove('english', 'german');
-                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
-                    const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html',
-                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
-                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
-                    };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
-                    document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
-                });
             });
 
             document.body.style.transition = 'opacity 0.3s ease';
