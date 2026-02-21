@@ -1,49 +1,10 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Beachbar Überwachung - Samuele Rosselli</title>
-    <meta name="description" content="Details zum Projekt Beachbar Überwachung von Samuele Rosselli, ein Sicherheitssystem mit 8 Kameras und NVR-Konfiguration.">
+    <meta name="description" content="Details über das Beachbar-Überwachungsprojekt von Samuele Rosselli – ein Sicherheitssystem mit 7 Kameras und NVR-Konfiguration.">
     <meta name="keywords" content="Überwachung, Sicherheit, NVR, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -72,6 +33,78 @@
         }
     </script>
     <style>
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(0, 168, 255, 0.6);
+            box-shadow: 0 0 40px rgba(0, 168, 255, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+            #particles-js { display: none !important; }
+        }
+
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -104,15 +137,12 @@
         }
         .glitch-effect {
             position: relative;
-            animation: glitch 1s linear infinite;
         }
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -126,36 +156,42 @@
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim2 2s infinite linear alternate-reverse;
         }
-        @keyframes glitch {
-            2% { transform: translate(1px, -1px); }
-            4% { transform: translate(-1px, 1px); }
-            6% { transform: translate(0, 0); }
-        }
         @keyframes glitch-anim {
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
-        .image-card:hover {
-            transform: scale(1.1);
+        .image-card {
+            cursor: pointer;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
+        }
+        .image-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateX(5px);
         }
         .language-toggle {
             background: #15151f;
@@ -174,6 +210,8 @@
             color: #f8fafc;
             font-size: 14px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .language-toggle .active {
             background: #00a8ff;
@@ -183,31 +221,35 @@
         }
         .language-toggle .slider {
             position: absolute;
-            width: 50%;
-            height: 100%;
+            width: 50%; height: 100%;
             background: #00a8ff;
             border-radius: 9999px;
             transition: transform 0.3s ease;
+            pointer-events: none;
         }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
+        .language-toggle.english .slider { transform: translateX(0); }
+        .language-toggle.german .slider { transform: translateX(100%); }
         #particles-js {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
             z-index: 0;
         }
     </style>
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Vollbild">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="index-de.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
@@ -217,55 +259,168 @@
                         <div class="language-option active" data-lang="de">DE</div>
                         <div class="slider"></div>
                     </div>
-                    <a href="index-de.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
+                    <a href="index-de.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white font-semibold rounded-md hover:bg-cyber-green hover:text-dark-bg transition-colors back-button">← Zurück zum Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Beachbar Überwachung" data-aos="fade-up">Beachbar Überwachung</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cyber-blue glitch-effect neon-text text-center"
+                data-text="Beachbar Überwachungssystem"
+                data-aos="fade-up">
+                Beachbar Überwachungssystem
+            </h1>
+            <p class="text-center text-gray-400 mb-12 font-mono" data-aos="fade-up" data-aos-delay="100">7 IP-Kameras · NVR 24/7 · 4K-Auflösung · Fernzugriff</p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+
+                <!-- Left Column: Overview & Specs -->
                 <div data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektübersicht</h2>
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Projektübersicht</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Entwicklung und Installation eines fortschrittlichen Sicherheitssystems mit 8 hochauflösenden Kameras und NVR-Konfiguration für eine Beachbar, um eine umfassende Überwachung des Geländes zu gewährleisten.
+                        Planung und Installation eines umfassenden Videoüberwachungssystems für eine Beachbar. Das System ermöglicht eine 24/7-Überwachung mit hochauflösenden Kameras, die strategisch für maximale Abdeckung und Sicherheit positioniert wurden.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich gemacht habe</h3>
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Systemspezifikationen</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Kameras:</span> 7x hochauflösende IP-Kameras
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">NVR:</span> Network Video Recorder (24/7-Aufzeichnung)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Netzwerk:</span> Dediziertes Sicherheitsnetzwerk
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="database" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Speicher:</span> 7+-Tage-Archiv mit Erweiterungsmöglichkeit
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="eye" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Auflösung:</span> 4K Ultra HD
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="moon" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Nachtsicht:</span> IR-Beleuchtung
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="smartphone" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Zugriff:</span> Mobiles Fernmonitoring
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Überwachungsbereiche</h3>
                     <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installation und Konfiguration von 7 hochauflösenden Überwachungskameras.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Einrichtung eines NVR-Systems für Echtzeitüberwachung und sichere Datenspeicherung.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Optimierung der Kamerawinkel für maximale Abdeckung des Beachbar-Bereichs.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Schulung des Personals zur Verwaltung und Bedienung des Systems.</li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Haupteingang und Kundenzugangspunkte</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Bar und Servicetheke</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Außenbereich und Strandzugang</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Lagerräume und Hinterbereiche</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Parkplatz und Außenperimeter</span>
+                        </li>
                     </ul>
                 </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektbilder</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera1.jpg" alt="Beachbar Kamera 1" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera2.jpg" alt="Beachbar Kamera 2" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera3.jpg" alt="Beachbar Kamera 3" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera4.jpg" alt="Beachbar Kamera 4" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera5.jpg" alt="Beachbar Kamera 5" class="w-full h-48 object-cover">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/beachbar-camera6.jpg" alt="Beachbar Kamera 6" class="w-full h-48 object-cover">
-                        </div>
+
+                <!-- Right Column: Installation Process -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Installationsprozess</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="map" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Standortanalyse:</strong> Umfassende Begehung zur Bestimmung der optimalen Kamerastandorte</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="settings" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Netzwerkkonfiguration:</strong> Einrichtung eines dedizierten Sicherheits-VLANs zur Trennung des Kameraverkehrs</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="tool" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Hardware-Installation:</strong> Montage der Kameras mit wetterfestem Gehäuse und sauberem Kabelmanagement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="sliders" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Kamerakonfiguration:</strong> Optimierung von Winkeln, Belichtung und Bewegungserkennungszonen</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="monitor" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">NVR-Einrichtung:</strong> Konfiguration von Aufzeichnungsplänen, Speicherzuweisung und Aufbewahrungsrichtlinien</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="smartphone" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Fernzugriff:</strong> Einrichtung sicherer mobiler und Desktop-Monitoring-Apps</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="users" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Mitarbeiterschulung:</strong> Umfassende Einweisung in Systembedienung und Wiedergabe</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-square" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Test & Validierung:</strong> Überprüfung von Abdeckung, Aufzeichnungsqualität und Systemzuverlässigkeit</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card cyber-border rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Hauptmerkmale</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="shield" class="inline-block text-cyber-blue mr-2"></i> Wetterfeste Außenkameras</li>
+                            <li><i data-feather="sun" class="inline-block text-cyber-blue mr-2"></i> Wide Dynamic Range (WDR) für wechselnde Lichtverhältnisse</li>
+                            <li><i data-feather="activity" class="inline-block text-cyber-blue mr-2"></i> Bewegungsgesteuerte Benachrichtigungen</li>
+                            <li><i data-feather="clock" class="inline-block text-cyber-blue mr-2"></i> Kontinuierliche 24/7-Aufzeichnung</li>
+                            <li><i data-feather="lock" class="inline-block text-cyber-blue mr-2"></i> Verschlüsselte Datenübertragung</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
+            <!-- Images Section -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-6 text-center">Installationsgalerie</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera1.jpg" alt="Beachbar Kamera 1" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera2.jpg" alt="Beachbar Kamera 2" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera3.jpg" alt="Beachbar Kamera 3" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera4.jpg" alt="Beachbar Kamera 4" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera5.jpg" alt="Beachbar Kamera 5" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/beachbar-camera6.jpg" alt="Beachbar Kamera 6" class="w-full h-48 object-cover">
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -289,6 +444,10 @@
                 retina_detect: true
             });
 
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
+
+            // Language toggle
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
             languageOptions.forEach(option => {
@@ -299,30 +458,59 @@
                     languageToggle.classList.remove('english', 'german');
                     languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
                     const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
                         'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
                         'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html'
                     };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
+                    const currentPage = window.location.pathname.split('/').pop() || 'beachbar-surveillance-de.html';
+                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'beachbar-surveillance-de.html' : 'beachbar-surveillance.html');
                     document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
+                    setTimeout(() => { window.location.href = newPage; }, 300);
                 });
             });
+        });
 
-            document.body.style.transition = 'opacity 0.3s ease';
-            document.body.style.opacity = 1;
+        // Lightbox
+        let currentImageIndex = 0;
+        const images = [];
+
+        document.querySelectorAll('.image-card img').forEach((img, index) => {
+            images.push(img.src);
+            img.style.cursor = 'pointer';
+            img.onclick = function() { openLightbox(index); };
+        });
+
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('lightboxModal');
+            const modalImg = document.getElementById('lightboxImage');
+            modal.classList.add('active');
+            modalImg.src = images[currentImageIndex];
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex >= images.length) currentImageIndex = 0;
+            else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+            document.getElementById('lightboxImage').src = images[currentImageIndex];
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            const modal = document.getElementById('lightboxModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') changeImage(-1);
+                if (e.key === 'ArrowRight') changeImage(1);
+            }
+        });
+
+        document.getElementById('lightboxModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
         });
     </script>
 </body>
