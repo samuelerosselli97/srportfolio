@@ -419,6 +419,41 @@
                 retina_detect: true
             });
 
+            // Language toggle
+            const languageToggle = document.getElementById('languageToggle');
+const languageOptions = languageToggle.querySelectorAll('.language-option');
+
+languageOptions.forEach(option => {
+    option.addEventListener('click', function() {
+        const lang = this.getAttribute('data-lang');
+        languageOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        languageToggle.classList.remove('english', 'german');
+        languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+
+        const pageMap = {
+            'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
+            'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+            'networking-solutions.html':       'networking-solutions-de.html',
+            'networking-solutions-de.html':    'networking-solutions.html',
+            'lulzim-website.html':             'lulzim-website-de.html',
+            'lulzim-website-de.html':          'lulzim-website.html',
+            'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
+            'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
+            'custom-pc-build.html':            'custom-pc-build-de.html',
+            'custom-pc-build-de.html':         'custom-pc-build.html',
+        };
+
+        const currentPage = window.location.pathname.split('/').pop() || '';
+        const newPage = pageMap[currentPage];
+
+        if (newPage) {
+            document.body.style.opacity = 0;
+            setTimeout(() => { window.location.href = newPage; }, 300);
+        }
+    });
+});
+
             document.body.style.transition = 'opacity 0.3s ease';
             document.body.style.opacity = 1;
             let currentImageIndex = 0;
