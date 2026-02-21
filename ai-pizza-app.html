@@ -429,82 +429,87 @@
 
             // Language toggle
             const languageToggle = document.getElementById('languageToggle');
-const languageOptions = languageToggle.querySelectorAll('.language-option');
+            const languageOptions = languageToggle.querySelectorAll('.language-option');
 
-languageOptions.forEach(option => {
-    option.addEventListener('click', function() {
-        const lang = this.getAttribute('data-lang');
-        languageOptions.forEach(opt => opt.classList.remove('active'));
-        this.classList.add('active');
-        languageToggle.classList.remove('english', 'german');
-        languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    languageToggle.classList.remove('english', 'german');
+                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
 
-        const pageMap = {
-    'ai-pizza-app.html':               'ai-pizza-app-de.html',
-    'ai-pizza-app-de.html':            'ai-pizza-app.html',
-    'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
-    'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-    'networking-solutions.html':       'networking-solutions-de.html',
-    'networking-solutions-de.html':    'networking-solutions.html',
-    'lulzim-website.html':             'lulzim-website-de.html',
-    'lulzim-website-de.html':          'lulzim-website.html',
-    'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
-    'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
-    'custom-pc-build.html':            'custom-pc-build-de.html',
-    'custom-pc-build-de.html':         'custom-pc-build.html',
-};
+                    const pageMap = {
+                        'ai-pizza-app.html':               'ai-pizza-app-de.html',
+                        'ai-pizza-app-de.html':            'ai-pizza-app.html',
+                        'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
+                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                        'networking-solutions.html':       'networking-solutions-de.html',
+                        'networking-solutions-de.html':    'networking-solutions.html',
+                        'lulzim-website.html':             'lulzim-website-de.html',
+                        'lulzim-website-de.html':          'lulzim-website.html',
+                        'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
+                        'custom-pc-build.html':            'custom-pc-build-de.html',
+                        'custom-pc-build-de.html':         'custom-pc-build.html',
+                    };
 
-        const currentPage = window.location.pathname.split('/').pop() || '';
-        const newPage = pageMap[currentPage];
+                    const currentPage = window.location.pathname.split('/').pop() || 'ai-pizza-app.html';
+                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'ai-pizza-app-de.html' : 'ai-pizza-app.html');
 
-        if (newPage) {
-            document.body.style.opacity = 0;
-            setTimeout(() => { window.location.href = newPage; }, 300);
-        }
-    });
-});
-        // Lightbox
-        let currentImageIndex = 0;
-        const images = [];
+                    document.body.style.opacity = 0;
+                    setTimeout(() => { window.location.href = newPage; }, 300);
+                });
+            });
 
-        document.querySelectorAll('.image-card img').forEach((img, index) => {
-            images.push(img.src);
-            img.style.cursor = 'pointer';
-            img.onclick = function() { openLightbox(index); };
-        });
+            // Lightbox
+            let currentImageIndex = 0;
+            const images = [];
 
-        function openLightbox(index) {
-            currentImageIndex = index;
-            const modal = document.getElementById('lightboxModal');
-            const modalImg = document.getElementById('lightboxImage');
-            modal.classList.add('active');
-            modalImg.src = images[currentImageIndex];
-            document.body.style.overflow = 'hidden';
-        }
+            document.querySelectorAll('.image-card img').forEach((img, index) => {
+                images.push(img.src);
+                img.style.cursor = 'pointer';
+                img.onclick = function() { openLightbox(index); };
+            });
 
-        function closeLightbox() {
-            document.getElementById('lightboxModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function changeImage(direction) {
-            currentImageIndex += direction;
-            if (currentImageIndex >= images.length) currentImageIndex = 0;
-            else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
-            document.getElementById('lightboxImage').src = images[currentImageIndex];
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeLightbox();
-            const modal = document.getElementById('lightboxModal');
-            if (modal.classList.contains('active')) {
-                if (e.key === 'ArrowLeft') changeImage(-1);
-                if (e.key === 'ArrowRight') changeImage(1);
+            function openLightbox(index) {
+                currentImageIndex = index;
+                const modal = document.getElementById('lightboxModal');
+                const modalImg = document.getElementById('lightboxImage');
+                modal.classList.add('active');
+                modalImg.src = images[currentImageIndex];
+                document.body.style.overflow = 'hidden';
             }
-        });
 
-        document.getElementById('lightboxModal').addEventListener('click', function(e) {
-            if (e.target === this) closeLightbox();
+            function closeLightbox() {
+                document.getElementById('lightboxModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            function changeImage(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex >= images.length) currentImageIndex = 0;
+                else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+                document.getElementById('lightboxImage').src = images[currentImageIndex];
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeLightbox();
+                const modal = document.getElementById('lightboxModal');
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') changeImage(-1);
+                    if (e.key === 'ArrowRight') changeImage(1);
+                }
+            });
+
+            document.getElementById('lightboxModal').addEventListener('click', function(e) {
+                if (e.target === this) closeLightbox();
+            });
+
+            // Expose lightbox functions globally
+            window.openLightbox = openLightbox;
+            window.closeLightbox = closeLightbox;
+            window.changeImage = changeImage;
         });
     </script>
 </body>
