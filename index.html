@@ -1718,22 +1718,26 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
                     this.classList.add('active');
                     languageToggle.classList.remove('english', 'german');
                     languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
-                    const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html',
-                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
-                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
-                    };
+                   const pageMap = {
+    'index.html': 'index-de.html',
+    'index-de.html': 'index.html',
+    'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
+    'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
+    'beachbar-surveillance-new.html': 'beachbar-surveillance-de.html',
+    'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
+    'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+    'ai-pizza-app.html': 'ai-pizza-app-de.html',
+    'ai-pizza-app-de.html': 'ai-pizza-app.html',
+    'networking-solutions.html': 'networking-solutions-de.html',
+    'networking-solutions-de.html': 'networking-solutions.html',
+    'lulzim-website.html': 'lulzim-website-de.html',
+    'lulzim-website-de.html': 'lulzim-website.html',
+    'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
+    'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html',
+    'da-amelia-surveillance-new.html': 'da-amelia-surveillance-de.html',
+    'custom-pc-build.html': 'custom-pc-build-de.html',
+    'custom-pc-build-de.html': 'custom-pc-build.html'
+};
                     const currentPage = window.location.pathname.split('/').pop();
                     const newPage = pageMap[currentPage] || 'index.html';
                     document.body.style.opacity = 0;
@@ -1749,6 +1753,7 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
     </script>
 </body>
 </html>
+
 
 
 
