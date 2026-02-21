@@ -2,10 +2,10 @@
 <html lang="de" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Netzwerklösungen - Samuele Rosselli</title>
-    <meta name="description" content="Details zum Netzwerklösungen-Projekt von Samuele Rosselli, Implementierung sicherer und effizienter Netzwerkinfrastrukturen.">
-    <meta name="keywords" content="Netzwerk, Sicherheit, Infrastruktur, Samuele Rosselli">
+    <meta name="description" content="Details zum Netzwerklösungsprojekt von Samuele Rosselli – Implementierung sicherer und effizienter Netzwerkinfrastrukturen.">
+    <meta name="keywords" content="Netzwerk, Sicherheit, Infrastruktur, Switches, NVR, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -33,6 +33,78 @@
         }
     </script>
     <style>
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(0, 168, 255, 0.6);
+            box-shadow: 0 0 40px rgba(0, 168, 255, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+            #particles-js { display: none !important; }
+        }
+
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -59,21 +131,26 @@
             text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5);
             animation: neonPulse 1.5s ease-in-out infinite;
         }
+        .neon-text-green {
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8), 0 0 20px rgba(0, 255, 157, 0.5);
+            animation: neonPulseGreen 1.5s ease-in-out infinite;
+        }
         @keyframes neonPulse {
             0%, 100% { text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5); }
             50% { text-shadow: 0 0 15px rgba(0, 168, 255, 1), 0 0 30px rgba(0, 168, 255, 0.7); }
         }
+        @keyframes neonPulseGreen {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 157, 0.8), 0 0 20px rgba(0, 255, 157, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(0, 255, 157, 1), 0 0 30px rgba(0, 255, 157, 0.7); }
+        }
         .glitch-effect {
             position: relative;
-            animation: glitch 1s linear infinite;
         }
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -87,67 +164,54 @@
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim2 2s infinite linear alternate-reverse;
         }
-        @keyframes glitch {
-            2% { transform: translate(1px, -1px); }
-            4% { transform: translate(-1px, 1px); }
-            6% { transform: translate(0, 0); }
-        }
         @keyframes glitch-anim {
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
         .image-card {
             cursor: pointer;
-            transition: box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
         .image-card:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-        }
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border: 2px solid #00a8ff;
-            box-shadow: 0 0 20px rgba(0, 168, 255, 0.8);
-        }
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #00ff9d;
-            font-size: 30px;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
-            box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
+            box-shadow: 0 0 25px rgba(0, 168, 255, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateX(5px);
+        }
+        .service-card {
+            background: rgba(0, 168, 255, 0.05);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            background: rgba(0, 168, 255, 0.1);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateY(-3px);
         }
         .language-toggle {
             background: #15151f;
@@ -166,6 +230,8 @@
             color: #f8fafc;
             font-size: 14px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .language-toggle .active {
             background: #00a8ff;
@@ -175,93 +241,174 @@
         }
         .language-toggle .slider {
             position: absolute;
-            width: 50%;
-            height: 100%;
+            width: 50%; height: 100%;
             background: #00a8ff;
             border-radius: 9999px;
             transition: transform 0.3s ease;
+            pointer-events: none;
         }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
+        .language-toggle.english .slider { transform: translateX(0); }
+        .language-toggle.german .slider { transform: translateX(100%); }
         #particles-js {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
             z-index: 0;
         }
     </style>
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img id="modalImage" src="" alt="Vollauflösungsbild">
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Vollbildansicht">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
     </div>
-    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="index-de.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                <a href="index.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
                 <div class="flex items-center space-x-4">
                     <div class="language-toggle german" id="languageToggle">
                         <div class="language-option" data-lang="en">EN</div>
                         <div class="language-option active" data-lang="de">DE</div>
                         <div class="slider"></div>
                     </div>
-                    <a href="index-de.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
+                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white font-semibold rounded-md hover:bg-cyber-green hover:text-dark-bg transition-colors back-button">← Zurück zum Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Netzwerklösungen" data-aos="fade-up">Netzwerklösungen</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+            <!-- Titel -->
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cyber-blue glitch-effect neon-text text-center"
+                data-text="Netzwerklösungen"
+                data-aos="fade-up">
+                Netzwerklösungen
+            </h1>
+            <p class="text-center text-gray-400 mb-12 font-mono" data-aos="fade-up" data-aos-delay="100">Drucker · Managed Switches · NVR-Systeme · Infrastruktur</p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+
+                <!-- Linke Spalte: Überblick & Leistungen -->
                 <div data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektübersicht</h2>
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Projektübersicht</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Entwurf und Implementierung sicherer und effizienter Netzwerkinfrastrukturen für Unternehmen, um robuste Konnektivität und Datensicherheit zu gewährleisten.
+                        Umfassende End-to-End-Netzwerkdienstleistungen für Kunden, einschließlich Druckerinstallationen, Konfiguration verwalteter Switches und Implementierung von NVR-Systemen. Jede Bereitstellung wurde auf die spezifische Umgebung des Kunden zugeschnitten, um maximale Leistung, Zuverlässigkeit und Sicherheit zu gewährleisten.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich getan habe</h3>
-                    <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Konfiguration von Routern und Switches auf Unternehmensniveau für optimale Leistung.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Implementierung von Firewalls und Intrusion-Detection-Systemen für erhöhte Sicherheit.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Optimierung der Netzwerkleistung durch Lastverteilung und QoS-Einstellungen.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Bereitstellung fortlaufender Wartung und Unterstützung für die Netzwerkinfrastruktur.</li>
-                    </ul>
-                </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektbilder</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking1.jpg" alt="Netzwerklösung 1" class="w-full h-48 object-cover" onclick="openModal('images/networking1.jpg')">
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text-green mb-4">Erbrachte Leistungen</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="printer" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Druckereinrichtung:</span> Installation und Netzwerkkonfiguration von Unternehmensdruckern
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking2.jpg" alt="Netzwerklösung 2" class="w-full h-48 object-cover" onclick="openModal('images/networking2.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Switch-Konfiguration:</span> Bereitstellung verwalteter Netzwerk-Switches & VLANs
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking3.jpg" alt="Netzwerklösung 3" class="w-full h-48 object-cover" onclick="openModal('images/networking3.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">NVR-Systeme:</span> Einrichtung und Integration von Netzwerk-Videorekordern
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking4.jpg" alt="Netzwerklösung 4" class="w-full h-48 object-cover" onclick="openModal('images/networking4.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="shield" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Sicherheit:</span> Firewall-Regeln & Einbruchserkennung
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking5.jpg" alt="Netzwerklösung 5" class="w-full h-48 object-cover" onclick="openModal('images/networking5.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="activity" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Optimierung:</span> Load Balancing & QoS-Einstellungen
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/networking6.jpg" alt="Netzwerklösung 6" class="w-full h-48 object-cover" onclick="openModal('images/networking6.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="tool" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Wartung:</span> Laufender Support & Fehlerbehebung
                         </div>
                     </div>
                 </div>
+
+                <!-- Rechte Spalte: Was ich getan habe -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Was ich gemacht habe</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="printer" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Druckerinstallationen:</strong> Konfiguration von Unternehmensnetzwerkdruckern mit Treiber-Deployment, IP-Zuweisung und Benutzerzugriffskontrolle</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="hard-drive" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Switch-Bereitstellungen:</strong> Konfiguration verwalteter Switches mit VLANs, Port-Sicherheit und Trunk-Links für segmentierten Datenverkehr</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="video" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">NVR-Implementierungen:</strong> Installation und Konfiguration von Netzwerk-Videorekordern mit Kamera-Erkennung, Aufzeichnungsplänen und Fernzugriff</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="shield" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Sicherheitshärtung:</strong> Implementierung von Firewall-Regeln und Einbruchserkennung für verbesserten Netzwerkschutz</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="bar-chart-2" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Leistungsoptimierung:</strong> Optimierung des Netzwerkdurchsatzes durch Load Balancing und Quality-of-Service-Richtlinien</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="package" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Hardware-Beschaffung:</strong> Auswahl und Empfehlung der richtigen Hardware für Budget und Anforderungen jedes Kunden</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="users" class="text-cyber-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Kundenschulung:</strong> Einweisung in Systembetrieb, Überwachung und grundlegende Fehlerbehebung</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card rounded-lg p-6" style="border: 1px solid rgba(0, 168, 255, 0.3);">
+                        <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-3">Highlights</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="check-circle" class="inline-block text-cyber-blue mr-2"></i> Kundenbereitstellung in verschiedenen Umgebungen</li>
+                            <li><i data-feather="check-circle" class="inline-block text-cyber-blue mr-2"></i> Sauberes Kabelmanagement bei jeder Installation</li>
+                            <li><i data-feather="check-circle" class="inline-block text-cyber-blue mr-2"></i> Fernüberwachung und -verwaltung aktiviert</li>
+                            <li><i data-feather="check-circle" class="inline-block text-cyber-blue mr-2"></i> Bereitstellungen ohne Ausfallzeiten, wo möglich</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+            <!-- Bildergalerie -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-6 text-center">Projektgalerie</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking1.jpg" alt="Netzwerklösung 1" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking2.jpg" alt="Netzwerklösung 2" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking3.jpg" alt="Netzwerklösung 3" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking4.jpg" alt="Netzwerklösung 4" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking5.jpg" alt="Netzwerklösung 5" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 168, 255, 0.5); box-shadow: 0 0 25px rgba(0, 168, 255, 0.4);">
+                        <img src="images/networking6.jpg" alt="Netzwerklösung 6" class="w-full h-48 object-cover">
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -285,28 +432,10 @@
                 retina_detect: true
             });
 
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalClose = document.querySelector('.modal-close');
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
 
-            window.openModal = function(src) {
-                modalImage.src = src;
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            };
-
-            modalClose.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-
+            // Sprachumschalter
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
             languageOptions.forEach(option => {
@@ -317,32 +446,59 @@
                     languageToggle.classList.remove('english', 'german');
                     languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
                     const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
                         'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html',
-                        'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
-                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
+                        'networking-solutions.html': 'networking-solutions-de.html',
                     };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
+                    const currentPage = window.location.pathname.split('/').pop() || 'networking-solutions-de.html';
+                    const newPage = pageMap[currentPage] || (lang === 'en' ? 'networking-solutions.html' : 'networking-solutions-de.html');
                     document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
+                    setTimeout(() => { window.location.href = newPage; }, 300);
                 });
             });
+        });
 
-            document.body.style.transition = 'opacity 0.3s ease';
-            document.body.style.opacity = 1;
+        // Lightbox
+        let currentImageIndex = 0;
+        const images = [];
+
+        document.querySelectorAll('.image-card img').forEach((img, index) => {
+            images.push(img.src);
+            img.style.cursor = 'pointer';
+            img.onclick = function() { openLightbox(index); };
+        });
+
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('lightboxModal');
+            const modalImg = document.getElementById('lightboxImage');
+            modal.classList.add('active');
+            modalImg.src = images[currentImageIndex];
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex >= images.length) currentImageIndex = 0;
+            else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+            document.getElementById('lightboxImage').src = images[currentImageIndex];
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            const modal = document.getElementById('lightboxModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') changeImage(-1);
+                if (e.key === 'ArrowRight') changeImage(1);
+            }
+        });
+
+        document.getElementById('lightboxModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
         });
     </script>
 </body>
