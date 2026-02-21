@@ -440,19 +440,19 @@ languageOptions.forEach(option => {
         languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
 
         const pageMap = {
-            'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
-            'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-            'networking-solutions.html':       'networking-solutions-de.html',
-            'networking-solutions-de.html':    'networking-solutions.html',
-            'lulzim-website.html':             'lulzim-website-de.html',
-            'lulzim-website-de.html':          'lulzim-website.html',
-            'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
-            'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
-            'custom-pc-build.html':            'custom-pc-build-de.html',
-            'custom-pc-build-de.html':         'custom-pc-build.html',
-            'ai-pizza-app.html':    'ai-pizza-app-de.html',
-            'ai-pizza-app-de.html': 'ai-pizza-app.html',
-        };
+    'ai-pizza-app.html':               'ai-pizza-app-de.html',
+    'ai-pizza-app-de.html':            'ai-pizza-app.html',
+    'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
+    'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+    'networking-solutions.html':       'networking-solutions-de.html',
+    'networking-solutions-de.html':    'networking-solutions.html',
+    'lulzim-website.html':             'lulzim-website-de.html',
+    'lulzim-website-de.html':          'lulzim-website.html',
+    'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
+    'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
+    'custom-pc-build.html':            'custom-pc-build-de.html',
+    'custom-pc-build-de.html':         'custom-pc-build.html',
+};
 
         const currentPage = window.location.pathname.split('/').pop() || '';
         const newPage = pageMap[currentPage];
