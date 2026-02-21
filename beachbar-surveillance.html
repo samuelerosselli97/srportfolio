@@ -500,6 +500,10 @@ document.addEventListener('keydown', function(e) {
 document.getElementById('lightboxModal').addEventListener('click', function(e) {
     if (e.target === this) closeLightbox();
 });
+             // Esponi le funzioni globalmente per gli onclick HTML
+        window.openLightbox = openLightbox;
+        window.closeLightbox = closeLightbox;
+        window.changeImage = changeImage;
         });
     </script>
     <div id="lightboxModal" class="lightbox-modal">
