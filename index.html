@@ -1697,20 +1697,22 @@ document.querySelectorAll('#mobileMenu a').forEach(link => {
 });
             
             const modeToggle = document.getElementById('modeToggle');
-            const html = document.documentElement;
-            const modeIcon = modeToggle.querySelector('i');
-            
-            modeToggle.addEventListener('click', function() {
-                html.classList.toggle('dark');
-                
-                if (html.classList.contains('dark')) {
-                    modeIcon.setAttribute('data-feather', 'moon');
-                    feather.replace();
-                } else {
-                    modeIcon.setAttribute('data-feather', 'sun');
-                    feather.replace();
-                }
-            });
+if (modeToggle) {
+    const html = document.documentElement;
+    const modeIcon = modeToggle.querySelector('i');
+    
+    modeToggle.addEventListener('click', function() {
+        html.classList.toggle('dark');
+        
+        if (html.classList.contains('dark')) {
+            modeIcon.setAttribute('data-feather', 'moon');
+            feather.replace();
+        } else {
+            modeIcon.setAttribute('data-feather', 'sun');
+            feather.replace();
+        }
+    });
+}
             
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
@@ -1832,6 +1834,7 @@ languageOptions.forEach(option => {
     </script>
 </body>
 </html>
+
 
 
 
