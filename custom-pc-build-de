@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom PC Build - Samuele Rosselli</title>
+    <meta name="description" content="Details zum Hochleistungs-Custom-PC-Build von Samuele Rosselli mit AMD Ryzen 7 7770X und RTX 4070 Super.">
+    <meta name="keywords" content="PC-Bau, Gaming-PC, Hardware, Samuele Rosselli, Custom-PC">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-blue': '#00a8ff',
+                        'cyber-green': '#00ff9d',
+                        'cyber-orange': '#ff5e00',
+                        'dark-bg': '#0a0a0f',
+                        'dark-card': '#15151f'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'mono': ['Roboto Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .cyber-glow {
+            box-shadow: 0 0 25px rgba(255, 94, 0, 0.8), 0 0 50px rgba(255, 94, 0, 0.4);
+        }
+        .cyber-border {
+            border: 2px solid rgba(255, 94, 0, 0.5);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(255, 94, 0, 0.3), rgba(0, 168, 255, 0.3));
+            background-size: 200% 200%;
+            animation: gradientShift 20s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .neon-text {
+            text-shadow: 0 0 10px rgba(255, 94, 0, 0.8), 0 0 20px rgba(255, 94, 0, 0.5);
+            animation: neonPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 94, 0, 0.8), 0 0 20px rgba(255, 94, 0, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(255, 94, 0, 1), 0 0 30px rgba(255, 94, 0, 0.7); }
+        }
+        .glitch-effect {
+            position: relative;
+            animation: glitch 1s linear infinite;
+        }
+        .glitch-effect::before, .glitch-effect::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch-effect::before {
+            left: 3px;
+            text-shadow: -3px 0 #00ff9d;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch-effect::after {
+            left: -3px;
+            text-shadow: -3px 0 #00a8ff;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch {
+            2% { transform: translate(1px, -1px); }
+            4% { transform: translate(-1px, 1px); }
+            6% { transform: translate(0, 0); }
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); }
+            5% { clip: rect(12px, 9999px, 59px, 0); }
+            10% { clip: rect(48px, 9999px, 29px, 0); }
+            100% { clip: rect(32px, 9999px, 92px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 100px, 0); }
+            5% { clip: rect(52px, 9999px, 74px, 0); }
+            10% { clip: rect(79px, 9999px, 85px, 0); }
+            100% { clip: rect(7px, 9999px, 68px, 0); }
+        }
+        .image-card:hover {
+            transform: scale(1.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 0 30px rgba(255, 94, 0, 0.7);
+        }
+        .back-button:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(255, 94, 0, 0.1);
+            border: 1px solid rgba(255, 94, 0, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(255, 94, 0, 0.2);
+            border-color: rgba(255, 94, 0, 0.6);
+            transform: translateX(5px);
+        }
+        .language-toggle {
+            background: #15151f;
+            border-radius: 9999px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            width: 80px;
+            position: relative;
+            cursor: pointer;
+        }
+        .language-toggle div {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            color: #f8fafc;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .language-toggle .active {
+            background: #00a8ff;
+            border-radius: 9999px;
+            color: #0a0a0f;
+            font-weight: 600;
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-200">
+    <div id="particles-js"></div>
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                <div class="flex items-center space-x-4">
+                    <div class="language-toggle" id="languageToggle">
+                        <div class="language-option" data-lang="en">EN</div>
+                        <div class="language-option active" data-lang="de">DE</div>
+                    </div>
+                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-orange glitch-effect neon-text text-center" data-text="Hochleistungs-PC-Build" data-aos="fade-up">Hochleistungs-PC-Build</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <!-- Linke Spalte: Überblick & Spezifikationen -->
+                <div data-aos="fade-right" data-aos-delay="100">
+                    <h2 class="text-2xl font-semibold text-cyber-orange neon-text mb-4">Projektübersicht</h2>
+                    <p class="text-lg text-gray-300 mb-6">
+                        Von Grund auf selbst gebaute Hochleistungs-Workstation für Gaming und Produktivität. Jede Komponente wurde sorgfältig für optimale Leistung, thermische Effizienz und zukünftige Erweiterbarkeit ausgewählt.
+                    </p>
+                    
+                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Kernkomponenten</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="cpu" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">CPU:</span> AMD Ryzen 7 7770X (8-Kern, 16-Thread)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="monitor" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">GPU:</span> NVIDIA RTX 4070 Super (12GB GDDR6X)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="layers" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">RAM:</span> 32GB Corsair Vengeance RGB DDR5
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Speicher:</span> 2x Kingston NVMe 1TB + 2TB HDD
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="grid" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Mainboard:</span> ASUS TUF B650-PLUS WiFi
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="wind" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Kühlung:</span> Arctic Freezer 36 A-RGB
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="zap" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Netzteil:</span> MSI MAG 850W 80+ Gold
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="box" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Gehäuse:</span> Corsair Carbide (Weiß)
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Peripheriegeräte</h3>
+                    <div class="space-y-3">
+                        <div class="spec-badge">
+                            <i data-feather="monitor" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Monitore:</span> Dual Samsung 2K Curved 240Hz
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="package" class="inline-block text-cyber-orange mr-2"></i>
+                            <span class="font-semibold text-cyber-orange">Betriebssystem:</span> Windows 11 Pro (Optimiert)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechte Spalte: Build-Prozess -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-orange neon-text mb-4">Build-Prozess</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Komponentenauswahl:</strong> Recherche und Auswahl optimaler Teile für Gaming und Produktivität</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Vollständiger Zusammenbau:</strong> Von Grund auf handgefertigt mit professionellem Kabelmanagement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Wärmemanagement:</strong> Arctic MX-6 Wärmeleitpaste aufgetragen und Luftstrom optimiert</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">BIOS-Konfiguration:</strong> RAM-Timings angepasst und XMP-Profile aktiviert</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Betriebssystem-Installation:</strong> Saubere Windows-11-Installation via bootfähigem USB-Stick</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Treiberoptimierung:</strong> Neueste Chipsatz-, GPU- und Peripherietreiber installiert</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Leistungsoptimierung:</strong> Systemoptimierung für maximale FPS und Stabilität</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-orange">Stresstests:</strong> 24-stündige Stabilitätstests und Temperaturüberwachung</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card cyber-border rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-3">Leistungsergebnisse</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="zap" class="inline-block text-cyber-orange mr-2"></i> 2K-Gaming mit 120+ FPS</li>
+                            <li><i data-feather="thermometer" class="inline-block text-cyber-orange mr-2"></i> CPU-Temperatur: 35–65 °C unter Last</li>
+                            <li><i data-feather="activity" class="inline-block text-cyber-orange mr-2"></i> GPU-Temperatur: 60–72 °C unter Last</li>
+                            <li><i data-feather="trending-up" class="inline-block text-cyber-orange mr-2"></i> Startzeit: 8 Sekunden (NVMe)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bildergalerie -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-orange neon-text mb-6 text-center">Build-Galerie</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/IMG20260217025858.jpg" alt="PC-Build – Innenansicht" class="w-full h-64 object-cover">
+                        <div class="p-3 bg-dark-card">
+                            <p class="text-sm text-center text-cyber-orange">Monitoransicht</p>
+                        </div>
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/IMG20260217025952.jpg" alt="PC-Build – RGB-Beleuchtung" class="w-full h-64 object-cover">
+                        <div class="p-3 bg-dark-card">
+                            <p class="text-sm text-center text-cyber-orange">RGB-Beleuchtung</p>
+                        </div>
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/IMG20260217030034.jpg" alt="PC-Build – Vollständiges Setup" class="w-full h-64 object-cover">
+                        <div class="p-3 bg-dark-card">
+                            <p class="text-sm text-center text-cyber-orange">Vollständiges Setup</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
+            feather.replace();
+
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#ff5e00', '#00a8ff', '#00ff9d'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#ff5e00', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                    modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
+        });
+    </script>
+</body>
+</html>
