@@ -34,115 +34,77 @@
     </script>
     <style>
         /* Lightbox Modal */
-.lightbox-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    animation: fadeIn 0.3s ease;
-}
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(0, 168, 255, 0.6);
+            box-shadow: 0 0 40px rgba(0, 168, 255, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+            #particles-js { display: none !important; }
+        }
 
-.lightbox-modal.active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.lightbox-content {
-    max-width: 90%;
-    max-height: 90vh;
-    object-fit: contain;
-    border: 2px solid rgba(0, 168, 255, 0.6);
-    box-shadow: 0 0 40px rgba(0, 168, 255, 0.8);
-    border-radius: 8px;
-    animation: zoomIn 0.3s ease;
-}
-
-.lightbox-close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: #00ff9d;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 10000;
-    text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
-}
-
-.lightbox-close:hover {
-    color: #00a8ff;
-    transform: rotate(90deg);
-    text-shadow: 0 0 20px rgba(0, 168, 255, 1);
-}
-
-.lightbox-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #00ff9d;
-    font-size: 50px;
-    cursor: pointer;
-    padding: 20px;
-    user-select: none;
-    transition: all 0.3s ease;
-    z-index: 10000;
-    text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
-}
-
-.lightbox-nav:hover {
-    color: #00a8ff;
-    text-shadow: 0 0 20px rgba(0, 168, 255, 1);
-}
-
-.lightbox-prev {
-    left: 20px;
-}
-
-.lightbox-next {
-    right: 20px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes zoomIn {
-    from {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* Mobile optimization */
-@media (max-width: 768px) {
-    .lightbox-content {
-        max-width: 95%;
-        max-height: 80vh;
-    }
-    
-    .lightbox-close {
-        top: 10px;
-        right: 15px;
-        font-size: 35px;
-    }
-    
-    .lightbox-nav {
-        font-size: 40px;
-        padding: 15px;
-    }
-}
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -175,15 +137,12 @@
         }
         .glitch-effect {
             position: relative;
-            animation: glitch 1s linear infinite;
         }
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -197,11 +156,6 @@
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim2 2s infinite linear alternate-reverse;
         }
-        @keyframes glitch {
-            2% { transform: translate(1px, -1px); }
-            4% { transform: translate(-1px, 1px); }
-            6% { transform: translate(0, 0); }
-        }
         @keyframes glitch-anim {
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
@@ -214,9 +168,12 @@
             10% { clip: rect(79px, 9999px, 85px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
+        .image-card {
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
         .image-card:hover {
             transform: scale(1.05);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
             box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
@@ -236,6 +193,8 @@
             border-color: rgba(0, 168, 255, 0.6);
             transform: translateX(5px);
         }
+
+        /* ── Language Toggle (identico ad AI Pizza App) ── */
         .language-toggle {
             background: #15151f;
             border-radius: 9999px;
@@ -253,6 +212,8 @@
             color: #f8fafc;
             font-size: 14px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .language-toggle .active {
             background: #00a8ff;
@@ -260,47 +221,75 @@
             color: #0a0a0f;
             font-weight: 600;
         }
+        .language-toggle .slider {
+            position: absolute;
+            width: 50%; height: 100%;
+            background: #00a8ff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .language-toggle.english .slider { transform: translateX(0); }
+        .language-toggle.german .slider  { transform: translateX(100%); }
+
         #particles-js {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
             z-index: 0;
         }
     </style>
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Full size image">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="index.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
                 <div class="flex items-center space-x-4">
+                    <!-- Toggle con slider, identico ad AI Pizza App -->
                     <div class="language-toggle english" id="languageToggle">
                         <div class="language-option active" data-lang="en">EN</div>
                         <div class="language-option" data-lang="de">DE</div>
+                        <div class="slider"></div>
                     </div>
-                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Back to Portfolio</a>
+                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white font-semibold rounded-md hover:bg-cyber-green hover:text-dark-bg transition-colors back-button">← Back to Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
-    
+
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text text-center" data-text="Da Amelia Restaurant - 4K WiFi Surveillance" data-aos="fade-up">Da Amelia Restaurant - 4K WiFi Surveillance</h1>
-            
+
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cyber-blue glitch-effect neon-text text-center"
+                data-text="Da Amelia Restaurant - 4K WiFi Surveillance"
+                data-aos="fade-up">
+                Da Amelia Restaurant - 4K WiFi Surveillance
+            </h1>
+            <p class="text-center text-gray-400 mb-12 font-mono" data-aos="fade-up" data-aos-delay="100">4K UHD · 15 WiFi Cameras · NVR Configuration · Professional Cable Management</p>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+
                 <!-- Left Column: Overview & Specs -->
                 <div data-aos="fade-right" data-aos-delay="100">
                     <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Project Overview</h2>
                     <p class="text-lg text-gray-300 mb-6">
                         Deployed a state-of-the-art 4K WiFi surveillance system at Ristorante Da Amelia featuring 15 wireless cameras with professional cable management. The system provides ultra-high-definition monitoring with the flexibility of wireless connectivity.
                     </p>
-                    
-                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">System Specifications</h3>
+
+                    <h3 class="text-xl font-semibold text-cyber-green mb-4">System Specifications</h3>
                     <div class="space-y-3 mb-6">
                         <div class="spec-badge">
                             <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
@@ -336,7 +325,7 @@
                         </div>
                     </div>
 
-                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Coverage Areas</h3>
+                    <h3 class="text-xl font-semibold text-cyber-green mb-4">Coverage Areas</h3>
                     <ul class="space-y-2 text-gray-300">
                         <li class="flex items-start">
                             <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
@@ -404,7 +393,7 @@
                     </ul>
 
                     <div class="bg-dark-card cyber-border rounded-lg p-6">
-                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Key Advantages</h3>
+                        <h3 class="text-xl font-semibold text-cyber-green mb-3">Key Advantages</h3>
                         <ul class="space-y-2 text-gray-300">
                             <li><i data-feather="award" class="inline-block text-cyber-blue mr-2"></i> 4K Ultra HD crystal-clear footage</li>
                             <li><i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i> Wireless installation - minimal drilling</li>
@@ -440,14 +429,16 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
             feather.replace();
 
+            // ── Particles ──
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -468,13 +459,13 @@
 
             document.body.style.transition = 'opacity 0.3s ease';
             document.body.style.opacity = 1;
-        });
-         // Language toggle
+
+            // ── Language Toggle ──
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
 
             languageOptions.forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', function () {
                     const lang = this.getAttribute('data-lang');
                     languageOptions.forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
@@ -496,81 +487,63 @@
                         'custom-pc-build-de.html':         'custom-pc-build.html',
                     };
 
-                    const currentPage = window.location.pathname.split('/').pop() || 'ai-pizza-app.html';
-                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'ai-pizza-app-de.html' : 'ai-pizza-app.html');
+                    const currentPage = window.location.pathname.split('/').pop() || 'da-amelia-surveillance.html';
+                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'da-amelia-surveillance-de.html' : 'da-amelia-surveillance.html');
 
                     document.body.style.opacity = 0;
                     setTimeout(() => { window.location.href = newPage; }, 300);
                 });
             });
-        // Lightbox functionality
-let currentImageIndex = 0;
-const images = [];
 
-// Collect all image sources on page load
-document.querySelectorAll('.image-card img').forEach((img, index) => {
-    images.push(img.src);
-    img.style.cursor = 'pointer';
-    img.onclick = function() {
-        openLightbox(index);
-    };
-});
+            // ── Lightbox ──
+            let currentImageIndex = 0;
+            const images = [];
 
-function openLightbox(index) {
-    currentImageIndex = index;
-    const modal = document.getElementById('lightboxModal');
-    const modalImg = document.getElementById('lightboxImage');
-    modal.classList.add('active');
-    modalImg.src = images[currentImageIndex];
-    document.body.style.overflow = 'hidden';
-}
+            document.querySelectorAll('.image-card img').forEach((img, index) => {
+                images.push(img.src);
+                img.style.cursor = 'pointer';
+                img.onclick = function () { openLightbox(index); };
+            });
 
-function closeLightbox() {
-    const modal = document.getElementById('lightboxModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
+            function openLightbox(index) {
+                currentImageIndex = index;
+                const modal = document.getElementById('lightboxModal');
+                const modalImg = document.getElementById('lightboxImage');
+                modal.classList.add('active');
+                modalImg.src = images[currentImageIndex];
+                document.body.style.overflow = 'hidden';
+            }
 
-function changeImage(direction) {
-    currentImageIndex += direction;
-    if (currentImageIndex >= images.length) {
-        currentImageIndex = 0;
-    } else if (currentImageIndex < 0) {
-        currentImageIndex = images.length - 1;
-    }
-    document.getElementById('lightboxImage').src = images[currentImageIndex];
-}
+            function closeLightbox() {
+                document.getElementById('lightboxModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
 
-// Close on ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLightbox();
-});
+            function changeImage(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex >= images.length) currentImageIndex = 0;
+                else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+                document.getElementById('lightboxImage').src = images[currentImageIndex];
+            }
 
-// Navigate with arrow keys
-document.addEventListener('keydown', function(e) {
-    const modal = document.getElementById('lightboxModal');
-    if (modal.classList.contains('active')) {
-        if (e.key === 'ArrowLeft') changeImage(-1);
-        if (e.key === 'ArrowRight') changeImage(1);
-    }
-});
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeLightbox();
+                const modal = document.getElementById('lightboxModal');
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') changeImage(-1);
+                    if (e.key === 'ArrowRight') changeImage(1);
+                }
+            });
 
-// Close when clicking outside image
-document.getElementById('lightboxModal').addEventListener('click', function(e) {
-    if (e.target === this) closeLightbox();
-});
-           // Expose lightbox functions globally
+            document.getElementById('lightboxModal').addEventListener('click', function (e) {
+                if (e.target === this) closeLightbox();
+            });
+
+            // Expose lightbox functions globally
             window.openLightbox = openLightbox;
             window.closeLightbox = closeLightbox;
             window.changeImage = changeImage;
         });
     </script>
-    <!-- Lightbox Modal -->
-<div id="lightboxModal" class="lightbox-modal">
-    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-    <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
-    <img id="lightboxImage" class="lightbox-content" src="" alt="Full size image">
-    <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
-</div>
 </body>
 </html>
