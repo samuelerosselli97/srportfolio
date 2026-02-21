@@ -33,6 +33,78 @@
         }
     </script>
     <style>
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(255, 94, 0, 0.6);
+            box-shadow: 0 0 40px rgba(255, 94, 0, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+            #particles-js { display: none !important; }
+        }
+
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -70,10 +142,8 @@
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -104,9 +174,12 @@
             10% { clip: rect(79px, 9999px, 85px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
+        .image-card {
+            cursor: pointer;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
         .image-card:hover {
             transform: scale(1.05);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
             box-shadow: 0 0 30px rgba(255, 94, 0, 0.7);
         }
         .back-button:hover {
@@ -143,6 +216,8 @@
             color: #f8fafc;
             font-size: 14px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .language-toggle .active {
             background: #00a8ff;
@@ -150,18 +225,35 @@
             color: #0a0a0f;
             font-weight: 600;
         }
+        .language-toggle .slider {
+            position: absolute;
+            width: 50%; height: 100%;
+            background: #00a8ff;
+            border-radius: 9999px;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .language-toggle.english .slider { transform: translateX(0); }
+        .language-toggle.german .slider { transform: translateX(100%); }
         #particles-js {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
             z-index: 0;
         }
     </style>
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Full size image">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
@@ -170,6 +262,7 @@
                     <div class="language-toggle english" id="languageToggle">
                         <div class="language-option active" data-lang="en">EN</div>
                         <div class="language-option" data-lang="de">DE</div>
+                        <div class="slider"></div>
                     </div>
                     <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Back to Portfolio</a>
                 </div>
@@ -294,7 +387,7 @@
                 <h2 class="text-2xl font-semibold text-cyber-orange neon-text mb-6 text-center">Build Gallery</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                        <img src="images/IMG20260217025858.jpg" alt="PC Build - Interior View" class="w-full h-64 object-cover">
+                        <img src="images/IMG20260217025858.jpg" alt="PC Build - Monitor View" class="w-full h-64 object-cover">
                         <div class="p-3 bg-dark-card">
                             <p class="text-sm text-center text-cyber-orange">Monitor View</p>
                         </div>
@@ -341,6 +434,92 @@
 
             document.body.style.transition = 'opacity 0.3s ease';
             document.body.style.opacity = 1;
+
+            // Language toggle
+            const languageToggle = document.getElementById('languageToggle');
+            const languageOptions = languageToggle.querySelectorAll('.language-option');
+
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    languageToggle.classList.remove('english', 'german');
+                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
+
+                    const pageMap = {
+                        'custom-pc-build.html':            'custom-pc-build-de.html',
+                        'custom-pc-build-de.html':         'custom-pc-build.html',
+                        'beachbar-surveillance.html':      'beachbar-surveillance-de.html',
+                        'beachbar-surveillance-de.html':   'beachbar-surveillance.html',
+                        'ai-pizza-app.html':               'ai-pizza-app-de.html',
+                        'ai-pizza-app-de.html':            'ai-pizza-app.html',
+                        'restaurant-surveillance.html':    'restaurant-surveillance-de.html',
+                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
+                        'networking-solutions.html':       'networking-solutions-de.html',
+                        'networking-solutions-de.html':    'networking-solutions.html',
+                        'lulzim-website.html':             'lulzim-website-de.html',
+                        'lulzim-website-de.html':          'lulzim-website.html',
+                        'da-amelia-surveillance.html':     'da-amelia-surveillance-de.html',
+                        'da-amelia-surveillance-de.html':  'da-amelia-surveillance.html',
+                    };
+
+                    const currentPage = window.location.pathname.split('/').pop() || 'custom-pc-build.html';
+                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'custom-pc-build-de.html' : 'custom-pc-build.html');
+
+                    document.body.style.opacity = 0;
+                    setTimeout(() => { window.location.href = newPage; }, 300);
+                });
+            });
+
+            // Lightbox
+            let currentImageIndex = 0;
+            const images = [];
+
+            document.querySelectorAll('.image-card img').forEach((img, index) => {
+                images.push(img.src);
+                img.style.cursor = 'pointer';
+                img.onclick = function() { openLightbox(index); };
+            });
+
+            function openLightbox(index) {
+                currentImageIndex = index;
+                const modal = document.getElementById('lightboxModal');
+                const modalImg = document.getElementById('lightboxImage');
+                modal.classList.add('active');
+                modalImg.src = images[currentImageIndex];
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                document.getElementById('lightboxModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            function changeImage(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex >= images.length) currentImageIndex = 0;
+                else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+                document.getElementById('lightboxImage').src = images[currentImageIndex];
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeLightbox();
+                const modal = document.getElementById('lightboxModal');
+                if (modal.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') changeImage(-1);
+                    if (e.key === 'ArrowRight') changeImage(1);
+                }
+            });
+
+            document.getElementById('lightboxModal').addEventListener('click', function(e) {
+                if (e.target === this) closeLightbox();
+            });
+
+            // Expose lightbox functions globally for onclick HTML attributes
+            window.openLightbox = openLightbox;
+            window.closeLightbox = closeLightbox;
+            window.changeImage = changeImage;
         });
     </script>
 </body>
