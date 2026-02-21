@@ -2,10 +2,10 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lulzim Website - Samuele Rosselli</title>
-    <meta name="description" content="Details about the Lulzim Website project by Samuele Rosselli, a modern and responsive website for a client.">
-    <meta name="keywords" content="website, web development, responsive design, Samuele Rosselli">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Lulzim.at Website - Samuele Rosselli</title>
+    <meta name="description" content="Details about the Lulzim.at Website project by Samuele Rosselli - high-traffic website with 10,000+ monthly views and table reservation system.">
+    <meta name="keywords" content="website, web development, responsive design, WordPress, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -33,6 +33,81 @@
         }
     </script>
     <style>
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(0, 255, 157, 0.6);
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+            #particles-js { display: none !important; }
+        }
+
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -40,13 +115,13 @@
             overflow-x: hidden;
         }
         .cyber-glow {
-            box-shadow: 0 0 25px rgba(0, 168, 255, 0.8), 0 0 50px rgba(0, 168, 255, 0.4);
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.8), 0 0 50px rgba(0, 255, 157, 0.4);
         }
         .cyber-border {
-            border: 2px solid rgba(0, 168, 255, 0.5);
+            border: 2px solid rgba(0, 255, 157, 0.5);
         }
         .gradient-bg {
-            background: linear-gradient(135deg, rgba(0, 168, 255, 0.3), rgba(0, 255, 157, 0.3));
+            background: linear-gradient(135deg, rgba(0, 255, 157, 0.3), rgba(0, 168, 255, 0.3));
             background-size: 200% 200%;
             animation: gradientShift 20s ease infinite;
         }
@@ -56,24 +131,29 @@
             100% { background-position: 0% 50%; }
         }
         .neon-text {
-            text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5);
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8), 0 0 20px rgba(0, 255, 157, 0.5);
             animation: neonPulse 1.5s ease-in-out infinite;
         }
+        .neon-text-blue {
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5);
+            animation: neonPulseBlue 1.5s ease-in-out infinite;
+        }
         @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 157, 0.8), 0 0 20px rgba(0, 255, 157, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(0, 255, 157, 1), 0 0 30px rgba(0, 255, 157, 0.7); }
+        }
+        @keyframes neonPulseBlue {
             0%, 100% { text-shadow: 0 0 10px rgba(0, 168, 255, 0.8), 0 0 20px rgba(0, 168, 255, 0.5); }
             50% { text-shadow: 0 0 15px rgba(0, 168, 255, 1), 0 0 30px rgba(0, 168, 255, 0.7); }
         }
         .glitch-effect {
             position: relative;
-            animation: glitch 1s linear infinite;
         }
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -87,67 +167,55 @@
             clip: rect(44px, 450px, 56px, 0);
             animation: glitch-anim2 2s infinite linear alternate-reverse;
         }
-        @keyframes glitch {
-            2% { transform: translate(1px, -1px); }
-            4% { transform: translate(-1px, 1px); }
-            6% { transform: translate(0, 0); }
-        }
         @keyframes glitch-anim {
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
         .image-card {
             cursor: pointer;
-            transition: box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
         .image-card:hover {
+            transform: scale(1.05);
             box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-        }
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border: 2px solid #00a8ff;
-            box-shadow: 0 0 20px rgba(0, 168, 255, 0.8);
-        }
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #00ff9d;
-            font-size: 30px;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 255, 157, 0.2);
+            border-color: rgba(0, 255, 157, 0.6);
+            transform: translateX(5px);
+        }
+        .stat-card {
+            background: rgba(0, 255, 157, 0.05);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            background: rgba(0, 255, 157, 0.1);
+            border-color: rgba(0, 255, 157, 0.6);
+            transform: translateY(-4px);
         }
         .language-toggle {
             background: #15151f;
@@ -166,6 +234,8 @@
             color: #f8fafc;
             font-size: 14px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .language-toggle .active {
             background: #00a8ff;
@@ -180,30 +250,31 @@
             background: #00a8ff;
             border-radius: 9999px;
             transition: transform 0.3s ease;
+            pointer-events: none;
         }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
+        .language-toggle.english .slider { transform: translateX(0); }
+        .language-toggle.german .slider { transform: translateX(100%); }
         #particles-js {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
             z-index: 0;
         }
     </style>
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img id="modalImage" src="" alt="Full resolution image">
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Full size image">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
     </div>
-    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
                 <a href="index.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
@@ -213,55 +284,152 @@
                         <div class="language-option" data-lang="de">DE</div>
                         <div class="slider"></div>
                     </div>
-                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Back to Portfolio</a>
+                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-green text-dark-bg font-semibold rounded-md hover:bg-cyber-blue hover:text-white transition-colors back-button">← Back to Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Lulzim Website" data-aos="fade-up">Lulzim Website</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-cyber-green glitch-effect neon-text text-center"
+                data-text="Lulzim.at Website"
+                data-aos="fade-up">
+                Lulzim.at Website
+            </h1>
+            <p class="text-center text-gray-400 mb-12 font-mono" data-aos="fade-up" data-aos-delay="100">High-Traffic Web Platform · Table Reservation System · 10,000+ Monthly Views</p>
+
+            <!-- Stats Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12" data-aos="fade-up" data-aos-delay="150">
+                <div class="stat-card">
+                    <p class="text-3xl font-bold text-cyber-green">10K+</p>
+                    <p class="text-sm text-gray-400 mt-1">Monthly Views</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-3xl font-bold text-cyber-green">1,500+</p>
+                    <p class="text-sm text-gray-400 mt-1">Monthly Reservations</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-3xl font-bold text-cyber-green">100%</p>
+                    <p class="text-sm text-gray-400 mt-1">Mobile Responsive</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-3xl font-bold text-cyber-green">24/7</p>
+                    <p class="text-sm text-gray-400 mt-1">Online Booking</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+
+                <!-- Left Column: Overview & Specs -->
                 <div data-aos="fade-right" data-aos-delay="100">
                     <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Overview</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Developed a modern, responsive website for Lulzim, featuring a sleek design and seamless user experience tailored to the client's needs.
+                        Developed a modern, high-performance website for Lulzim.at featuring a striking visual design, seamless user experience, and a fully integrated table reservation system. The platform consistently attracts over 10,000 monthly visitors and manages 1,500+ guest bookings per month.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">What I Did</h3>
-                    <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Developed a visually striking website using modern frameworks like React and Tailwind CSS in Wordpress, achieving over 8,000 visits per month.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Implemented a custom design with videos and photos</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Deployed a reservation system that accommodates over 1,500 guests monthly.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Deployed the website with optimized performance and mobile responsiveness.</li>
-                    </ul>
-                </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Project Images</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website1.jpg" alt="Lulzim Website 1" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website1.jpg')">
+
+                    <h3 class="text-xl font-semibold text-cyber-blue neon-text-blue mb-4">Tech Stack & Features</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="code" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Platform:</span> WordPress with custom theme
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website2.jpg" alt="Lulzim Website 2" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website2.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="layers" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Frontend:</span> React components & Tailwind CSS
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website3.jpg" alt="Lulzim Website 3" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website3.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="calendar" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Reservation:</span> Custom booking system
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website4.jpg" alt="Lulzim Website 4" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website4.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="smartphone" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Design:</span> Fully mobile responsive
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website5.jpg" alt="Lulzim Website 5" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website5.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Media:</span> Custom videos & photo gallery
                         </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/lulzim-website6.jpg" alt="Lulzim Website 6" class="w-full h-48 object-cover" onclick="openModal('images/lulzim-website6.jpg')">
+                        <div class="spec-badge">
+                            <i data-feather="zap" class="inline-block text-cyber-green mr-2"></i>
+                            <span class="font-semibold text-cyber-green">Performance:</span> Optimized load times & SEO
                         </div>
                     </div>
                 </div>
+
+                <!-- Right Column: What I Did -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">What I Did</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="monitor" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Website Development:</strong> Built a visually striking site using React and Tailwind CSS in WordPress, achieving over 8,000 visits per month</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="image" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Custom Design:</strong> Implemented a unique design system with embedded videos, photo galleries, and branded visuals</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="calendar" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Reservation System:</strong> Deployed a custom booking platform accommodating over 1,500 guests per month with real-time availability</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="smartphone" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Mobile Optimization:</strong> Ensured pixel-perfect responsiveness across all screen sizes and devices</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="trending-up" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Performance & SEO:</strong> Optimized loading speed, core web vitals, and search engine visibility</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="tool" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-green">Ongoing Maintenance:</strong> Provided continuous updates, content management, and technical support</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card rounded-lg p-6" style="border: 1px solid rgba(0, 255, 157, 0.3);">
+                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Key Results</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="users" class="inline-block text-cyber-green mr-2"></i> Consistent 10,000+ monthly visitors</li>
+                            <li><i data-feather="check-circle" class="inline-block text-cyber-green mr-2"></i> 1,500+ successful reservations per month</li>
+                            <li><i data-feather="star" class="inline-block text-cyber-green mr-2"></i> High client satisfaction and engagement</li>
+                            <li><i data-feather="clock" class="inline-block text-cyber-green mr-2"></i> Fast load times across all devices</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+
+            <!-- Images Section -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-6 text-center">Project Gallery</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website1.jpg" alt="Lulzim Website 1" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website2.jpg" alt="Lulzim Website 2" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website3.jpg" alt="Lulzim Website 3" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website4.jpg" alt="Lulzim Website 4" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website5.jpg" alt="Lulzim Website 5" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card rounded-md overflow-hidden" style="border: 2px solid rgba(0, 255, 157, 0.5); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);">
+                        <img src="images/lulzim-website6.jpg" alt="Lulzim Website 6" class="w-full h-48 object-cover">
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -285,6 +453,10 @@
                 retina_detect: true
             });
 
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
+
+            // Language toggle
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
             languageOptions.forEach(option => {
@@ -295,53 +467,59 @@
                     languageToggle.classList.remove('english', 'german');
                     languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
                     const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
                         'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html'
+                        'lulzim-website-de.html': 'lulzim-website.html',
                     };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
+                    const currentPage = window.location.pathname.split('/').pop() || 'lulzim-website.html';
+                    const newPage = pageMap[currentPage] || (lang === 'de' ? 'lulzim-website-de.html' : 'lulzim-website.html');
                     document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
+                    setTimeout(() => { window.location.href = newPage; }, 300);
                 });
             });
+        });
 
-            // Modal functionality
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalClose = document.querySelector('.modal-close');
+        // Lightbox
+        let currentImageIndex = 0;
+        const images = [];
 
-            window.openModal = function(src) {
-                modalImage.src = src;
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            };
+        document.querySelectorAll('.image-card img').forEach((img, index) => {
+            images.push(img.src);
+            img.style.cursor = 'pointer';
+            img.onclick = function() { openLightbox(index); };
+        });
 
-            modalClose.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('lightboxModal');
+            const modalImg = document.getElementById('lightboxImage');
+            modal.classList.add('active');
+            modalImg.src = images[currentImageIndex];
+            document.body.style.overflow = 'hidden';
+        }
 
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
 
-            document.body.style.transition = 'opacity 0.3s ease';
-            document.body.style.opacity = 1;
+        function changeImage(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex >= images.length) currentImageIndex = 0;
+            else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+            document.getElementById('lightboxImage').src = images[currentImageIndex];
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            const modal = document.getElementById('lightboxModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') changeImage(-1);
+                if (e.key === 'ArrowRight') changeImage(1);
+            }
+        });
+
+        document.getElementById('lightboxModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
         });
     </script>
 </body>
