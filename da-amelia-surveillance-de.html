@@ -1,51 +1,11 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-</script>
 <!DOCTYPE html>
 <html lang="de" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Da Amelia Restaurant Überwachung - Samuele Rosselli</title>
-    <meta name="description" content="Details zum Da Amelia Restaurant Überwachungsprojekt von Samuele Rosselli, ein Sicherheitssystem mit 15 Kameras und NVR-Konfiguration.">
-    <meta name="keywords" content="Überwachung, Sicherheit, NVR, Samuele Rosselli">
+    <meta name="description" content="Details zum Überwachungsprojekt des Ristorante Da Amelia von Samuele Rosselli – 4K-Sicherheitssystem mit 15 WLAN-Kameras und NVR-Konfiguration.">
+    <meta name="keywords" content="Überwachung, Sicherheit, NVR, 4K, WLAN, Samuele Rosselli">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -73,6 +33,80 @@
         }
     </script>
     <style>
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+        .lightbox-modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            border: 2px solid rgba(0, 168, 255, 0.6);
+            box-shadow: 0 0 40px rgba(0, 168, 255, 0.8);
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #00ff9d;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-close:hover {
+            color: #00a8ff;
+            transform: rotate(90deg);
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff9d;
+            font-size: 50px;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+        }
+        .lightbox-nav:hover {
+            color: #00a8ff;
+            text-shadow: 0 0 20px rgba(0, 168, 255, 1);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .lightbox-content { max-width: 95%; max-height: 80vh; }
+            .lightbox-close { top: 10px; right: 15px; font-size: 35px; }
+            .lightbox-nav { font-size: 40px; padding: 15px; }
+        }
+
         body {
             background-color: #0a0a0f;
             color: #f8fafc;
@@ -110,10 +144,8 @@
         .glitch-effect::before, .glitch-effect::after {
             content: attr(data-text);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
         }
         .glitch-effect::before {
             left: 3px;
@@ -136,58 +168,35 @@
             0% { clip: rect(42px, 9999px, 44px, 0); }
             5% { clip: rect(12px, 9999px, 59px, 0); }
             10% { clip: rect(48px, 9999px, 29px, 0); }
-            15% { clip: rect(42px, 9999px, 73px, 0); }
-            20% { clip: rect(63px, 9999px, 27px, 0); }
             100% { clip: rect(32px, 9999px, 92px, 0); }
         }
         @keyframes glitch-anim2 {
             0% { clip: rect(65px, 9999px, 100px, 0); }
             5% { clip: rect(52px, 9999px, 74px, 0); }
             10% { clip: rect(79px, 9999px, 85px, 0); }
-            15% { clip: rect(75px, 9999px, 5px, 0); }
-            20% { clip: rect(67px, 9999px, 61px, 0); }
             100% { clip: rect(7px, 9999px, 68px, 0); }
         }
-        .image-card {
-            cursor: pointer;
-            transition: box-shadow 0.4s ease;
-        }
         .image-card:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.7);
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-        }
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border: 2px solid #00a8ff;
-            box-shadow: 0 0 20px rgba(0, 168, 255, 0.8);
-        }
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #00ff9d;
-            font-size: 30px;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.7);
+            transform: scale(1.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.7);
         }
         .back-button:hover {
             box-shadow: 0 0 25px rgba(0, 255, 157, 0.7);
             transform: translateY(-3px);
             transition: all 0.3s ease;
+        }
+        .spec-badge {
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid rgba(0, 168, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .spec-badge:hover {
+            background: rgba(0, 168, 255, 0.2);
+            border-color: rgba(0, 168, 255, 0.6);
+            transform: translateX(5px);
         }
         .language-toggle {
             background: #15151f;
@@ -213,20 +222,6 @@
             color: #0a0a0f;
             font-weight: 600;
         }
-        .language-toggle .slider {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #00a8ff;
-            border-radius: 9999px;
-            transition: transform 0.3s ease;
-        }
-        .language-toggle.english .slider {
-            transform: translateX(0);
-        }
-        .language-toggle.german .slider {
-            transform: translateX(100%);
-        }
         #particles-js {
             position: absolute;
             width: 100%;
@@ -239,69 +234,189 @@
 </head>
 <body class="bg-dark-bg text-gray-200">
     <div id="particles-js"></div>
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img id="modalImage" src="" alt="Vollauflösungsbild">
-    </div>
     <nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 cyber-border-b border-gray-800">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="index-de.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
+                <a href="index.html" class="text-2xl font-bold text-cyber-blue glitch-effect" data-text="S.Rosselli">S.Rosselli</a>
                 <div class="flex items-center space-x-4">
                     <div class="language-toggle german" id="languageToggle">
                         <div class="language-option" data-lang="en">EN</div>
                         <div class="language-option active" data-lang="de">DE</div>
-                        <div class="slider"></div>
                     </div>
-                    <a href="index-de.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
+                    <a href="index.html#portfolio" class="px-4 py-2 bg-cyber-blue text-white rounded-md hover:bg-cyber-green transition-colors back-button">Zurück zum Portfolio</a>
                 </div>
             </div>
         </div>
     </nav>
+    
     <section class="min-h-screen flex items-center justify-center gradient-bg py-20 relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-dark-bg/80 to-dark-bg"></div>
         <div class="container mx-auto px-6 relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text" data-text="Da Amelia Restaurant Überwachung" data-aos="fade-up">Da Amelia Restaurant Überwachung</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-8 text-cyber-blue glitch-effect neon-text text-center"
+                data-text="Da Amelia Restaurant – 4K WLAN-Überwachung"
+                data-aos="fade-up">
+                Da Amelia Restaurant – 4K WLAN-Überwachung
+            </h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <!-- Linke Spalte: Überblick & Spezifikationen -->
                 <div data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektübersicht</h2>
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Projektübersicht</h2>
                     <p class="text-lg text-gray-300 mb-6">
-                        Installation von 15 Überwachungskameras sowie eines NVR-Systems für umfassende Überwachung im Ristorante Da Amelia. Kabelinstallationen wurden mit Kabelkanälen organisiert, um eine saubere und professionelle Einrichtung zu gewährleisten.
+                        Installation eines modernen 4K-WLAN-Überwachungssystems im Ristorante Da Amelia mit 15 kabellosen Kameras und professionellem Kabelmanagement. Das System bietet ultrahohe Bildauflösung mit der Flexibilität kabelloser Verbindung.
                     </p>
-                    <h3 class="text-xl font-semibold text-cyber-blue neon-text mb-4">Was ich getan habe</h3>
+                    
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Systemspezifikationen</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="spec-badge">
+                            <i data-feather="video" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Kameras:</span> 15x 4K UHD WLAN-IP-Kameras
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="monitor" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Auflösung:</span> 4K Ultra HD (3840 x 2160)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Verbindung:</span> Vollständiges WLAN-5-GHz-Netzwerk
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="hard-drive" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">NVR:</span> 16-Kanal 4K Netzwerk-Videorekorder
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="database" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Speicher:</span> 60-Tage 4K-Aufzeichnungsarchiv
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="moon" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Nachtsicht:</span> Erweitertes IR (30 m Reichweite)
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="smartphone" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">Fernzugriff:</span> Mobile & Desktop-Apps
+                        </div>
+                        <div class="spec-badge">
+                            <i data-feather="activity" class="inline-block text-cyber-blue mr-2"></i>
+                            <span class="font-semibold text-cyber-blue">KI-Funktionen:</span> Bewegungserkennung & Alarme
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-cyber-green neon-text mb-4">Überwachungsbereiche</h3>
                     <ul class="space-y-2 text-gray-300">
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Installation und Konfiguration von 15 hochauflösenden Überwachungskameras.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Einrichtung eines NVR-Systems für Echtzeitüberwachung und sichere Datenspeicherung.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Organisation der Kabelinstallationen mit Kabelkanälen für ein sauberes und professionelles Erscheinungsbild.</li>
-                        <li class="flex items-start"><i data-feather="check" class="text-cyber-green mr-2 mt-1"></i> Schulung des Personals in der Bedienung und Wartung des Systems.</li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Hauptspeisesaal und Gästebereiche</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Küche und Lebensmittelzubereitungsbereiche</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Bar und Kassenbereiche</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Ein-, Ausgänge und Notausgänge</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Lagerräume und Hinterbereiche</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="check-circle" class="text-cyber-green mr-2 mt-1 flex-shrink-0"></i>
+                            <span>Außenterrasse und Parkplatz</span>
+                        </li>
                     </ul>
                 </div>
-                <div data-aos="zoom-in" data-aos-delay="200">
-                    <h2 class="text-2xl font-semibold text-cyber-green neon-text mb-4">Projektbilder</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera1.jpg" alt="Da Amelia Kamera 1" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera1.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera2.jpg" alt="Da Amelia Kamera 2" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera2.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera3.jpg" alt="Da Amelia Kamera 3" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera3.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera4.jpg" alt="Da Amelia Kamera 4" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera4.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera5.jpg" alt="Da Amelia Kamera 5" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera5.jpg')">
-                        </div>
-                        <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
-                            <img src="images/da-amelia-camera6.jpg" alt="Da Amelia Kamera 6" class="w-full h-48 object-cover" onclick="openModal('images/da-amelia-camera6.jpg')">
-                        </div>
+
+                <!-- Rechte Spalte: Installationsprozess -->
+                <div data-aos="fade-left" data-aos-delay="200">
+                    <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-4">Installationsprozess</h2>
+                    <ul class="space-y-3 text-gray-300 mb-6">
+                        <li class="flex items-start">
+                            <i data-feather="map" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Vor-Ort-Analyse:</strong> Umfassende Begehung des Restaurants und Analyse der WLAN-Signalstärke</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="wifi" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Netzwerkoptimierung:</strong> Einrichtung eines dedizierten 5-GHz-WLAN-Netzwerks für den Kameraverkehr</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="tool" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Kamerainstallation:</strong> Montage von 15 4K-WLAN-Kameras an strategischen Standorten</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="package" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Kabelmanagement:</strong> Professionelle Kabelkanäle für saubere, geordnete Stromführung</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="settings" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Systemkonfiguration:</strong> Kopplung aller Kameras mit dem NVR und optimierten 4K-Aufzeichnungseinstellungen</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="sliders" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Feinabstimmung:</strong> Anpassung von Winkel, Belichtung und Bewegungszonen für jede Kamera</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="smartphone" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Fernzugriff-Einrichtung:</strong> Konfiguration des mobilen App-Zugriffs für die Überwachung durch den Manager</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-feather="users" class="text-cyber-green mr-3 mt-1 flex-shrink-0"></i>
+                            <span><strong class="text-cyber-blue">Mitarbeiterschulung:</strong> Umfassende Einweisung in Wiedergabe, Export und Systemverwaltung</span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-dark-card cyber-border rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-cyber-green neon-text mb-3">Hauptvorteile</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li><i data-feather="award" class="inline-block text-cyber-blue mr-2"></i> Kristallklare 4K-Ultra-HD-Aufnahmen</li>
+                            <li><i data-feather="wifi" class="inline-block text-cyber-blue mr-2"></i> Kabellose Installation – minimales Bohren erforderlich</li>
+                            <li><i data-feather="zap" class="inline-block text-cyber-blue mr-2"></i> Einfache Kamera-Umpositionierung bei Bedarf</li>
+                            <li><i data-feather="package" class="inline-block text-cyber-blue mr-2"></i> Professionelles Kabelkanal-Management</li>
+                            <li><i data-feather="cloud" class="inline-block text-cyber-blue mr-2"></i> 7-tägiges rollendes Videoarchiv (bei Bedarf erweiterbar)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bildergalerie -->
+            <div data-aos="zoom-in" data-aos-delay="300">
+                <h2 class="text-2xl font-semibold text-cyber-blue neon-text mb-6 text-center">Installationsgalerie</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera1.jpg" alt="Da Amelia Kamera 1" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera2.jpg" alt="Da Amelia Kamera 2" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera3.jpg" alt="Da Amelia Kamera 3" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera4.jpg" alt="Da Amelia Kamera 4" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera5.jpg" alt="Da Amelia Kamera 5" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="image-card cyber-border cyber-glow rounded-md overflow-hidden">
+                        <img src="images/da-amelia-camera6.jpg" alt="Da Amelia Kamera 6" class="w-full h-48 object-cover">
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightboxImage" class="lightbox-content" src="" alt="Vollbildansicht">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init({ duration: 1000, easing: 'ease-in-out', once: true });
@@ -325,28 +440,10 @@
                 retina_detect: true
             });
 
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalClose = document.querySelector('.modal-close');
+            document.body.style.transition = 'opacity 0.3s ease';
+            document.body.style.opacity = 1;
 
-            window.openModal = function(src) {
-                modalImage.src = src;
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            };
-
-            modalClose.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-
+            // Sprachumschalter
             const languageToggle = document.getElementById('languageToggle');
             const languageOptions = languageToggle.querySelectorAll('.language-option');
             languageOptions.forEach(option => {
@@ -354,35 +451,60 @@
                     const lang = this.getAttribute('data-lang');
                     languageOptions.forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
-                    languageToggle.classList.remove('english', 'german');
-                    languageToggle.classList.add(lang === 'en' ? 'english' : 'german');
                     const pageMap = {
-                        'index.html': 'index-de.html',
-                        'index-de.html': 'index.html',
-                        'beachbar-surveillance.html': 'beachbar-surveillance-de.html',
-                        'beachbar-surveillance-de.html': 'beachbar-surveillance.html',
-                        'restaurant-surveillance.html': 'restaurant-surveillance-de.html',
-                        'restaurant-surveillance-de.html': 'restaurant-surveillance.html',
-                        'ai-pizza-app.html': 'ai-pizza-app-de.html',
-                        'ai-pizza-app-de.html': 'ai-pizza-app.html',
-                        'networking-solutions.html': 'networking-solutions-de.html',
-                        'networking-solutions-de.html': 'networking-solutions.html',
-                        'lulzim-website.html': 'lulzim-website-de.html',
-                        'lulzim-website-de.html': 'lulzim-website.html',
+                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html',
                         'da-amelia-surveillance.html': 'da-amelia-surveillance-de.html',
-                        'da-amelia-surveillance-de.html': 'da-amelia-surveillance.html'
                     };
-                    const currentPage = window.location.pathname.split('/').pop();
-                    const newPage = pageMap[currentPage] || 'index.html';
+                    const currentPage = window.location.pathname.split('/').pop() || 'da-amelia-surveillance-de.html';
+                    const newPage = pageMap[currentPage] || (lang === 'en' ? 'da-amelia-surveillance.html' : 'da-amelia-surveillance-de.html');
                     document.body.style.opacity = 0;
-                    setTimeout(() => {
-                        window.location.href = newPage;
-                    }, 300);
+                    setTimeout(() => { window.location.href = newPage; }, 300);
                 });
             });
+        });
 
-            document.body.style.transition = 'opacity 0.3s ease';
-            document.body.style.opacity = 1;
+        // Lightbox
+        let currentImageIndex = 0;
+        const images = [];
+
+        document.querySelectorAll('.image-card img').forEach((img, index) => {
+            images.push(img.src);
+            img.style.cursor = 'pointer';
+            img.onclick = function() { openLightbox(index); };
+        });
+
+        function openLightbox(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('lightboxModal');
+            const modalImg = document.getElementById('lightboxImage');
+            modal.classList.add('active');
+            modalImg.src = images[currentImageIndex];
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentImageIndex += direction;
+            if (currentImageIndex >= images.length) currentImageIndex = 0;
+            else if (currentImageIndex < 0) currentImageIndex = images.length - 1;
+            document.getElementById('lightboxImage').src = images[currentImageIndex];
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+            const modal = document.getElementById('lightboxModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') changeImage(-1);
+                if (e.key === 'ArrowRight') changeImage(1);
+            }
+        });
+
+        document.getElementById('lightboxModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
         });
     </script>
 </body>
