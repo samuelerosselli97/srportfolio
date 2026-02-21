@@ -169,13 +169,15 @@ nav .container {
             cursor: pointer;
         }
         .language-toggle div {
-            flex: 1;
-            text-align: center;
-            padding: 6px;
-            color: #f8fafc;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
+    flex: 1;
+    text-align: center;
+    padding: 6px;
+    color: #f8fafc;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
         .language-toggle .active {
             background: #00a8ff;
             border-radius: 9999px;
@@ -183,13 +185,14 @@ nav .container {
             font-weight: 600;
         }
         .language-toggle .slider {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            background: #00a8ff;
-            border-radius: 9999px;
-            transition: transform 0.3s ease;
-        }
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background: #00a8ff;
+    border-radius: 9999px;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
         .language-toggle.english .slider {
             transform: translateX(0);
         }
@@ -1829,6 +1832,7 @@ languageOptions.forEach(option => {
     </script>
 </body>
 </html>
+
 
 
 
