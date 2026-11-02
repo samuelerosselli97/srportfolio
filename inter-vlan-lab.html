@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inter-VLAN Routing Lab | Samuele Rosselli</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--card:#15151f;--blue:#00a8ff;--green:#00ff9d;--orange:#ff5e00;--txt:#e5e7eb;--mut:#9ca3af;--line:rgba(0,168,255,.3)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:17px/1.7 Inter,sans-serif;overflow-x:hidden}
+nav{position:sticky;top:0;background:rgba(10,10,15,.92);backdrop-filter:blur(6px);border-bottom:1px solid #1f2937;padding:14px 20px;z-index:5}
+nav a{color:var(--blue);text-decoration:none;font-weight:500}
+nav a:hover{color:var(--green)}
+main{max-width:900px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:2.2rem;line-height:1.2;margin:0 0 12px}
+h1 span{color:var(--blue)}
+h2{color:var(--blue);font-size:1.5rem;margin:52px 0 12px;padding-top:20px;border-top:1px solid #1f2937}
+h3{color:var(--green);font-size:1.1rem;margin:28px 0 8px}
+.sub{font-family:'Roboto Mono',monospace;color:var(--green);margin:0 0 16px}
+.lead{color:#d1d5db;max-width:68ch}
+.tags{display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:20px 0 0;list-style:none}
+.tags li{background:rgba(0,168,255,.2);color:var(--blue);border-radius:999px;padding:3px 14px;font-size:.85rem}
+.note{border:1px solid var(--line);border-left:4px solid var(--blue);background:var(--card);border-radius:6px;padding:10px 16px;font-size:.95rem;color:var(--mut);margin:24px 0}
+figure{margin:20px 0}
+figure img{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
+figcaption{font-size:.9rem;color:var(--mut);margin-top:8px}
+.table{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;background:var(--card)}
+th,td{border:1px solid #243044;padding:8px 12px;text-align:left;white-space:nowrap}
+th{background:#0f1520;color:var(--blue)}
+.v10{color:var(--blue);font-weight:600}.v100{color:#ff5c7a;font-weight:600}
+pre{background:#05070b;border:1px solid #1f2937;color:#d8e2f0;padding:16px;border-radius:8px;overflow-x:auto;font:.84rem/1.6 'Roboto Mono',monospace}
+code{font-family:'Roboto Mono',monospace;font-size:.9em;color:var(--green)}
+pre code{color:inherit}
+.c{color:#6b7f99}
+.ok{color:var(--green);font-weight:600}.no{color:#ff5c7a;font-weight:600}
+.btn{display:inline-block;padding:10px 22px;background:var(--blue);color:#fff;border-radius:6px;text-decoration:none;margin:8px 12px 0 0}
+.btn:hover{background:var(--green);color:#0a0a0f}
+.btn.alt{background:transparent;border:1px solid var(--line);color:var(--blue)}
+</style>
+</head>
+<body>
+<nav><a href="index.html#portfolio">&larr; Back to projects</a></nav>
+<main>
+<h1>Inter-VLAN Routing with <span>Router-on-a-Stick</span></h1>
+<p class="sub">Cisco Packet Tracer lab</p>
+<p class="lead">I configured three switches and a router from scratch in Cisco Packet Tracer: two separate VLANs for students and staff, connected by a router that uses a single physical interface split into subinterfaces.</p>
+<ul class="tags"><li>Cisco IOS</li><li>VLANs</li><li>802.1Q trunking</li><li>Router-on-a-stick</li><li>/25 subnetting</li><li>Packet Tracer</li></ul>
+
+<h2>Goal</h2>
+<p>Separate the traffic of two user groups with VLANs, then allow the groups to communicate in a way controlled by the router. The project has two parts: first Layer 2 isolation, then routing between the VLANs.</p>
+
+<h2>What I did</h2>
+<p>The topology (devices, cabling and PC IP addresses) was already provided in the starting file. The switches and the router had no configuration: I wrote all the commands on SW1, SW2, SW3 and R1 myself, verified the result with pings and <code>show</code> commands, and corrected the ports that did not match the real connections in the lab description.</p>
+<div class="note">Starting lab: "Inter-VLAN Routing Lab (Router-on-a-Stick)" by Dylan Doyle, thelineman.ca.</div>
+
+<h2>Topology</h2>
+<figure>
+<!-- REPLACE: topology screenshot (put your file in images/) -->
+<img src="images/inter-vlan-topology.png" alt="Packet Tracer topology: R1 connected to SW3, which connects to SW1 and SW2; PC1, PC2, PC5, PC6 in VLAN 10 and PC3, PC4 in VLAN 100">
+<figcaption>R1 (ISR 4321) connects to SW3 via G0/0/0 – F0/1. SW3 reaches SW1 and SW2 over G0/1 and G0/2. SW1 and SW2 are also linked directly on F0/1, so STP handles the resulting loop.</figcaption>
+</figure>
+<h3>Links</h3>
+<div class="table"><table>
+<tr><th>From</th><th>To</th><th>Type</th></tr>
+<tr><td>R1 G0/0/0</td><td>SW3 F0/1</td><td>Trunk</td></tr>
+<tr><td>SW3 G0/1</td><td>SW1 G0/1</td><td>Trunk</td></tr>
+<tr><td>SW3 G0/2</td><td>SW2 G0/2</td><td>Trunk</td></tr>
+<tr><td>SW1 F0/1</td><td>SW2 F0/1</td><td>Trunk</td></tr>
+<tr><td>SW1 F0/2, F0/3, F0/4</td><td>PC1, PC2, PC3</td><td>Access</td></tr>
+<tr><td>SW2 F0/2, F0/3, F0/4</td><td>PC4, PC5, PC6</td><td>Access</td></tr>
+</table></div>
+
+<h2>Addressing plan</h2>
+<div class="table"><table>
+<tr><th>Device</th><th>VLAN</th><th>IP address</th><th>Mask</th><th>Gateway</th></tr>
+<tr><td>PC1, PC2, PC5, PC6</td><td class="v10">10 Students</td><td>192.168.10.1 – .4</td><td>255.255.255.128</td><td>192.168.10.126</td></tr>
+<tr><td>PC3, PC4</td><td class="v100">100 Staff</td><td>192.168.10.130 and .129</td><td>255.255.255.128</td><td>192.168.10.254</td></tr>
+<tr><td>R1 G0/0/0.10</td><td class="v10">10</td><td>192.168.10.126</td><td>255.255.255.128</td><td>-</td></tr>
+<tr><td>R1 G0/0/0.100</td><td class="v100">100</td><td>192.168.10.254</td><td>255.255.255.128</td><td>-</td></tr>
+</table></div>
+<p>The 192.168.10.0/24 network is split into two /25 subnets: students use 192.168.10.0/25 (broadcast .127) and staff use 192.168.10.128/25 (broadcast .255). Each subnet's gateway is its last usable address. VLAN 99 (Native_Unused) is the native VLAN on the trunks and hosts no devices.</p>
+
+<h2>Part 1: VLAN segmentation</h2>
+<h3>Creating the VLANs (on SW1, SW2 and SW3)</h3>
+<pre>vlan 10
+ name Students
+vlan 100
+ name Staff
+vlan 99
+ name Native_Unused</pre>
+<h3>SW1: access ports and trunks</h3>
+<pre>interface range fa0/2 - 3
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+interface fa0/4
+ switchport mode access
+ switchport access vlan 100
+ spanning-tree portfast
+<span class="c">! trunks to SW2 and to SW3</span>
+interface range fa0/1, g0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,100
+ switchport trunk native vlan 99</pre>
+<h3>SW2: access ports and trunks</h3>
+<pre>interface fa0/2
+ switchport mode access
+ switchport access vlan 100
+ spanning-tree portfast
+interface range fa0/3 - 4
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+<span class="c">! trunks to SW1 and to SW3</span>
+interface range fa0/1, g0/2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,100
+ switchport trunk native vlan 99</pre>
+<h3>Expected result of Part 1</h3>
+<p>PC1 &rarr; PC6 <span class="ok">succeeds</span> (same VLAN 10, across the trunk). PC1 &rarr; PC3 <span class="no">fails</span>: without a router, the two VLANs are isolated.</p>
+
+<h2>Part 2: routing between the VLANs</h2>
+<h3>SW3: trunks to the router and the access switches</h3>
+<pre>interface range fa0/1, g0/1 - 2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,100
+ switchport trunk native vlan 99</pre>
+<h3>R1: dot1q subinterfaces</h3>
+<pre>interface g0/0/0
+ no shutdown
+<span class="c">! no IP address on the physical interface</span>
+interface g0/0/0.10
+ encapsulation dot1q 10
+ ip address 192.168.10.126 255.255.255.128
+interface g0/0/0.100
+ encapsulation dot1q 100
+ ip address 192.168.10.254 255.255.255.128</pre>
+<p>On each subinterface, <code>encapsulation dot1q</code> must come before the IP address: the router needs to know which VLAN the subinterface serves before it can be given an address.</p>
+
+<h2>Verification</h2>
+<pre>show vlan brief
+show interfaces trunk
+show ip interface brief       <span class="c">(on R1)</span>
+show ip route                 <span class="c">(on R1)</span></pre>
+<div class="table"><table>
+<tr><th>Test</th><th>Expected</th><th>Reason</th></tr>
+<tr><td>PC1 &rarr; PC2</td><td class="ok">Succeeds</td><td>Same VLAN, same switch</td></tr>
+<tr><td>PC1 &rarr; PC6</td><td class="ok">Succeeds</td><td>Same VLAN, across the trunk</td></tr>
+<tr><td>PC1 &rarr; PC3</td><td class="ok">Succeeds</td><td>Routed by R1 between VLAN 10 and 100</td></tr>
+<tr><td>PC6 &rarr; PC4</td><td class="ok">Succeeds</td><td>Routed by R1</td></tr>
+<tr><td>PC3 &rarr; PC4</td><td class="ok">Succeeds</td><td>Same VLAN 100, across the trunk</td></tr>
+</table></div>
+<figure>
+<!-- REPLACE: ping PC1 -> PC3 screenshot -->
+<img src="https://placehold.co/900x380/15151f/00a8ff?text=Ping+PC1+to+PC3+screenshot" alt="Successful ping from PC1 to PC3">
+<figcaption>PC1 (VLAN 10) reaching PC3 (VLAN 100) through R1.</figcaption>
+</figure>
+<figure>
+<!-- REPLACE: show vlan brief + show interfaces trunk screenshot -->
+<img src="https://placehold.co/900x380/15151f/00ff9d?text=show+vlan+brief+and+show+interfaces+trunk" alt="Output of show vlan brief and show interfaces trunk">
+<figcaption>VLAN table and trunk status on the switches.</figcaption>
+</figure>
+
+<h2>Skills used</h2>
+<p>VLAN and 802.1Q trunk design, a dedicated native VLAN, portfast on access ports, router subinterfaces for inter-VLAN routing, /25 subnet calculation, and troubleshooting with <code>show</code> commands and ping.</p>
+<!-- REPLACE: path to your .pkt file, or delete the first button -->
+<a class="btn" href="files/inter-vlan-lab.pkt" download>Download Packet Tracer file</a>
+<a class="btn alt" href="index.html#portfolio">Back to projects</a>
+</main>
+</body>
+</html>
