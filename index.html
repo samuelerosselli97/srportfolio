@@ -904,6 +904,31 @@ nav .container {
                         </div>
                     </div>
                 </div>
+                <!-- Project: Inter-VLAN Routing Lab -->
+<div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('interVlanLab')">
+    <div class="h-48 bg-gradient-to-br from-cyber-blue/30 to-cyber-green/30 flex items-center justify-center">
+        <i data-feather="share-2" class="text-cyber-blue" style="width: 64px; height: 64px;"></i>
+    </div>
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xl font-semibold text-cyber-blue">Inter-VLAN Routing Lab</h3>
+            <span class="project-badge">
+                <i data-feather="file-text" style="width: 14px; height: 14px;"></i>
+                Project
+            </span>
+        </div>
+        <p class="text-gray-400 mb-4">Packet Tracer lab with Students and Staff VLANs, 802.1Q trunks and a router-on-a-stick for inter-VLAN routing.</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">VLANs</span>
+            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Cisco IOS</span>
+            <span class="px-3 py-1 bg-cyber-blue/20 text-cyber-blue rounded-full text-sm">Routing</span>
+        </div>
+        <div class="text-cyber-blue hover:text-cyber-green flex items-center">
+            <span>Click to view details</span>
+            <i data-feather="arrow-right" class="ml-2"></i>
+        </div>
+    </div>
+</div>
                 
                 <!-- Project 3: Trading System -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('tradingSystem')">
@@ -1508,7 +1533,7 @@ nav .container {
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-6 md:mb-0">
-                    <p class="text-gray-400">&copy; 2023 Samuele Rosselli. All rights reserved.</p>
+                    <p class="text-gray-400">&copy; 2026 Samuele Rosselli. All rights reserved.</p>
                 </div>
                 
                 <div class="flex space-x-6">
@@ -1562,6 +1587,21 @@ nav .container {
                     'Security monitoring and compliance'
                 ]
             },
+            interVlanLab: {
+    title: 'Inter-VLAN Routing with Router-on-a-Stick',
+    description: 'Packet Tracer lab in which I configured three switches and a router from scratch: Students (VLAN 10) and Staff (VLAN 100) separated with VLANs, 802.1Q trunks between the switches, and a router-on-a-stick providing inter-VLAN routing. The topology and PC addressing came with the lab file; all the device configuration is my own work.',
+    link: 'inter-vlan-lab.html',
+    linkText: 'View Full Project',
+    color: 'cyber-blue',
+    type: 'html',
+    highlights: [
+        'VLAN 10 (Students) and VLAN 100 (Staff) on three switches',
+        '802.1Q trunks with a dedicated native VLAN 99',
+        'Router subinterfaces with dot1q encapsulation',
+        '/25 subnetting with last-usable-address gateways',
+        'Verification with ping and show commands'
+    ]
+},
             tradingSystem: {
                 title: 'Automated Trading System - XAUUSD',
                 description: 'Development of an automated trading system for XAUUSD (Gold) with Telegram signal parsing and cTrader platform integration. This system demonstrates real-time signal processing, automated order execution, and risk management strategies.',
