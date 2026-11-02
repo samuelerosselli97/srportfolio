@@ -52,8 +52,8 @@ pre code{color:inherit}
 <p>Separate the traffic of two user groups with VLANs, then allow the groups to communicate in a way controlled by the router. The project has two parts: first Layer 2 isolation, then routing between the VLANs.</p>
 
 <h2>What I did</h2>
-<p>The topology (devices, cabling and PC IP addresses) was already provided in the starting file. The switches and the router had no configuration: I wrote all the commands on SW1, SW2, SW3 and R1 myself, verified the result with pings and <code>show</code> commands, and corrected the ports that did not match the real connections in the lab description.</p>
-<div class="note">Starting lab: "Inter-VLAN Routing Lab (Router-on-a-Stick)" by Dylan Doyle, thelineman.ca.</div>
+<p>The topology (devices, cabling and PC IP addresses) was already provided in the starting file. The switches and the router had no configuration: I wrote all the commands on SW1, SW2, SW3 and R1 myself, verified the result with pings and <code>show</code> commands.</p>
+
 
 <h2>Topology</h2>
 <figure>
@@ -159,14 +159,17 @@ show ip route                 <span class="c">(on R1)</span></pre>
 </figure>
 <figure>
 <!-- REPLACE: show vlan brief + show interfaces trunk screenshot -->
-<img src="https://placehold.co/900x380/15151f/00ff9d?text=show+vlan+brief+and+show+interfaces+trunk" alt="Output of show vlan brief and show interfaces trunk">
-<figcaption>VLAN table and trunk status on the switches.</figcaption>
+<img src="images/show vlan brief.png" alt="Output of show vlan brief">
+<figcaption>VLAN table.</figcaption>
+</figure>
+ <!-- REPLACE: show vlan brief + show interfaces trunk screenshot -->
+<img src="images/show interfaces trunk.png" alt="Show interfaces trunk">
+<figcaption>Trunk status on the switches.</figcaption>
 </figure>
 
 <h2>Skills used</h2>
 <p>VLAN and 802.1Q trunk design, a dedicated native VLAN, portfast on access ports, router subinterfaces for inter-VLAN routing, /25 subnet calculation, and troubleshooting with <code>show</code> commands and ping.</p>
 <!-- REPLACE: path to your .pkt file, or delete the first button -->
-<a class="btn" href="files/inter-vlan-lab.pkt" download>Download Packet Tracer file</a>
 <a class="btn alt" href="index.html#portfolio">Back to projects</a>
 </main>
 </body>
