@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA Mega Lab — Traffic Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #050608;
+  --bg2:   #080a10;
+  --bg3:   #0c1018;
+  --grid:  rgba(255,255,255,.02);
+  --cyan:  #00f0ff;
+  --green: #00ff9d;
+  --amber: #ffaa00;
+  --red:   #ff3a5c;
+  --blue:  #3a7fff;
+  --purple:#b06fff;
+  --text:  #d0e4f0;
+  --dim:   #2a3a50;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{height:100dvh}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  display:flex;flex-direction:column;
+  background-image:
+    linear-gradient(rgba(0,240,255,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,.02) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+
+/* ── TOP BAR ── */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:52px;
+  border-bottom:1px solid rgba(0,240,255,.1);
+  background:rgba(5,6,8,.9);
+  backdrop-filter:blur(8px);
+  flex-shrink:0;
+}
+.logo{
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
+  letter-spacing:3px;color:#fff;text-transform:uppercase;
+}
+.logo span{color:var(--cyan)}
+.status{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;letter-spacing:2px;color:var(--dim);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,157,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(0,255,157,0)}}
+
+/* ── SCENARIO SELECTOR ── */
+#selector{
+  display:flex;gap:0;
+  padding:12px 24px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  flex-shrink:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+#selector::-webkit-scrollbar{display:none}
+.sc-btn{
+  padding:8px 16px;
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;
+  background:none;border:1px solid rgba(255,255,255,.06);
+  color:var(--dim);cursor:pointer;white-space:nowrap;
+  transition:all .2s;
+  margin-right:-1px;
+}
+.sc-btn:first-child{border-radius:4px 0 0 4px}
+.sc-btn:last-child{border-radius:0 4px 4px 0;margin-right:0}
+.sc-btn:hover{background:rgba(0,240,255,.05);color:var(--text);border-color:rgba(0,240,255,.2)}
+.sc-btn.active{
+  background:rgba(0,240,255,.08);
+  color:var(--cyan);
+  border-color:rgba(0,240,255,.4);
+  z-index:1;
+}
+
+/* ── MAIN AREA ── */
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ── CANVAS ── */
+#canvas-wrap{flex:1;position:relative;overflow:hidden}
+canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+
+/* ── INFO PANEL ── */
+#info{
+  width:280px;flex-shrink:0;
+  border-left:1px solid rgba(255,255,255,.05);
+  background:var(--bg2);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+#info-title{
+  padding:16px 20px 12px;
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:3px;color:var(--dim);text-transform:uppercase;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  flex-shrink:0;
+}
+#info-scroll{flex:1;overflow-y:auto;padding:16px 20px 20px;-webkit-overflow-scrolling:touch}
+#info-scroll::-webkit-scrollbar{width:3px}
+#info-scroll::-webkit-scrollbar-thumb{background:rgba(0,240,255,.2);border-radius:2px}
+
+.flow-name{
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:800;
+  color:#fff;margin-bottom:4px;line-height:1.2;
+}
+.flow-desc{font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:16px}
+
+.step-list{display:flex;flex-direction:column;gap:0}
+.step{
+  display:flex;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.03);
+  position:relative;
+}
+.step:last-child{border:none}
+.step-num{
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;flex-shrink:0;
+  background:rgba(0,240,255,.1);color:var(--cyan);
+  border:1px solid rgba(0,240,255,.3);
+  margin-top:1px;
+}
+.step-body{}
+.step-node{font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.step-detail{font-size:10px;color:var(--dim);line-height:1.6}
+.step-tech{
+  display:inline-block;margin-top:4px;
+  font-size:9px;padding:2px 7px;border-radius:2px;
+  letter-spacing:1px;
+}
+.tech-cyan{background:rgba(0,240,255,.08);color:var(--cyan);border:1px solid rgba(0,240,255,.2)}
+.tech-green{background:rgba(0,255,157,.08);color:var(--green);border:1px solid rgba(0,255,157,.2)}
+.tech-amber{background:rgba(255,170,0,.08);color:var(--amber);border:1px solid rgba(255,170,0,.2)}
+.tech-red{background:rgba(255,58,92,.08);color:var(--red);border:1px solid rgba(255,58,92,.2)}
+.tech-blue{background:rgba(58,127,255,.08);color:var(--blue);border:1px solid rgba(58,127,255,.2)}
+.tech-purple{background:rgba(176,111,255,.08);color:var(--purple);border:1px solid rgba(176,111,255,.2)}
+
+.legend-title{
+  font-size:9px;letter-spacing:2px;color:var(--dim);
+  margin-top:20px;margin-bottom:10px;
+}
+.legend-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:10px;color:var(--dim)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+#info-credit{padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-size:9px;line-height:1.6;color:#3a4a60;flex-shrink:0}
+/* ── MOBILE ── */
+@media(max-width:700px){
+  #info{
+    position:fixed;bottom:0;left:0;right:0;
+    width:100%;height:50vh;height:50dvh;border-left:none;border-top:1px solid rgba(255,255,255,.08);
+    z-index:50;transform:translateY(0);
+  }
+  #canvas-wrap{height:50vh;height:50dvh}
+  .sc-btn{padding:7px 12px;font-size:9px}
+  header{padding:0 14px;height:44px}
+  .logo{font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><a href="../ccna-mega-lab.html" style="color:#3a4a60;text-decoration:none;font-size:10px;letter-spacing:1px;margin-right:14px">← PROJECT</a>CCNA <span>MEGA LAB</span> — TRAFFIC FLOW</div>
+  <div class="status"><div class="dot"></div>ANIMATED WALKTHROUGH</div>
+</header>
+
+<div id="selector"></div>
+
+<div id="main">
+  <div id="canvas-wrap">
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="main-canvas"></canvas>
+  </div>
+  <div id="info">
+    <div id="info-title">Scenario Details</div>
+    <div id="info-scroll">
+      <div id="info-content"></div>
+    </div>
+    <div id="info-credit">Educational animation built from the lab configurations, not a simulation of real packets. Lab: Jeremy's IT Lab · configurations and analysis: S. Rosselli.</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// NETWORK TOPOLOGY NODES
+// ═══════════════════════════════════════════════════════════════════
+const COLORS = {
+  cyan:'#00f0ff', green:'#00ff9d', amber:'#ffaa00',
+  red:'#ff3a5c', blue:'#3a7fff', purple:'#b06fff',
+  dim:'#1a2a3a', text:'#d0e4f0'
+};
+
+// Node definitions — positions are % of canvas (0-1)
+const NODES = {
+  internet: { label:'INTERNET',  sub:'ISP-A/B',         x:.50, y:.04, color:COLORS.red,    shape:'cloud',  r:22 },
+  r1:       { label:'R1',        sub:'ISR2900 · .76/32', x:.50, y:.14, color:COLORS.cyan,   shape:'router', r:18 },
+  csw1:     { label:'CSW1',      sub:'.77/32',           x:.32, y:.26, color:COLORS.cyan,   shape:'switch', r:16 },
+  csw2:     { label:'CSW2',      sub:'.78/32',           x:.68, y:.26, color:COLORS.cyan,   shape:'switch', r:16 },
+  dswa1:    { label:'DSW-A1',    sub:'HSRP active 1,2',  x:.18, y:.42, color:COLORS.blue,   shape:'switch', r:14 },
+  dswa2:    { label:'DSW-A2',    sub:'HSRP active 3,4',  x:.35, y:.42, color:COLORS.blue,   shape:'switch', r:14 },
+  dswb1:    { label:'DSW-B1',    sub:'HSRP active 1,2',  x:.65, y:.42, color:COLORS.purple, shape:'switch', r:14 },
+  dswb2:    { label:'DSW-B2',    sub:'HSRP active 3,4',  x:.82, y:.42, color:COLORS.purple, shape:'switch', r:14 },
+  aswa1:    { label:'ASW-A1',    sub:'VLAN 99/40',       x:.10, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  aswa2:    { label:'ASW-A2',    sub:'VLAN 10/20',       x:.26, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  aswa3:    { label:'ASW-A3',    sub:'VLAN 10/20',       x:.40, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  aswb1:    { label:'ASW-B1',    sub:'VLAN 99',          x:.58, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  aswb2:    { label:'ASW-B2',    sub:'VLAN 10/20',       x:.72, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  aswb3:    { label:'ASW-B3',    sub:'VLAN 30',          x:.86, y:.60, color:COLORS.dim,    shape:'switch', r:11 },
+  lwap1:    { label:'LWAP1',     sub:'VLAN99 Office A',  x:.05, y:.76, color:COLORS.dim,    shape:'ap',     r:9  },
+  wlc1:     { label:'WLC1',      sub:'10.0.0.7 VLAN99',  x:.16, y:.76, color:COLORS.blue,   shape:'host',   r:10 },
+  pc1:      { label:'PC1',       sub:'10.1.0.x VLAN10',  x:.26, y:.76, color:COLORS.green,  shape:'host',   r:10 },
+  pc2:      { label:'PC2',       sub:'10.1.0.x VLAN10',  x:.40, y:.76, color:COLORS.green,  shape:'host',   r:10 },
+  laptop1:  { label:'Laptop1',   sub:'WiFi VLAN40',      x:.05, y:.91, color:COLORS.green,  shape:'host',   r:9  },
+  lwap2:    { label:'LWAP2',     sub:'VLAN99 Office B',  x:.58, y:.76, color:COLORS.dim,    shape:'ap',     r:9  },
+  pc3:      { label:'PC3',       sub:'10.3.0.x VLAN10',  x:.72, y:.76, color:COLORS.green,  shape:'host',   r:10 },
+  srv1:     { label:'SRV1',      sub:'10.5.0.4 VLAN30',  x:.86, y:.76, color:COLORS.amber,  shape:'server', r:12 },
+  laptop2:  { label:'Laptop2',   sub:'WiFi VLAN40',      x:.58, y:.91, color:COLORS.green,  shape:'host',   r:9  },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// SCENARIOS
+// ═══════════════════════════════════════════════════════════════════
+const SCENARIOS = [
+  {
+    id:'pc1-internet',
+    label:'PC1 → Internet',
+    color:COLORS.cyan,
+    path:['pc1','aswa2','dswa1','csw1','r1','internet'],
+    name:'PC1 browses the Internet',
+    desc:'A packet leaves PC1 (VLAN 10, Office A) and reaches google.com through NAT on R1.',
+    steps:[
+      { node:'PC1', detail:'DHCP: 10.1.0.11/24, GW: 10.1.0.1 (HSRP VIP)\nDNS query for google.com → SRV1', techs:[{t:'VLAN 10',c:'cyan'},{t:'DHCP',c:'green'}] },
+      { node:'ASW-A2', detail:'Frame arriving on F0/1 (Access VLAN 10)\nForwarded on trunk G0/1-2 towards distribution', techs:[{t:'TRUNK',c:'amber'},{t:'802.1Q tag 10',c:'cyan'}] },
+      { node:'DSW-A1', detail:'Active HSRP router for VLAN 10 (GW 10.1.0.1)\nThe VLAN 10 SVI de-encapsulates the frame\nRouting via OSPF → next hop CSW1', techs:[{t:'HSRP active',c:'green'},{t:'OSPF',c:'cyan'},{t:'Inter-VLAN',c:'blue'}] },
+      { node:'CSW1', detail:'Routed port towards R1 (10.0.0.33/30)\nOSPF: default route learned via R1\nForwarded on G1/0/1 → R1', techs:[{t:'OSPF',c:'cyan'},{t:'L3 routing',c:'blue'}] },
+      { node:'R1', detail:'NAT inside source: 10.1.0.11 → 203.0.113.200 (POOL1)\nACL 2 permit 10.1.0.0/24 → overload PAT\nExits on G0/0/0 towards ISP-A', techs:[{t:'PAT overload',c:'amber'},{t:'ACL 2',c:'red'},{t:'default route',c:'cyan'}] },
+      { node:'INTERNET', detail:'Packet arrives with source IP 203.0.113.200\nThe reply returns to R1, which translates it back\nPC1 receives the reply', techs:[{t:'ISP-A primary',c:'green'}] },
+    ]
+  },
+  {
+    id:'pc1-ssh',
+    label:'PC1 → SSH R1',
+    color:COLORS.green,
+    path:['pc1','aswa2','dswa1','csw1','r1'],
+    name:'PC1 opens an SSH session to R1',
+    desc:'Secure remote access from PC1 to R1. ACL 1 permits only the 10.1.0.0/24 subnet.',
+    steps:[
+      { node:'PC1', detail:'Starts SSH: ssh -l cisco 10.0.0.76\nDestination: R1 Loopback0\nSource: 10.1.0.11 (A-PCs subnet)', techs:[{t:'SSH v2',c:'green'},{t:'ACL 1 PERMIT',c:'green'}] },
+      { node:'ASW-A2 → DSW-A1', detail:'Normal forwarding on the VLAN 10 trunk\nDSW-A1 routes towards 10.0.0.76 via OSPF', techs:[{t:'VLAN 10',c:'cyan'},{t:'OSPF route',c:'blue'}] },
+      { node:'CSW1', detail:'OSPF route: 10.0.0.76/32 via the DSW links\nForwarded towards R1 on G1/0/1', techs:[{t:'OSPF',c:'cyan'}] },
+      { node:'R1', detail:'VTY lines: access-class 1 in\nACL 1: permit 10.1.0.0 0.0.0.255 ✔\nRSA 4096 bit — SSHv2 handshake\nLogin local: cisco/ccna', techs:[{t:'SSHv2',c:'green'},{t:'ACL 1 match',c:'green'},{t:'RSA 4096',c:'cyan'}] },
+    ]
+  },
+  {
+    id:'pc3-ssh-blocked',
+    label:'PC3 → SSH blocked',
+    color:COLORS.red,
+    path:['pc3','aswb2','dswb1','csw1','r1'],
+    name:'PC3 → SSH to R1 — BLOCKED',
+    desc:'PC3 is in Office B (VLAN 10, subnet 10.3.0.0/24). ACL 1 denies everything except 10.1.0.0/24.',
+    steps:[
+      { node:'PC3', detail:'Starts SSH: ssh -l cisco 10.0.0.76\nSource: 10.3.0.x (B-PCs subnet)\nNot in the subnet permitted by ACL 1', techs:[{t:'SSH v2',c:'blue'},{t:'ACL 1 DENY',c:'red'}] },
+      { node:'ASW-B2 → DSW-B1', detail:'Normal forwarding on the VLAN 10 trunk\nDSW-B1 routes via OSPF towards R1', techs:[{t:'VLAN 10',c:'cyan'}] },
+      { node:'CSW1 → R1', detail:'Packet reaches R1 on the VTY lines\nACL 1 check: 10.3.0.x\nPermit 10.1.0.0/24 → NO MATCH\nImplicit deny → connection refused', techs:[{t:'ACL 1 implicit deny',c:'red'},{t:'Connection refused',c:'red'}] },
+    ]
+  },
+  {
+    id:'dhcp',
+    label:'DHCP Lease',
+    color:COLORS.amber,
+    path:['pc1','aswa2','dswa1','csw1','r1'],
+    name:'PC1 gets an IP address via DHCP',
+    desc:'DORA process: PC1 obtains an IP address. The relay agent on DSW-A1 forwards the broadcast to R1, which acts as the DHCP server.',
+    steps:[
+      { node:'PC1', detail:'Broadcast DHCP DISCOVER\nSrc: 0.0.0.0 → Dst: 255.255.255.255\nUDP 68 → 67', techs:[{t:'DHCP DISCOVER',c:'amber'},{t:'broadcast',c:'red'}] },
+      { node:'ASW-A2', detail:'Frame arriving on F0/1 (untrusted port, rate limit 15 pps)\nDHCP Snooping: replies are accepted only from the trusted uplinks G0/1-2\nThe broadcast stays in VLAN 10 and goes up the trunk', techs:[{t:'DHCP Snooping',c:'red'},{t:'VLAN 10',c:'cyan'}] },
+      { node:'DSW-A1 — RELAY', detail:'ip helper-address 10.0.0.76 on the VLAN 10 SVI\nTurns the broadcast into a unicast towards R1 Loopback0\ngiaddr = 10.1.0.2 (SVI IP): R1 picks the A-PC pool', techs:[{t:'ip helper-address',c:'amber'},{t:'giaddr',c:'cyan'}] },
+      { node:'CSW1 → R1', detail:'The unicast packet is routed via OSPF all the way to 10.0.0.76\nPool A-PC: 10.1.0.0/24, 10.1.0.1-10 excluded\nOFFER: 10.1.0.11 · GW 10.1.0.1 · DNS 10.5.0.4', techs:[{t:'DHCP OFFER',c:'amber'},{t:'pool A-PC',c:'green'}] },
+      { node:'PC1', detail:'DHCP REQUEST → DHCP ACK\nIP assigned: 10.1.0.11/24\nGW 10.1.0.1 (HSRP VIP) · DNS 10.5.0.4', techs:[{t:'DHCP ACK',c:'green'},{t:'lease OK',c:'green'}] },
+    ]
+  },
+  {
+    id:'ospf',
+    label:'OSPF Route',
+    color:COLORS.blue,
+    path:['r1','csw1','dswa1','csw2','dswb1'],
+    name:'OSPF route propagation',
+    desc:'R1, as ASBR, injects the default route into OSPF Area 0. All routers learn the path to the Internet.',
+    steps:[
+      { node:'R1 — ASBR', detail:'default-information originate\nInjects 0.0.0.0/0 as an LSA Type 5\nRouter-ID: 10.0.0.76\nOSPF Process 1 · Area 0', techs:[{t:'OSPF ASBR',c:'blue'},{t:'LSA Type 5',c:'cyan'},{t:'Area 0',c:'blue'}] },
+      { node:'CSW1', detail:'Receives the LSA from R1 (G1/0/1 P2P link)\nInstalls: 0.0.0.0/0 via 10.0.0.33 (R1)\nAdvertises it to DSW-A1/A2 on G1/1/1-2\nRouter-ID: 10.0.0.77', techs:[{t:'LSA flood',c:'blue'},{t:'LSDB update',c:'cyan'}] },
+      { node:'DSW-A1', detail:'OSPF adjacency over the VLAN 99 SVI with DSW-A2\nReceives the default route from CSW1 and CSW2\nInstalls: 0.0.0.0/0 (ECMP, two paths)\nPassive: VLAN 10, 20, 40', techs:[{t:'ECMP',c:'green'},{t:'passive SVI',c:'amber'}] },
+      { node:'CSW2', detail:'Same process on the right-hand side\nP2P adjacency with R1 (G1/0/1)\nAdjacency with DSW-B1/B2\nRouter-ID: 10.0.0.78', techs:[{t:'OSPF neighbor',c:'blue'}] },
+      { node:'DSW-B1', detail:'Receives the default route via CSW1 and CSW2\nECMP installed in the routing table\nshow ip route → O*E2 0.0.0.0/0\nRouter-ID: 10.0.0.81', techs:[{t:'O*E2 route',c:'blue'},{t:'ECMP',c:'green'}] },
+    ]
+  },
+  {
+    id:'hsrp-failover',
+    label:'HSRP Failover',
+    color:COLORS.purple,
+    path:['pc1','aswa2','dswa2','csw1','r1'],
+    name:'HSRP Failover — DSW-A1 down',
+    desc:'DSW-A1 goes down. DSW-A2 (standby for VLAN 10) becomes active and answers for the VIP. PC1 does not change its gateway.',
+    steps:[
+      { node:'DSW-A1 — DOWN', detail:'Link failure or shutdown\nHSRP Hellos no longer arrive\nThe hold timer (default 10 s) expires on DSW-A2', techs:[{t:'HSRP holdtime',c:'red'},{t:'active lost',c:'red'}] },
+      { node:'DSW-A2 — ELECTION', detail:'DSW-A2 was standby for VLAN 10 (group 2)\nWith no Hellos from DSW-A1 it declares itself active\nPreempt on A1 only matters when A1 comes back online', techs:[{t:'standby → active',c:'purple'},{t:'HSRP Gr.2',c:'purple'}] },
+      { node:'PC1 — UNCHANGED', detail:'VIP 10.1.0.1 and virtual MAC (HSRPv2 group 2: 0000.0C9F.F002) stay unchanged\nThe ARP cache of PC1 does not change\nSwitches relearn the virtual MAC on the new port\nOutage: about 10 s', techs:[{t:'virtual MAC unchanged',c:'green'},{t:'CAM table update',c:'amber'}] },
+      { node:'ASW-A2 → DSW-A2', detail:'DSW-A2 was already the STP secondary root for VLAN 10 (priority 4096)\nRapid PVST+ immediately activates the alternate port towards DSW-A2\nTraffic resumes on that path', techs:[{t:'Rapid PVST+',c:'cyan'},{t:'alternate port',c:'blue'}] },
+      { node:'CSW1 → R1', detail:'OSPF: the adjacency with DSW-A1 drops, the path goes through DSW-A2\nNo changes on CSW1 or R1', techs:[{t:'OSPF reconverge',c:'blue'},{t:'service continues',c:'green'}] },
+    ]
+  },
+  {
+    id:'wireless',
+    label:'WiFi — CAPWAP',
+    color:COLORS.amber,
+    path:['laptop1','lwap1','aswa1','wlc1','aswa1','dswa2'],
+    name:'Laptop1 connects over Wi-Fi',
+    desc:'Laptop1 associates with LWAP1. Traffic is tunnelled via CAPWAP to WLC1, which assigns it to VLAN 40 and puts it back on the network.',
+    steps:[
+      { node:'Laptop1', detail:'Looks for the Wi-Fi SSID\nWPA2-PSK authentication, AES encryption\nAssociation with LWAP1', techs:[{t:'WPA2-PSK',c:'amber'},{t:'AES',c:'cyan'}] },
+      { node:'LWAP1', detail:'Local mode (no FlexConnect): no local switching\nAll client traffic is encapsulated in CAPWAP towards WLC1 (10.0.0.7)\nASW-A1 port F0/1: access VLAN 99', techs:[{t:'CAPWAP tunnel',c:'amber'},{t:'Local mode',c:'blue'}] },
+      { node:'ASW-A1', detail:'The CAPWAP tunnel travels in VLAN 99 (Management)\nWLC1 is on the same switch (F0/2, trunk VLAN 40+99, native 99)\nThe tunnel does not go up to the distribution layer', techs:[{t:'VLAN 99',c:'cyan'},{t:'trunk F0/2',c:'blue'}] },
+      { node:'WLC1', detail:'Decapsulates the client traffic\nAssigns it to VLAN 40 (Wi-Fi dynamic interface, 10.6.0.2/24)\nDHCP: request forwarded to server 10.0.0.76 (R1)\nIn Packet Tracer the client often gets an IP from the Management pool: a known simulator limitation', techs:[{t:'Dynamic Interface',c:'amber'},{t:'VLAN 40',c:'green'}] },
+      { node:'ASW-A1 → DSW-A2', detail:'The frame leaves F0/2 tagged VLAN 40 and goes up the trunks G0/1-2\nDSW-A2 is HSRP active (group 4) for VLAN 40: gateway 10.6.0.1\nFrom here the traffic is routed via OSPF', techs:[{t:'HSRP Gr.4',c:'purple'},{t:'OSPF',c:'blue'}] },
+    ]
+  },
+  {
+    id:'nat-static',
+    label:'Internet → SRV1',
+    color:COLORS.red,
+    path:['internet','r1','csw1','dswb2','aswb3','srv1'],
+    name:'Internet reaches SRV1',
+    desc:'An external host reaches SRV1 through static NAT: public IP 203.0.113.113 → 10.5.0.4.',
+    steps:[
+      { node:'INTERNET', detail:'An external host sends a packet to 203.0.113.113\nISP-A forwards it to R1 (G0/0/0)\nThis is the public address of SRV1 (static NAT)', techs:[{t:'public IP',c:'red'},{t:'203.0.113.113',c:'amber'}] },
+      { node:'R1 — STATIC NAT', detail:'ip nat inside source static 10.5.0.4 203.0.113.113\nDestination rewritten: 203.0.113.113 → 10.5.0.4\nThe packet leaves towards CSW1 or CSW2 according to the OSPF route', techs:[{t:'static NAT',c:'amber'},{t:'dst rewrite',c:'cyan'}] },
+      { node:'CSW1', detail:'OSPF route for 10.5.0.0/24, advertised by both DSW-B1 and DSW-B2 (ECMP)\nIn this example the packet takes G1/1/4 towards DSW-B2', techs:[{t:'OSPF ECMP',c:'blue'}] },
+      { node:'DSW-B2', detail:'VLAN 30 SVI: 10.5.0.3/24 · VIP 10.5.0.1\nIt is HSRP active (group 4) and STP root for VLAN 30: direct L2 path to ASW-B3\nHSRP does not decide the inbound L3 path: it acts as the gateway for the clients', techs:[{t:'HSRP Gr.4 active',c:'purple'},{t:'STP root VLAN 30',c:'cyan'}] },
+      { node:'ASW-B3 → SRV1', detail:'F0/1: access VLAN 30\nSRV1 (10.5.0.4) replies: R1 translates the source to 203.0.113.113\nThe reply goes back out to the Internet', techs:[{t:'VLAN 30',c:'amber'},{t:'NAT reply',c:'green'}] },
+    ]
+  },
+  {
+    id:'vlan-acl',
+    label:'ACL Inter-VLAN',
+    color:COLORS.red,
+    path:['pc1','aswa2','dswa1','csw1','dswb1','aswb2','pc3'],
+    name:'ACL: PC1 pings PC3',
+    desc:'Extended ACL OfficeA_to_OfficeB: only ICMP is allowed between the two PC subnets, everything else is denied.',
+    steps:[
+      { node:'PC1', detail:'ping towards PC3 (10.3.0.x, Office B)\nICMP Echo Request\nSource: 10.1.0.11', techs:[{t:'ICMP',c:'green'},{t:'inter-office',c:'cyan'}] },
+      { node:'DSW-A1 — ACL CHECK', detail:'ACL OfficeA_to_OfficeB applied IN on the VLAN 10 SVI\npermit icmp 10.1.0.0/24 → 10.3.0.0/24: match\nThe packet passes and is routed via OSPF', techs:[{t:'PERMIT icmp',c:'green'},{t:'ACL match',c:'green'}] },
+      { node:'CSW1 → DSW-B1', detail:'OSPF route towards 10.3.0.0/24 via CSW1 or CSW2\nDSW-B1 is HSRP active for VLAN 10 (group 2) and delivers the packet to PC3 through ASW-B2', techs:[{t:'OSPF',c:'blue'},{t:'inter-site',c:'cyan'}] },
+      { node:'PC3 — REPLY', detail:'PC3 replies with an ICMP Echo Reply\nThe ACL is applied only IN on the Office A VLAN 10 SVI: it filters traffic that originates from A\nThe reply enters Office A without going through that filter', techs:[{t:'ACL inbound only',c:'amber'},{t:'ping OK',c:'green'}] },
+      { node:'TCP/UDP BLOCKED', detail:'If PC1 tries TCP (e.g. SSH) towards PC3, deny ip 10.1.0.0/24 → 10.3.0.0/24 triggers\nThe packet is dropped\nFrom A to B only ICMP gets through. Connections started from B towards A are not covered by this ACL', techs:[{t:'DENY ip',c:'red'},{t:'TCP blocked',c:'red'}] },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// CANVAS SETUP
+// ═══════════════════════════════════════════════════════════════════
+const bgCanvas = document.getElementById('bg-canvas');
+const mainCanvas = document.getElementById('main-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+const ctx = mainCanvas.getContext('2d');
+
+let W, H, dpr, scale=1;
+function resize(){
+  const wrap = document.getElementById('canvas-wrap');
+  W = wrap.clientWidth; H = wrap.clientHeight;
+  dpr = window.devicePixelRatio||1;
+  scale = Math.max(.62, Math.min(1, W/900));
+  [bgCanvas,mainCanvas].forEach(c=>{
+    c.width=W*dpr; c.height=H*dpr;
+    c.style.width=W+'px'; c.style.height=H+'px';
+    c.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  });
+  drawBg();
+  if(currentScenario){ particles = []; }
+}
+let rzT; window.addEventListener('resize', ()=>{ clearTimeout(rzT); rzT=setTimeout(resize,150); });
+
+function px(node){ return { x: node.x*W, y: node.y*H } }
+
+// ─── Draw background ─────────────────────────────────────────────
+function drawBg(){
+  bgCtx.clearRect(0,0,W,H);
+
+  // Office zone labels
+  bgCtx.font = '10px "Space Mono"';
+  bgCtx.letterSpacing = '3px';
+
+  // Office A zone
+  bgCtx.fillStyle = 'rgba(0,100,200,.025)';
+  bgCtx.strokeStyle = 'rgba(0,100,200,.06)';
+  bgCtx.lineWidth = 1;
+  rr(bgCtx, W*.02, H*.52, W*.46, H*.45, 8);
+  bgCtx.fill(); bgCtx.stroke();
+  bgCtx.fillStyle = 'rgba(0,100,200,.15)';
+  bgCtx.fillText('OFFICE A', W*.04, H*.56);
+
+  // Office B zone
+  bgCtx.fillStyle = 'rgba(100,0,200,.025)';
+  bgCtx.strokeStyle = 'rgba(100,0,200,.06)';
+  rr(bgCtx, W*.52, H*.52, W*.46, H*.45, 8);
+  bgCtx.fill(); bgCtx.stroke();
+  bgCtx.fillStyle = 'rgba(100,0,200,.15)';
+  bgCtx.fillText('OFFICE B', W*.54, H*.56);
+
+  // Draw all static links (dim)
+  const links = [
+    ['internet','r1'],['r1','csw1'],['r1','csw2'],
+    ['csw1','csw2'],
+    ['csw1','dswa1'],['csw1','dswa2'],['csw2','dswa1'],['csw2','dswa2'],
+    ['csw1','dswb1'],['csw1','dswb2'],['csw2','dswb1'],['csw2','dswb2'],
+    ['dswa1','aswa1'],['dswa1','aswa2'],['dswa1','aswa3'],['dswa2','aswa1'],['dswa2','aswa2'],['dswa2','aswa3'],
+    ['dswb1','aswb1'],['dswb1','aswb2'],['dswb1','aswb3'],['dswb2','aswb1'],['dswb2','aswb2'],['dswb2','aswb3'],
+    ['aswa1','wlc1'],['aswa1','lwap1'],['lwap1','laptop1'],
+    ['aswa2','pc1'],['aswa3','pc2'],
+    ['aswb1','lwap2'],['lwap2','laptop2'],['aswb2','pc3'],['aswb3','srv1'],
+  ];
+  links.forEach(([a,b])=>{
+    const pa=px(NODES[a]), pb=px(NODES[b]);
+    bgCtx.beginPath();
+    bgCtx.moveTo(pa.x,pa.y); bgCtx.lineTo(pb.x,pb.y);
+    bgCtx.strokeStyle='rgba(30,50,80,.5)'; bgCtx.lineWidth=1;
+    bgCtx.setLineDash([]);
+    bgCtx.stroke();
+  });
+
+  // EtherChannel links — DSW-A1↔A2 (PAgP) and DSW-B1↔B2 (LACP) — distinct dashed style
+  const ecLinks = [
+    { a:'dswa1', b:'dswa2', color:'rgba(176,111,255,.55)', label:'PAgP Po1' },
+    { a:'dswb1', b:'dswb2', color:'rgba(176,111,255,.55)', label:'LACP Po1' },
+  ];
+  ecLinks.forEach(({a,b,color,label})=>{
+    const pa=px(NODES[a]), pb=px(NODES[b]);
+    // Offset slightly so the two parallel lines are visible
+    const dx=pb.x-pa.x, dy=pb.y-pa.y;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const ox=(-dy/len)*4, oy=(dx/len)*4;
+
+    // Line 1
+    bgCtx.beginPath();
+    bgCtx.moveTo(pa.x+ox,pa.y+oy); bgCtx.lineTo(pb.x+ox,pb.y+oy);
+    bgCtx.strokeStyle=color; bgCtx.lineWidth=2;
+    bgCtx.setLineDash([6,4]);
+    bgCtx.stroke();
+    // Line 2
+    bgCtx.beginPath();
+    bgCtx.moveTo(pa.x-ox,pa.y-oy); bgCtx.lineTo(pb.x-ox,pb.y-oy);
+    bgCtx.stroke();
+
+    bgCtx.setLineDash([]);
+
+    // Mid-point label
+    const mx=(pa.x+pb.x)/2, my=(pa.y+pb.y)/2;
+    bgCtx.font='8px "Space Mono"';
+    bgCtx.fillStyle='rgba(176,111,255,.5)';
+    bgCtx.textAlign='center';
+    bgCtx.fillText(label, mx, my-8);
+  });
+
+  // Draw all nodes (dim)
+  Object.entries(NODES).forEach(([id,n])=>{
+    const p = px(n);
+    drawNode(bgCtx, p.x, p.y, n.r, n.shape, 'rgba(20,35,55,.9)', 'rgba(40,70,100,.6)', n.label, n.sub, 'rgba(50,80,110,.8)', 'rgba(30,60,90,.5)');
+  });
+}
+
+function rr(c, x, y, w, h, r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r);
+  c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y);
+  c.closePath();
+}
+
+function drawNode(c, x, y, r, shape, fill, stroke, label, sub, lcol, scol){
+  r = r*scale;
+  c.beginPath();
+  if(shape==='cloud'){
+    c.arc(x,y,r*1.2,0,Math.PI*2);
+  } else if(shape==='router'){
+    c.arc(x,y,r,0,Math.PI*2);
+  } else if(shape==='switch'){
+    const s=r*1.3;
+    c.rect(x-s,y-r*.7,s*2,r*1.4);
+  } else if(shape==='server'){
+    const s=r*1.1;
+    c.rect(x-s,y-r,s*2,r*2);
+  } else {
+    c.arc(x,y,r,0,Math.PI*2);
+  }
+  c.fillStyle=fill; c.fill();
+  c.strokeStyle=stroke; c.lineWidth=1.5; c.stroke();
+
+  c.font=`bold ${Math.max(8,r*.8)}px "Syne"`;
+  c.fillStyle=lcol; c.textAlign='center';
+  c.fillText(label,x,y+3);
+  if(sub && r>11 && W>620){
+    c.font=`${Math.max(6,r*.55)}px "Space Mono"`;
+    c.fillStyle=scol;
+    c.fillText(sub,x,y+r+11);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ANIMATION
+// ═══════════════════════════════════════════════════════════════════
+let currentScenario = null;
+let animFrame = null;
+let particles = [];
+let t = 0;
+let activeNodeIdx = 0;
+let nodeTimer = 0;
+
+function rgba(hex,a){
+  const h=hex.replace('#','');
+  const n=parseInt(h.length===3?h.split('').map(c=>c+c).join(''):h,16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${Math.max(0,Math.min(1,a))})`;
+}
+class Particle {
+  constructor(path, color){
+    this.path = path.map(id=>px(NODES[id]));
+    this.color = color;
+    this.seg = 0; this.prog = 0; this.done = false;
+    this.speed = .012 + Math.random()*.006;
+    this.size = 3.5 + Math.random()*1.5;
+    this.alpha = 1;
+    this.trail = [];
+    this.x = this.path[0].x; this.y = this.path[0].y;
+  }
+  update(){
+    if(this.done){ this.alpha -= .06; if(this.trail.length) this.trail.shift(); return; }
+    this.prog += this.speed;
+    if(this.prog >= 1){
+      this.seg++; this.prog = 0;
+      if(this.seg >= this.path.length-1){ this.done = true; return; }
+    }
+    const a = this.path[this.seg], b = this.path[this.seg+1];
+    this.x = a.x + (b.x-a.x)*this.prog;
+    this.y = a.y + (b.y-a.y)*this.prog;
+    this.trail.push({x:this.x,y:this.y});
+    if(this.trail.length>14) this.trail.shift();
+  }
+  draw(c){
+    if(this.alpha<=0) return;
+    for(let i=1;i<this.trail.length;i++){
+      const t0=this.trail[i-1], t1=this.trail[i];
+      c.beginPath(); c.moveTo(t0.x,t0.y); c.lineTo(t1.x,t1.y);
+      c.strokeStyle=rgba(this.color,(i/this.trail.length)*this.alpha*.5);
+      c.lineWidth=this.size*.6*(i/this.trail.length);
+      c.stroke();
+    }
+    if(this.done) return;
+    c.beginPath(); c.arc(this.x,this.y,this.size,0,Math.PI*2);
+    c.fillStyle=rgba(this.color,this.alpha); c.fill();
+    const g=c.createRadialGradient(this.x,this.y,0,this.x,this.y,this.size*2);
+    g.addColorStop(0,rgba(this.color,this.alpha*.4)); g.addColorStop(1,'rgba(0,0,0,0)');
+    c.beginPath(); c.arc(this.x,this.y,this.size*2,0,Math.PI*2); c.fillStyle=g; c.fill();
+  }
+  dead(){ return this.done && this.alpha<=0; }
+}
+
+function startScenario(sc){
+  currentScenario = sc;
+  particles = [];
+  t = 0; activeNodeIdx = 0; nodeTimer = 0;
+  if(animFrame) cancelAnimationFrame(animFrame);
+  animate();
+  renderInfo(sc);
+}
+
+let spawnTimer = 0;
+function animate(){
+  animFrame = requestAnimationFrame(animate);
+  ctx.clearRect(0,0,W,H);
+  t++;
+
+  // Spawn particles
+  spawnTimer++;
+  if(spawnTimer > 18){
+    spawnTimer=0;
+    particles.push(new Particle(currentScenario.path, currentScenario.color));
+  }
+
+  // Node timer
+  nodeTimer++;
+  if(nodeTimer > 90){
+    nodeTimer=0;
+    activeNodeIdx=(activeNodeIdx+1)%(currentScenario.path.length);
+  }
+
+  // Draw active links (glowing)
+  const path = currentScenario.path;
+  for(let i=0;i<path.length-1;i++){
+    const a=px(NODES[path[i]]), b=px(NODES[path[i+1]]);
+    const active=(i===activeNodeIdx||i===activeNodeIdx-1);
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+    if(active){
+      ctx.strokeStyle=currentScenario.color;
+      ctx.lineWidth=2.5;
+      ctx.shadowColor=currentScenario.color;
+      ctx.shadowBlur=12;
+    } else {
+      ctx.strokeStyle='rgba(40,80,120,.7)';
+      ctx.lineWidth=1.5;
+      ctx.shadowBlur=0;
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+
+  // Update & draw particles
+  particles = particles.filter(p=>!p.dead());
+  particles.forEach(p=>{ p.update(); p.draw(ctx); });
+
+  // Draw active nodes
+  path.forEach((id,i)=>{
+    const n=NODES[id], p=px(n);
+    const isActive=(i===activeNodeIdx);
+    const col = isActive ? currentScenario.color : n.color;
+    const glow = isActive ? col : 'transparent';
+    if(isActive){
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,n.r*scale*2.2,0,Math.PI*2);
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,n.r*scale*2.2);
+      g.addColorStop(0,rgba(col,.25));
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g; ctx.fill();
+    }
+    // Pulsing ring
+    if(isActive){
+      const pulse=(Math.sin(t*.08)+1)/2;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,n.r*scale+6+pulse*6,0,Math.PI*2);
+      ctx.strokeStyle=rgba(col,.3+pulse*.4);
+      ctx.lineWidth=1.5; ctx.stroke();
+    }
+    drawNode(ctx,p.x,p.y,n.r,n.shape,
+      isActive?'rgba(5,15,30,.95)':'rgba(8,12,22,.9)',
+      isActive?col:'rgba(40,70,100,.8)',
+      n.label,n.sub,
+      isActive?'#fff':COLORS.text,
+      isActive?col:'rgba(50,80,110,.7)'
+    );
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INFO PANEL
+// ═══════════════════════════════════════════════════════════════════
+function renderInfo(sc){
+  const techHTML = techs => techs.map(t=>`<span class="step-tech tech-${t.c}">${t.t}</span>`).join(' ');
+  const stepsHTML = sc.steps.map((s,i)=>`
+    <div class="step">
+      <div class="step-num">${i+1}</div>
+      <div class="step-body">
+        <div class="step-node">${s.node}</div>
+        <div class="step-detail">${s.detail.replace(/\n/g,'<br>')}</div>
+        <div style="margin-top:5px">${techHTML(s.techs)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const colorClass = {
+    [COLORS.cyan]:'cyan',[COLORS.green]:'green',[COLORS.amber]:'amber',
+    [COLORS.red]:'red',[COLORS.blue]:'blue',[COLORS.purple]:'purple'
+  }[sc.color]||'cyan';
+
+  document.getElementById('info-content').innerHTML = `
+    <div class="flow-name">${sc.name}</div>
+    <div class="flow-desc">${sc.desc}</div>
+    <div class="step-list">${stepsHTML}</div>
+    <div class="legend-title">PATH</div>
+    ${sc.path.map(id=>`
+      <div class="legend-row">
+        <div class="leg-dot" style="background:${NODES[id].color}"></div>
+        <span>${NODES[id].label}</span>
+        <span style="margin-left:auto;color:${COLORS.dim};font-size:9px">${NODES[id].sub}</span>
+      </div>
+    `).join('')}
+  `;
+  document.getElementById('info-scroll').scrollTop=0;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SELECTOR
+// ═══════════════════════════════════════════════════════════════════
+const sel = document.getElementById('selector');
+SCENARIOS.forEach(sc=>{
+  const btn=document.createElement('button');
+  btn.className='sc-btn';
+  btn.textContent=sc.label;
+  btn.style.cssText+=`--c:${sc.color}`;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    startScenario(sc);
+  });
+  sel.appendChild(btn);
+});
+
+// ── INIT ──
+resize();
+// Auto-start first scenario
+setTimeout(()=>{
+  document.querySelector('.sc-btn').classList.add('active');
+  startScenario(SCENARIOS[0]);
+}, 100);
+</script>
+</body>
+</html>

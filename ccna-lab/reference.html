@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA Mega Lab — Samuele Rosselli</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #050810;
+  --bg2:      #090d1a;
+  --bg3:      #0d1525;
+  --panel:    #0a1020;
+  --border:   #1a2840;
+  --cyan:     #00e5ff;
+  --cyan2:    #00b8d4;
+  --green:    #00ff88;
+  --green2:   #00c96e;
+  --amber:    #ffb300;
+  --red:      #ff4444;
+  --blue:     #4488ff;
+  --text:     #c8d8f0;
+  --text2:    #7a9cc0;
+  --text3:    #3a5070;
+  --mono:     'Share Tech Mono', monospace;
+  --head:     'Rajdhani', sans-serif;
+  --body:     'Exo 2', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINES OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,255,.015) 2px, rgba(0,229,255,.015) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 260px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-logo {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+  opacity: .7;
+}
+.sidebar-logo h2 {
+  font-family: var(--head);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+.sidebar-logo .sub {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-family: var(--mono);
+}
+
+.score-bar {
+  margin: 16px 20px;
+  padding: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.score-bar .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.score-bar .pct {
+  font-family: var(--head);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+}
+.score-bar .bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.score-bar .fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--green2), var(--cyan));
+  border-radius: 2px;
+  animation: fillup 2s ease-out both;
+}
+@keyframes fillup { from { width: 0 } to { width: 100% } }
+
+nav { flex: 1; padding: 8px 0; }
+.nav-section { margin-bottom: 4px; }
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text3);
+  padding: 12px 20px 4px;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 20px;
+  cursor: pointer;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+  font-size: 13px;
+  color: var(--text2);
+}
+.nav-item:hover { background: rgba(0,229,255,.05); color: var(--text); }
+.nav-item.active {
+  border-left-color: var(--cyan);
+  background: rgba(0,229,255,.08);
+  color: var(--cyan);
+}
+.nav-item .num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  min-width: 20px;
+}
+.nav-item.active .num { color: var(--cyan2); }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.8;
+}
+.sidebar-footer a {
+  color: var(--cyan2);
+  text-decoration: none;
+}
+
+/* ── MAIN ── */
+#main {
+  margin-left: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+#topbar {
+  position: sticky;
+  top: 0;
+  background: rgba(5,8,16,.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 36px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+.topbar-path {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+.topbar-path span { color: var(--cyan); }
+.topbar-tags { display: flex; gap: 8px; }
+.tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  border: 1px solid;
+}
+.tag-cisco  { color: var(--cyan);  border-color: rgba(0,229,255,.3);  background: rgba(0,229,255,.07); }
+.tag-passed { color: var(--green); border-color: rgba(0,255,136,.3); background: rgba(0,255,136,.07); }
+.tag-cert   { color: var(--amber); border-color: rgba(255,179,0,.3); background: rgba(255,179,0,.07); }
+
+/* ── CONTENT ── */
+#content {
+  padding: 40px 48px 80px;
+  max-width: 1100px;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 200px; height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+  opacity: .8;
+}
+.hero h1 {
+  font-family: var(--head);
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 0%, var(--cyan) 60%, var(--green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 600px;
+  line-height: 1.6;
+}
+.hero-meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.hero-stat { display: flex; flex-direction: column; gap: 4px; }
+.hero-stat .val {
+  font-family: var(--head);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.hero-stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+}
+
+/* ── SECTION ── */
+.section { display: none; animation: fadeIn .3s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px) } to { opacity:1; transform: none } }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 80px; height: 1px;
+  background: var(--cyan);
+}
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  min-width: 32px;
+}
+.section-header h2 {
+  font-family: var(--head);
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .5px;
+}
+.section-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(0,229,255,.3);
+  color: var(--cyan);
+  background: rgba(0,229,255,.07);
+  border-radius: 2px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+h3 {
+  font-family: var(--head);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--cyan2);
+  margin: 28px 0 12px;
+  letter-spacing: .3px;
+}
+h3::before {
+  content: '// ';
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+p { color: var(--text2); margin-bottom: 12px; line-height: 1.7; }
+strong { color: var(--text); }
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: #060c14;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin: 12px 0 20px;
+  overflow: hidden;
+  position: relative;
+}
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.code-block-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+}
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all .15s;
+}
+.copy-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+.code-block pre {
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-block .cm  { color: #4a6a8a; }  /* comment */
+.code-block .kw  { color: var(--cyan); }  /* keyword/command */
+.code-block .st  { color: var(--green2); }  /* string/value */
+.code-block .ip  { color: var(--amber); }  /* IP address */
+.code-block .pu  { color: #8888cc; }  /* punctuation */
+.code-block .pr  { color: #cc88ff; }  /* prompt */
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 24px;
+  font-size: 13px;
+}
+.data-table th {
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 13px;
+  vertical-align: top;
+}
+.data-table tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+.data-table tr:hover td { background: rgba(0,229,255,.04); }
+.data-table .mono { font-family: var(--mono); font-size: 12px; color: var(--amber); }
+.data-table .hi   { color: var(--text); font-weight: 600; }
+.data-table .green { color: var(--green2); font-family: var(--mono); font-size: 11px; }
+.data-table .cyan  { color: var(--cyan); font-family: var(--mono); font-size: 11px; }
+
+/* ── INFO BOX ── */
+.info-box {
+  border-left: 3px solid var(--cyan);
+  background: rgba(0,229,255,.04);
+  padding: 14px 18px;
+  margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 13px;
+  color: var(--text2);
+}
+.info-box.warn { border-color: var(--amber); background: rgba(255,179,0,.04); }
+.info-box.good { border-color: var(--green); background: rgba(0,255,136,.04); }
+.info-box strong { color: var(--cyan); }
+.info-box.warn strong { color: var(--amber); }
+.info-box.good strong { color: var(--green); }
+
+/* ── GRID ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0; }
+.card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: rgba(0,229,255,.3); }
+.card .card-title {
+  font-family: var(--head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.card .card-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+}
+.card .card-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── BADGE PILLS ── */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  border: 1px solid;
+  letter-spacing: 1px;
+}
+.pill-cyan  { color: var(--cyan);  border-color: rgba(0,229,255,.35);  background: rgba(0,229,255,.08); }
+.pill-green { color: var(--green2); border-color: rgba(0,201,110,.35); background: rgba(0,201,110,.08); }
+.pill-amber { color: var(--amber); border-color: rgba(255,179,0,.35);  background: rgba(255,179,0,.08); }
+.pill-blue  { color: var(--blue);  border-color: rgba(68,136,255,.35); background: rgba(68,136,255,.08); }
+.pill-red   { color: var(--red);   border-color: rgba(255,68,68,.35);  background: rgba(255,68,68,.08); }
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+  margin: 28px 0;
+}
+
+/* ── TOPOLOGY SVG AREA ── */
+.topo-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px;
+  margin: 16px 0 24px;
+  overflow-x: auto;
+}
+
+/* ── HSRP GROUP CARDS ── */
+.hsrp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.hsrp-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  border-top: 2px solid var(--cyan);
+}
+.hsrp-card.standby { border-top-color: var(--text3); }
+.hsrp-card .hc-head {
+  font-family: var(--head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.hsrp-card .hc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.hsrp-card .hc-row:last-child { border: none; }
+.hsrp-card .hc-key { color: var(--text3); font-family: var(--mono); }
+.hsrp-card .hc-val { color: var(--amber); font-family: var(--mono); }
+.hsrp-card .hc-val.active { color: var(--green); }
+
+/* ── MOBILE TOGGLE ── */
+#menu-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 200;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); transition: transform .25s; }
+  #sidebar.open { transform: none; }
+  #main { margin-left: 0; }
+  #content { padding: 20px 20px 60px; }
+  #menu-toggle { display: block; }
+  .hero h1 { font-size: 34px; }
+  .hsrp-grid, .grid2, .grid3 { grid-template-columns: 1fr; }
+  #topbar { padding: 0 16px 0 52px; }
+}
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="toggleMenu()">☰ NAV</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="badge">CCNA 200-301</div>
+    <h2>MEGA LAB</h2>
+    <div class="sub">Samuele Rosselli · 2026</div>
+  </div>
+
+  <div class="score-bar">
+    <div class="label">COMPLETION SCORE</div>
+    <div class="pct">100%</div>
+    <div class="bar"><div class="fill"></div></div>
+  </div>
+
+  <nav>
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="show('home')">
+      <span class="num">00</span> Home & Topology
+    </div>
+
+    <div class="nav-section-label">Lab Parts</div>
+    <div class="nav-item" onclick="show('p1')"><span class="num">01</span> Initial Setup</div>
+    <div class="nav-item" onclick="show('p2')"><span class="num">02</span> VLAN & EtherChannel L2</div>
+    <div class="nav-item" onclick="show('p3')"><span class="num">03</span> IP Addressing & HSRP</div>
+    <div class="nav-item" onclick="show('p4')"><span class="num">04</span> Rapid STP</div>
+    <div class="nav-item" onclick="show('p5')"><span class="num">05</span> OSPF & Static Routes</div>
+    <div class="nav-item" onclick="show('p6')"><span class="num">06</span> DHCP / DNS / NTP / SNMP</div>
+    <div class="nav-item" onclick="show('p7')"><span class="num">07</span> FTP / SSH / NAT</div>
+    <div class="nav-item" onclick="show('p8')"><span class="num">08</span> Security Features</div>
+    <div class="nav-item" onclick="show('p9')"><span class="num">09</span> IPv6</div>
+    <div class="nav-item" onclick="show('p10')"><span class="num">10</span> Wireless WLC</div>
+
+    <div class="nav-section-label">Reference</div>
+    <div class="nav-item" onclick="show('skills')"><span class="num">★</span> Skills Map CCNA</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    CompTIA Network+ · Security+<br>
+    CCNA (in corso)<br><br>
+    <a href="../ccna-mega-lab.html">← Project page</a><br><a href="topology.html">→ Topology</a><br><a href="traffic-flow.html">→ Traffic flow</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="topbar">
+    <div class="topbar-path">CCNA-MEGA-LAB / <span id="topbar-section">HOME</span></div>
+    <div class="topbar-tags">
+      <span class="tag tag-cisco">CISCO IOS</span>
+      <span class="tag tag-passed">SCORE 100%</span>
+      <span class="tag tag-cert">CCNA 200-301</span>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- ══ HOME ══════════════════════════════════════════════════ -->
+    <div id="home" class="section active">
+      <div class="hero">
+        <div class="hero-eyebrow">JEREMY'S IT LAB — PACKET TRACER .PKA</div>
+        <h1>CCNA<br>MEGA LAB</h1>
+        <p class="hero-sub">Complete lab covering every configuration topic of the Cisco CCNA 200-301 exam. Enterprise three-tier LAN topology with two offices, a redundant core layer and dual-ISP Internet access.</p>
+        <div class="hero-meta">
+          <div class="hero-stat"><span class="val">10</span><span class="lbl">LAB PARTS</span></div>
+          <div class="hero-stat"><span class="val">13</span><span class="lbl">DEVICES</span></div>
+          <div class="hero-stat"><span class="val">32</span><span class="lbl">SKILLS</span></div>
+          <div class="hero-stat"><span class="val">100%</span><span class="lbl">SCORE</span></div>
+        </div>
+      </div>
+
+      <h3>Network Architecture</h3>
+      <div class="topo-wrap">
+        <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:auto;font-family:'Share Tech Mono',monospace">
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#1a2840"/>
+            </marker>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- ISP Links -->
+          <line x1="450" y1="50" x2="140" y2="90" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+          <line x1="450" y1="50" x2="760" y2="90" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+
+          <!-- ISP Nodes -->
+          <rect x="80" y="70" width="60" height="26" rx="3" fill="#1a0a0a" stroke="#ff4444" stroke-width="1"/>
+          <text x="110" y="87" text-anchor="middle" fill="#ff8888" font-size="9">ISP-A</text>
+          <rect x="700" y="70" width="60" height="26" rx="3" fill="#1a0a0a" stroke="#ff4444" stroke-width="1"/>
+          <text x="730" y="87" text-anchor="middle" fill="#ff8888" font-size="9">ISP-B</text>
+
+          <!-- R1 -->
+          <rect x="400" y="22" width="100" height="36" rx="4" fill="#0a1830" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="450" y="37" text-anchor="middle" fill="#00e5ff" font-size="9">R1</text>
+          <text x="450" y="50" text-anchor="middle" fill="#4a7a9a" font-size="7.5">10.0.0.76/32</text>
+
+          <!-- R1 to CSW links -->
+          <line x1="420" y1="58" x2="260" y2="130" stroke="#00e5ff" stroke-width="1.5" opacity=".7"/>
+          <line x1="480" y1="58" x2="640" y2="130" stroke="#00e5ff" stroke-width="1.5" opacity=".7"/>
+          <text x="310" y="102" fill="#ffb300" font-size="7.5">.33/30</text>
+          <text x="580" y="102" fill="#ffb300" font-size="7.5">.37/30</text>
+
+          <!-- CSW1 -->
+          <rect x="200" y="118" width="120" height="36" rx="4" fill="#0a1830" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="260" y="133" text-anchor="middle" fill="#00e5ff" font-size="9">CSW1</text>
+          <text x="260" y="146" text-anchor="middle" fill="#4a7a9a" font-size="7.5">10.0.0.77/32</text>
+
+          <!-- CSW2 -->
+          <rect x="580" y="118" width="120" height="36" rx="4" fill="#0a1830" stroke="#00e5ff" stroke-width="1.5"/>
+          <text x="640" y="133" text-anchor="middle" fill="#00e5ff" font-size="9">CSW2</text>
+          <text x="640" y="146" text-anchor="middle" fill="#4a7a9a" font-size="7.5">10.0.0.78/32</text>
+
+          <!-- CSW1-CSW2 L3 EtherChannel -->
+          <line x1="320" y1="136" x2="580" y2="136" stroke="#8888cc" stroke-width="2" stroke-dasharray="6,3" opacity=".8"/>
+          <text x="450" y="130" text-anchor="middle" fill="#8888cc" font-size="7.5">L3 EtherChannel .40/30</text>
+
+          <!-- Office A box -->
+          <rect x="20" y="185" width="380" height="225" rx="6" fill="rgba(0,229,255,.03)" stroke="#1a3050" stroke-width="1"/>
+          <text x="30" y="200" fill="#1a3050" font-size="9">OFFICE A</text>
+
+          <!-- Office B box -->
+          <rect x="500" y="185" width="380" height="225" rx="6" fill="rgba(0,229,255,.03)" stroke="#1a3050" stroke-width="1"/>
+          <text x="510" y="200" fill="#1a3050" font-size="9">OFFICE B</text>
+
+          <!-- CSW to DSW links -->
+          <line x1="230" y1="154" x2="130" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="255" y1="154" x2="210" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="290" y1="154" x2="340" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="315" y1="154" x2="420" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+
+          <line x1="600" y1="154" x2="560" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="625" y1="154" x2="640" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="660" y1="154" x2="720" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+          <line x1="685" y1="154" x2="800" y2="215" stroke="#2a4a6a" stroke-width="1.5"/>
+
+          <!-- DSW-A1 -->
+          <rect x="80" y="205" width="100" height="30" rx="3" fill="#0d1520" stroke="#00b8d4" stroke-width="1"/>
+          <text x="130" y="217" text-anchor="middle" fill="#00b8d4" font-size="8">DSW-A1</text>
+          <text x="130" y="228" text-anchor="middle" fill="#3a5a7a" font-size="7">active gr.1,2</text>
+
+          <!-- DSW-A2 -->
+          <rect x="295" y="205" width="100" height="30" rx="3" fill="#0d1520" stroke="#00b8d4" stroke-width="1"/>
+          <text x="345" y="217" text-anchor="middle" fill="#00b8d4" font-size="8">DSW-A2</text>
+          <text x="345" y="228" text-anchor="middle" fill="#3a5a7a" font-size="7">active gr.3,4</text>
+
+          <!-- DSW EtherChannel A -->
+          <line x1="180" y1="220" x2="295" y2="220" stroke="#8888cc" stroke-width="1.5" stroke-dasharray="4,2" opacity=".6"/>
+          <text x="237" y="215" text-anchor="middle" fill="#8888cc" font-size="7">PAgP</text>
+
+          <!-- DSW-B1 -->
+          <rect x="510" y="205" width="100" height="30" rx="3" fill="#0d1520" stroke="#00b8d4" stroke-width="1"/>
+          <text x="560" y="217" text-anchor="middle" fill="#00b8d4" font-size="8">DSW-B1</text>
+          <text x="560" y="228" text-anchor="middle" fill="#3a5a7a" font-size="7">active gr.1,2</text>
+
+          <!-- DSW-B2 -->
+          <rect x="750" y="205" width="100" height="30" rx="3" fill="#0d1520" stroke="#00b8d4" stroke-width="1"/>
+          <text x="800" y="217" text-anchor="middle" fill="#00b8d4" font-size="8">DSW-B2</text>
+          <text x="800" y="228" text-anchor="middle" fill="#3a5a7a" font-size="7">active gr.3,4</text>
+
+          <!-- DSW EtherChannel B -->
+          <line x1="610" y1="220" x2="750" y2="220" stroke="#8888cc" stroke-width="1.5" stroke-dasharray="4,2" opacity=".6"/>
+          <text x="680" y="215" text-anchor="middle" fill="#8888cc" font-size="7">LACP</text>
+
+          <!-- ASW nodes A -->
+          <rect x="40" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="75" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-A1</text>
+          <rect x="120" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="155" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-A2</text>
+          <rect x="200" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="235" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-A3</text>
+
+          <!-- DSW-A1/2 to ASW-A links -->
+          <line x1="100" y1="235" x2="75" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="120" y1="235" x2="155" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="140" y1="235" x2="235" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="315" y1="235" x2="75" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+          <line x1="330" y1="235" x2="155" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+          <line x1="345" y1="235" x2="235" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+
+          <!-- End hosts A -->
+          <text x="45" y="346" fill="#2a5a4a" font-size="7.5">LWAP1</text>
+          <text x="45" y="358" fill="#2a5a4a" font-size="7.5">WLC1</text>
+          <text x="125" y="346" fill="#2a5a4a" font-size="7.5">PC1+Ph1</text>
+          <text x="205" y="346" fill="#2a5a4a" font-size="7.5">PC2+Ph2</text>
+          <text x="45" y="376" fill="#1a3a2a" font-size="7">VLAN 99</text>
+          <text x="125" y="376" fill="#1a3a2a" font-size="7">VLAN 10+20</text>
+          <text x="205" y="376" fill="#1a3a2a" font-size="7">VLAN 10+20</text>
+
+          <!-- ASW nodes B -->
+          <rect x="520" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="555" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-B1</text>
+          <rect x="600" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="635" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-B2</text>
+          <rect x="680" y="295" width="70" height="26" rx="3" fill="#060d18" stroke="#1a3040" stroke-width="1"/>
+          <text x="715" y="311" text-anchor="middle" fill="#4a7a8a" font-size="7.5">ASW-B3</text>
+
+          <!-- DSW-B to ASW-B links -->
+          <line x1="540" y1="235" x2="555" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="560" y1="235" x2="635" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="580" y1="235" x2="715" y2="295" stroke="#1a3040" stroke-width="1.5"/>
+          <line x1="770" y1="235" x2="555" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+          <line x1="790" y1="235" x2="635" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+          <line x1="810" y1="235" x2="715" y2="295" stroke="#1a3040" stroke-width="1" opacity=".5"/>
+
+          <!-- End hosts B -->
+          <text x="525" y="346" fill="#2a5a4a" font-size="7.5">LWAP2</text>
+          <text x="605" y="346" fill="#2a5a4a" font-size="7.5">PC3+Ph3</text>
+          <text x="685" y="346" fill="#2a5a4a" font-size="7.5">SRV1</text>
+          <text x="525" y="376" fill="#1a3a2a" font-size="7">VLAN 99</text>
+          <text x="605" y="376" fill="#1a3a2a" font-size="7">VLAN 10+20</text>
+          <text x="685" y="376" fill="#1a3a2a" font-size="7">VLAN 30</text>
+        </svg>
+      </div>
+
+      <h3>Configured Devices</h3>
+      <div class="grid3">
+        <div class="card"><div class="card-title">Router</div><div class="card-val">R1</div><div class="card-sub">ISR 2900 — IOS 15.5</div></div>
+        <div class="card"><div class="card-title">Core Switch</div><div class="card-val">CSW1, CSW2</div><div class="card-sub">Catalyst 3650 — L3</div></div>
+        <div class="card"><div class="card-title">Distribution</div><div class="card-val">DSW-A1/A2, DSW-B1/B2</div><div class="card-sub">Catalyst 3650 — L3</div></div>
+        <div class="card"><div class="card-title">Access Switch</div><div class="card-val">ASW-A1÷A3, ASW-B1÷B3</div><div class="card-sub">Catalyst 2960 — L2</div></div>
+        <div class="card"><div class="card-title">Server</div><div class="card-val">SRV1</div><div class="card-sub">DNS · FTP · Syslog · SNMP</div></div>
+        <div class="card"><div class="card-title">Wireless</div><div class="card-val">WLC1, LWAP1, LWAP2</div><div class="card-sub">WPA2-PSK/AES — CAPWAP</div></div>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 1 ══════════════════════════════════════════════ -->
+    <div id="p1" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 01</span>
+        <h2>Initial Setup</h2>
+        <span class="section-badge">13 DEVICES</span>
+      </div>
+
+      <h3>Hostname</h3>
+      <p>Configured on all 13 devices. Saving is mandatory: the automatic grading evaluates the <strong>startup-config</strong>, not the running-config.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">HOSTNAME CONFIG</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">R1></span> <span class="kw">enable</span>
+<span class="pr">R1#</span> <span class="kw">conf t</span>
+<span class="pr">R1(config)#</span> <span class="kw">hostname</span> <span class="st">R1</span>
+<span class="pr">R1(config)#</span> <span class="kw">do write</span>    <span class="cm">! = write memory = copy running-config startup-config</span></pre>
+      </div>
+
+      <h3>Enable Secret — Differentiated Hashing</h3>
+      <table class="data-table">
+        <tr><th>Devices</th><th>Hash Type</th><th>Command</th></tr>
+        <tr><td>R1, ASW-A1÷A3, ASW-B1÷B3</td><td class="mono">Type 5 (MD5)</td><td class="mono">enable secret jeremysitlab</td></tr>
+        <tr><td>CSW1/2, DSW-A1/2, DSW-B1/2</td><td class="mono">Type 9 (scrypt)</td><td class="mono">enable algorithm-type scrypt secret jeremysitlab</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">ENABLE SECRET + USER + CONSOLE</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! R1 and access switches (Type 5 MD5):</span>
+<span class="pr">(config)#</span> <span class="kw">enable secret</span> <span class="st">jeremysitlab</span>
+<span class="pr">(config)#</span> <span class="kw">username</span> <span class="st">cisco</span> <span class="kw">secret</span> <span class="st">ccna</span>
+
+<span class="cm">! Core and distribution switches (Type 9 scrypt):</span>
+<span class="pr">(config)#</span> <span class="kw">enable algorithm-type scrypt secret</span> <span class="st">jeremysitlab</span>
+<span class="pr">(config)#</span> <span class="kw">username</span> <span class="st">cisco</span> <span class="kw">algorithm-type scrypt secret</span> <span class="st">ccna</span>
+
+<span class="cm">! Check the hashing type:</span>
+<span class="pr">#</span> <span class="kw">show run | include secret</span>
+<span class="cm">! $1$ = Type 5 MD5  |  $9$ = Type 9 scrypt</span></pre>
+      </div>
+
+      <h3>Console Line</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">LINE CONSOLE 0</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">(config)#</span> <span class="kw">line console</span> <span class="st">0</span>
+<span class="pr">(config-line)#</span> <span class="kw">login local</span>           <span class="cm">! authentication with a local account</span>
+<span class="pr">(config-line)#</span> <span class="kw">exec-timeout</span> <span class="st">30</span>       <span class="cm">! logout after 30 min of inactivity</span>
+<span class="pr">(config-line)#</span> <span class="kw">logging synchronous</span>   <span class="cm">! stops log messages from interrupting typing</span>
+<span class="pr">(config-line)#</span> <span class="kw">exit</span>
+<span class="pr">(config)#</span> <span class="kw">do write</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 2 ══════════════════════════════════════════════ -->
+    <div id="p2" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 02</span>
+        <h2>VLAN & EtherChannel L2</h2>
+        <span class="section-badge">LAYER 2</span>
+      </div>
+
+      <h3>EtherChannel Layer-2</h3>
+      <div class="grid2">
+        <div class="card"><div class="card-title">Office A — DSW-A1 ↔ DSW-A2</div><div class="card-val">PAgP Desirable</div><div class="card-sub">Cisco-proprietary · PortChannel1 · G1/0/4-5</div></div>
+        <div class="card"><div class="card-title">Office B — DSW-B1 ↔ DSW-B2</div><div class="card-val">LACP Active</div><div class="card-sub">IEEE 802.3ad · PortChannel1 · G1/0/4-5</div></div>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">ETHERCHANNEL L2</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Office A — PAgP (Cisco) — both sides desirable:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/4-5</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">channel-group</span> <span class="st">1</span> <span class="kw">mode desirable</span>
+
+<span class="cm">! Office B — LACP (IEEE) — both sides active:</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/4-5</span>
+<span class="pr">DSW-B1(config-if-range)#</span> <span class="kw">channel-group</span> <span class="st">1</span> <span class="kw">mode active</span>
+
+<span class="cm">! Verify: SU = Layer 2 + in use | P = bundled in the channel</span>
+<span class="pr">#</span> <span class="kw">show etherchannel summary</span></pre>
+      </div>
+
+      <h3>Trunk Configuration</h3>
+      <div class="info-box warn"><strong>Security:</strong> Native VLAN set to VLAN 1000 (unused) on all trunks to prevent VLAN hopping attacks. DTP explicitly disabled with nonegotiate.</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">TRUNK — DISTRIBUTION SWITCH (Office A)</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Links to the access switches (G1/0/1-3) + PortChannel1:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/1-3</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">switchport mode trunk</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">switchport nonegotiate</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">switchport trunk native vlan</span> <span class="st">1000</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">switchport trunk allowed vlan</span> <span class="st">10,20,40,99</span>
+
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface port-channel1</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">switchport mode trunk</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">switchport nonegotiate</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">switchport trunk native vlan</span> <span class="st">1000</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">switchport trunk allowed vlan</span> <span class="st">10,20,40,99</span>
+
+<span class="cm">! Office B: allowed vlan 10,20,30,99  (VLAN 30 Servers instead of 40 Wi-Fi)</span>
+<span class="cm">! Access switch (G0/1-2 = uplink):</span>
+<span class="pr">ASW-A1(config)#</span> <span class="kw">interface range</span> <span class="st">g0/1-2</span>
+<span class="pr">ASW-A1(config-if-range)#</span> <span class="kw">switchport mode trunk</span>
+<span class="pr">ASW-A1(config-if-range)#</span> <span class="kw">switchport nonegotiate</span>
+<span class="pr">ASW-A1(config-if-range)#</span> <span class="kw">switchport trunk native vlan</span> <span class="st">1000</span>
+<span class="pr">ASW-A1(config-if-range)#</span> <span class="kw">switchport trunk allowed vlan</span> <span class="st">10,20,40,99</span></pre>
+      </div>
+
+      <h3>VTP — VLAN Trunking Protocol v2</h3>
+      <p>DSW-A1 and DSW-B1 are configured as VTP servers (one per office — the two offices cannot reach each other via VTP because the inter-office links are not trunks at this stage). The access switches become VTP clients and synchronise the VLAN database automatically.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">VTP CONFIG</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! DSW-A1 — VTP server for Office A (case-sensitive!):</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vtp domain</span> <span class="st">JeremysITLab</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vtp version</span> <span class="st">2</span>
+
+<span class="cm">! DSW-B1 — VTP server for Office B:</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vtp domain</span> <span class="st">JeremysITLab</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vtp version</span> <span class="st">2</span>
+
+<span class="cm">! Access switches — VTP client (all 6):</span>
+<span class="pr">ASW-A1(config)#</span> <span class="kw">vtp mode client</span>
+<span class="cm">! (repeat on ASW-A2, A3, B1, B2, B3)</span>
+
+<span class="cm">! Verify VLAN propagation:</span>
+<span class="pr">ASW-A3#</span> <span class="kw">show vtp status</span>       <span class="cm">! must show JeremysITLab, VTPv2</span>
+<span class="pr">ASW-A3#</span> <span class="kw">show vlan brief</span>       <span class="cm">! must show the VLANs created on DSW-A1</span></pre>
+      </div>
+
+      <h3>VLAN creation (on DSW-A1 and DSW-B1 — VTP propagates them)</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">VLAN DATABASE</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! DSW-A1 — Office A:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vlan</span> <span class="st">10</span>
+<span class="pr">DSW-A1(config-vlan)#</span> <span class="kw">name</span> <span class="st">PCs</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vlan</span> <span class="st">20</span>
+<span class="pr">DSW-A1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Phones</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vlan</span> <span class="st">40</span>
+<span class="pr">DSW-A1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Wi-Fi</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">vlan</span> <span class="st">99</span>
+<span class="pr">DSW-A1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Management</span>
+
+<span class="cm">! DSW-B1 — Office B (VLAN 30 instead of 40):</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vlan</span> <span class="st">10</span>
+<span class="pr">DSW-B1(config-vlan)#</span> <span class="kw">name</span> <span class="st">PCs</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vlan</span> <span class="st">20</span>
+<span class="pr">DSW-B1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Phones</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vlan</span> <span class="st">30</span>
+<span class="pr">DSW-B1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Servers</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">vlan</span> <span class="st">99</span>
+<span class="pr">DSW-B1(config-vlan)#</span> <span class="kw">name</span> <span class="st">Management</span></pre>
+      </div>
+
+      <h3>VLAN Database</h3>
+      <table class="data-table">
+        <tr><th>VLAN ID</th><th>Name</th><th>Office</th><th>Hosts / Purpose</th></tr>
+        <tr><td class="mono hi">10</td><td class="mono">PCs</td><td>A e B</td><td>PC1, PC2 (A) — PC3 (B)</td></tr>
+        <tr><td class="mono hi">20</td><td class="mono">Phones</td><td>A e B</td><td>Phone1/2 (A) — Phone3 (B) — VoIP</td></tr>
+        <tr><td class="mono hi">30</td><td class="mono">Servers</td><td>B</td><td>SRV1 — DNS, FTP, Syslog</td></tr>
+        <tr><td class="mono hi">40</td><td class="mono">Wi-Fi</td><td>A</td><td>Laptop1/2 — wireless traffic tunnelled via CAPWAP</td></tr>
+        <tr><td class="mono hi">99</td><td class="mono">Management</td><td>A e B</td><td>SVIs switch, LWAP1/2 (access port)</td></tr>
+        <tr><td class="mono hi">1000</td><td class="mono">Unused/Native</td><td>A e B</td><td>Trunk native VLAN — no hosts (security)</td></tr>
+      </table>
+
+      <h3>Access Ports and Unused Ports</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">ACCESS PORTS + SHUTDOWN UNUSED</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! ASW-A1/B1 — F0/1 to the LWAP (VLAN 99):</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/1</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport mode access</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport nonegotiate</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport access vlan</span> <span class="st">99</span>
+
+<span class="cm">! ASW-A2/A3/B2 — F0/1 to PC + IP phone:</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport access vlan</span> <span class="st">10</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport voice vlan</span> <span class="st">20</span>
+
+<span class="cm">! ASW-B3 — F0/1 to SRV1 (VLAN 30):</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport access vlan</span> <span class="st">30</span>
+
+<span class="cm">! ASW-A1 F0/2 — trunk to WLC1 (VLAN 40+99, native 99):</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/2</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport mode trunk</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport trunk allowed vlan</span> <span class="st">40,99</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport trunk native vlan</span> <span class="st">99</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport nonegotiate</span>
+
+<span class="cm">! Unused ports — distribution switches:</span>
+<span class="pr">(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/6-24, g1/1/3-4</span>
+<span class="pr">(config-if-range)#</span> <span class="kw">shutdown</span>
+
+<span class="cm">! ASW-A1 (F0/1 = LWAP, F0/2 = WLC1 in use):</span>
+<span class="pr">(config)#</span> <span class="kw">interface range</span> <span class="st">f0/3-24</span>
+<span class="pr">(config-if-range)#</span> <span class="kw">shutdown</span>
+
+<span class="cm">! All other access switches:</span>
+<span class="pr">(config)#</span> <span class="kw">interface range</span> <span class="st">f0/2-24</span>
+<span class="pr">(config-if-range)#</span> <span class="kw">shutdown</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 3 ══════════════════════════════════════════════ -->
+    <div id="p3" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 03</span>
+        <h2>IP Addressing & HSRP</h2>
+        <span class="section-badge">LAYER 3</span>
+      </div>
+
+      <h3>R1 — WAN and LAN Interfaces</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">R1 INTERFACES</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! WAN — IP via DHCP from the ISP:</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface range</span> <span class="st">g0/0/0, g0/1/0</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">ip address dhcp</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">no shutdown</span>
+
+<span class="cm">! LAN — to CSW1 and CSW2:</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface g0/0</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.33</span> <span class="ip">255.255.255.252</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface g0/1</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.37</span> <span class="ip">255.255.255.252</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">no shutdown</span>
+
+<span class="cm">! Loopback0 (Router ID OSPF + NTP server + DHCP relay target):</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface loopback0</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.76</span> <span class="ip">255.255.255.255</span></pre>
+      </div>
+
+      <h3>IP Routing — Enabled on all multilayer switches</h3>
+      <p>Mandatory prerequisite before any Layer 3 configuration.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">IP ROUTING</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">CSW1(config)#</span>  <span class="kw">ip routing</span>
+<span class="pr">CSW2(config)#</span>  <span class="kw">ip routing</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">ip routing</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">ip routing</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">ip routing</span>
+<span class="pr">DSW-B2(config)#</span> <span class="kw">ip routing</span></pre>
+      </div>
+
+      <h3>EtherChannel Layer-3 — CSW1 ↔ CSW2 (PAgP Desirable)</h3>
+      <p>Routed EtherChannel: physical ports converted with <code>no switchport</code>, IP configured only on the logical Port-Channel interface.</p>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">L3 ETHERCHANNEL CSW1↔CSW2</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! CSW1 — G1/0/2-3 to CSW2 (verify with show cdp neighbors):</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/2-3</span>
+<span class="pr">CSW1(config-if-range)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if-range)#</span> <span class="kw">channel-group</span> <span class="st">1</span> <span class="kw">mode desirable</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface port-channel1</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.41 255.255.255.252</span>
+
+<span class="cm">! CSW2:</span>
+<span class="pr">CSW2(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/2-3</span>
+<span class="pr">CSW2(config-if-range)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW2(config-if-range)#</span> <span class="kw">channel-group</span> <span class="st">1</span> <span class="kw">mode desirable</span>
+<span class="pr">CSW2(config)#</span> <span class="kw">interface port-channel1</span>
+<span class="pr">CSW2(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.42 255.255.255.252</span>
+
+<span class="cm">! Verify: flag RU = Layer 3 + in use | P = bundled in the channel</span>
+<span class="pr">#</span> <span class="kw">show etherchannel summary</span>
+<span class="pr">CSW2#</span> <span class="kw">do ping</span> <span class="ip">10.0.0.41</span></pre>
+      </div>
+
+      <h3>CSW1/CSW2 — Full IP configuration (no switchport on every interface)</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">CSW1 IP CONFIG</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! G1/0/1 to R1:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface g1/0/1</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.34 255.255.255.252</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! G1/1/1 to DSW-A1:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface g1/1/1</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.45 255.255.255.252</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! G1/1/2 to DSW-A2:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface g1/1/2</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.49 255.255.255.252</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! G1/1/3 to DSW-B1:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface g1/1/3</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.53 255.255.255.252</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! G1/1/4 to DSW-B2:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface g1/1/4</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.57 255.255.255.252</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! Loopback0:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface loopback0</span>
+<span class="pr">CSW1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.77 255.255.255.255</span>
+<span class="cm">! Disable unused ports:</span>
+<span class="pr">CSW1(config)#</span> <span class="kw">interface range</span> <span class="st">g1/0/4-24</span>
+<span class="pr">CSW1(config-if-range)#</span> <span class="kw">shutdown</span>
+<span class="cm">! CSW2 — same structure with IPs .38, .42, .61, .65, .69, .73, Lo0=.78</span></pre>
+      </div>
+
+      <h3>DSW — Config IP routed interfaces (Steps 6-9)</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">DSW IP CONFIG — DSW-A1 example</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! G1/1/1 to CSW1, G1/1/2 to CSW2:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface g1/1/1</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.46 255.255.255.252</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface g1/1/2</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">no switchport</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.62 255.255.255.252</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface loopback0</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.79 255.255.255.255</span>
+<span class="cm">! DSW-A2: G1/1/1=.50, G1/1/2=.66, Lo0=.80</span>
+<span class="cm">! DSW-B1: G1/1/1=.54, G1/1/2=.70, Lo0=.81</span>
+<span class="cm">! DSW-B2: G1/1/1=.58, G1/1/2=.74, Lo0=.82</span></pre>
+      </div>
+
+      <h3>Access Switches — Management SVI and Default Gateway</h3>
+      <p>The access switches are Layer 2 devices, but they need a VLAN 99 SVI for remote management over SSH and a manually configured default gateway.</p>
+      <table class="data-table">
+        <tr><th>Switch</th><th>Default GW</th><th>VLAN 99 SVI</th><th>Subnet</th></tr>
+        <tr><td class="hi">ASW-A1</td><td class="mono">10.0.0.1</td><td class="cyan">10.0.0.4 /28</td><td>10.0.0.0/28</td></tr>
+        <tr><td class="hi">ASW-A2</td><td class="mono">10.0.0.1</td><td class="cyan">10.0.0.5 /28</td><td>10.0.0.0/28</td></tr>
+        <tr><td class="hi">ASW-A3</td><td class="mono">10.0.0.1</td><td class="cyan">10.0.0.6 /28</td><td>10.0.0.0/28</td></tr>
+        <tr><td class="hi">ASW-B1</td><td class="mono">10.0.0.17</td><td class="cyan">10.0.0.20 /28</td><td>10.0.0.16/28</td></tr>
+        <tr><td class="hi">ASW-B2</td><td class="mono">10.0.0.17</td><td class="cyan">10.0.0.21 /28</td><td>10.0.0.16/28</td></tr>
+        <tr><td class="hi">ASW-B3</td><td class="mono">10.0.0.17</td><td class="cyan">10.0.0.22 /28</td><td>10.0.0.16/28</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">ACCESS SWITCH — MANAGEMENT SVI</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Example ASW-A1:</span>
+<span class="pr">ASW-A1(config)#</span> <span class="kw">ip default-gateway</span> <span class="ip">10.0.0.1</span>
+<span class="pr">ASW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">99</span>
+<span class="pr">ASW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.4 255.255.255.240</span>
+<span class="pr">ASW-A1(config-if)#</span> <span class="kw">no shutdown</span>
+<span class="cm">! ASW-A2: .5/28 | ASW-A3: .6/28 — same GW 10.0.0.1</span>
+<span class="cm">! ASW-B1: ip default-gateway 10.0.0.17 | vlan 99: 10.0.0.20/28</span>
+<span class="cm">! ASW-B2: 10.0.0.21/28 | ASW-B3: 10.0.0.22/28</span></pre>
+      </div>
+
+      <h3>SRV1 — IP Configuration via the Packet Tracer GUI</h3>
+      <div class="info-box"><strong>Note:</strong> SRV1 is an end host, configured from the Packet Tracer GUI (Config tab → FastEthernet0), not from the IOS CLI.</div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">SRV1 — IP Settings</div>
+          <div style="margin-top:10px;font-size:12px">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">IPv4 Address</span><span style="color:var(--amber);font-family:var(--mono)">10.5.0.4</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Subnet Mask</span><span style="color:var(--amber);font-family:var(--mono)">255.255.255.0 (/24)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Default Gateway</span><span style="color:var(--amber);font-family:var(--mono)">10.5.0.1 (HSRP VIP)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text3);font-family:var(--mono)">Role</span><span style="color:var(--green2);font-family:var(--mono)">DNS · FTP · Syslog · SNMP</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">VTP Config</div>
+          <div style="margin-top:10px;font-size:12px">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">DSW-A1/B1</span><span style="color:var(--green2);font-family:var(--mono)">VTP Server</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">ASW-A1÷A3/B1÷B3</span><span style="color:var(--cyan);font-family:var(--mono)">VTP Client</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Domain</span><span style="color:var(--amber);font-family:var(--mono)">JeremysITLab</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text3);font-family:var(--mono)">Version</span><span style="color:var(--amber);font-family:var(--mono)">VTPv2</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>CSW1 and CSW2 — IP Addresses (Summary Table)</h3>
+      <table class="data-table">
+        <tr><th>Switch</th><th>Interface</th><th>IP Address</th><th>Connected to</th></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/0/1</td><td class="cyan">10.0.0.34/30</td><td>R1 G0/0</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">Port-Channel1</td><td class="cyan">10.0.0.41/30</td><td>CSW2 (L3 EtherChannel)</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/1/1</td><td class="cyan">10.0.0.45/30</td><td>DSW-A1</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/1/2</td><td class="cyan">10.0.0.49/30</td><td>DSW-A2</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/1/3</td><td class="cyan">10.0.0.53/30</td><td>DSW-B1</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/1/4</td><td class="cyan">10.0.0.57/30</td><td>DSW-B2</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.77/32</td><td>Router ID OSPF</td></tr>
+        <tr><td class="hi">CSW2</td><td class="mono">G1/0/1</td><td class="cyan">10.0.0.38/30</td><td>R1 G0/1</td></tr>
+        <tr><td class="hi">CSW2</td><td class="mono">Port-Channel1</td><td class="cyan">10.0.0.42/30</td><td>CSW1 (L3 EtherChannel)</td></tr>
+        <tr><td class="hi">CSW2</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.78/32</td><td>Router ID OSPF</td></tr>
+      </table>
+
+      <h3>DSW — IP Addresses and HSRP SVIs</h3>
+      <table class="data-table">
+        <tr><th>Switch</th><th>Interface</th><th>IP Address</th><th>Note</th></tr>
+        <tr><td class="hi">DSW-A1</td><td class="mono">G1/1/1</td><td class="cyan">10.0.0.46/30</td><td>→ CSW1 G1/1/1</td></tr>
+        <tr><td class="hi">DSW-A1</td><td class="mono">G1/1/2</td><td class="cyan">10.0.0.62/30</td><td>→ CSW2 G1/1/1</td></tr>
+        <tr><td class="hi">DSW-A1</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.79/32</td><td>Router ID OSPF</td></tr>
+        <tr><td class="hi">DSW-A2</td><td class="mono">G1/1/1</td><td class="cyan">10.0.0.50/30</td><td>→ CSW1 G1/1/2</td></tr>
+        <tr><td class="hi">DSW-A2</td><td class="mono">G1/1/2</td><td class="cyan">10.0.0.66/30</td><td>→ CSW2 G1/1/2</td></tr>
+        <tr><td class="hi">DSW-A2</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.80/32</td><td>Router ID OSPF</td></tr>
+        <tr><td class="hi">DSW-B1</td><td class="mono">G1/1/1</td><td class="cyan">10.0.0.54/30</td><td>→ CSW1 G1/1/3</td></tr>
+        <tr><td class="hi">DSW-B1</td><td class="mono">G1/1/2</td><td class="cyan">10.0.0.70/30</td><td>→ CSW2 G1/1/3</td></tr>
+        <tr><td class="hi">DSW-B1</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.81/32</td><td>Router ID OSPF</td></tr>
+        <tr><td class="hi">DSW-B2</td><td class="mono">G1/1/1</td><td class="cyan">10.0.0.58/30</td><td>→ CSW1 G1/1/4</td></tr>
+        <tr><td class="hi">DSW-B2</td><td class="mono">G1/1/2</td><td class="cyan">10.0.0.74/30</td><td>→ CSW2 G1/1/4</td></tr>
+        <tr><td class="hi">DSW-B2</td><td class="mono">Loopback0</td><td class="cyan">10.0.0.82/32</td><td>Router ID OSPF</td></tr>
+      </table>
+
+      <h3>HSRP v2 — Office A</h3>
+      <div class="hsrp-grid">
+        <div class="hsrp-card"><div class="hc-head">Gr.1 — VLAN 99 Management · DSW-A1 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.0.0.0/28</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.0.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-A1</span><span class="hc-val active">10.0.0.2 · prio 105</span></div><div class="hc-row"><span class="hc-key">DSW-A2</span><span class="hc-val">10.0.0.3</span></div></div>
+        <div class="hsrp-card"><div class="hc-head">Gr.2 — VLAN 10 PCs · DSW-A1 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.1.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.1.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-A1</span><span class="hc-val active">10.1.0.2 · prio 105</span></div><div class="hc-row"><span class="hc-key">DSW-A2</span><span class="hc-val">10.1.0.3</span></div></div>
+        <div class="hsrp-card standby"><div class="hc-head">Gr.3 — VLAN 20 Phones · DSW-A2 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.2.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.2.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-A1</span><span class="hc-val">10.2.0.2</span></div><div class="hc-row"><span class="hc-key">DSW-A2</span><span class="hc-val active">10.2.0.3 · prio 105</span></div></div>
+        <div class="hsrp-card standby"><div class="hc-head">Gr.4 — VLAN 40 Wi-Fi · DSW-A2 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.6.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.6.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-A1</span><span class="hc-val">10.6.0.2</span></div><div class="hc-row"><span class="hc-key">DSW-A2</span><span class="hc-val active">10.6.0.3 · prio 105</span></div></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">HSRP CONFIG — DSW-A1 complete</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Gr.1 VLAN 99 — active (prio 105 + preempt):</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">99</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.2 255.255.255.240</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 1 ip</span> <span class="ip">10.0.0.1</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 1 priority</span> <span class="st">105</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 1 preempt</span>
+<span class="cm">! Gr.2 VLAN 10 — active:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">10</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.1.0.2 255.255.255.0</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 2 ip</span> <span class="ip">10.1.0.1</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 2 priority</span> <span class="st">105</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 2 preempt</span>
+<span class="cm">! Gr.3 VLAN 20 — standby (A2 is active, no priority, no preempt):</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">20</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.2.0.2 255.255.255.0</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 3 ip</span> <span class="ip">10.2.0.1</span>
+<span class="cm">! Gr.4 VLAN 40 — standby (A2 is active):</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">40</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.6.0.2 255.255.255.0</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">standby 4 ip</span> <span class="ip">10.6.0.1</span></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">HSRP CONFIG — DSW-A2 complete</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Gr.1 VLAN 99 — standby (A1 is active):</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">interface vlan</span> <span class="st">99</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.3 255.255.255.240</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 1 ip</span> <span class="ip">10.0.0.1</span>
+<span class="cm">! Gr.2 VLAN 10 — standby:</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">interface vlan</span> <span class="st">10</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.1.0.3 255.255.255.0</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 2 ip</span> <span class="ip">10.1.0.1</span>
+<span class="cm">! Gr.3 VLAN 20 — active (prio 105 + preempt):</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">interface vlan</span> <span class="st">20</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.2.0.3 255.255.255.0</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 3 ip</span> <span class="ip">10.2.0.1</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 3 priority</span> <span class="st">105</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 3 preempt</span>
+<span class="cm">! Gr.4 VLAN 40 — active:</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">interface vlan</span> <span class="st">40</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.6.0.3 255.255.255.0</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 4 ip</span> <span class="ip">10.6.0.1</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 4 priority</span> <span class="st">105</span>
+<span class="pr">DSW-A2(config-if)#</span> <span class="kw">standby 4 preempt</span></pre>
+      </div>
+
+      <h3>HSRP v2 — Office B</h3>
+      <div class="hsrp-grid">
+        <div class="hsrp-card"><div class="hc-head">Gr.1 — VLAN 99 Management · DSW-B1 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.0.0.16/28</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.0.0.17</span></div><div class="hc-row"><span class="hc-key">DSW-B1</span><span class="hc-val active">10.0.0.18 · prio 105</span></div><div class="hc-row"><span class="hc-key">DSW-B2</span><span class="hc-val">10.0.0.19</span></div></div>
+        <div class="hsrp-card"><div class="hc-head">Gr.2 — VLAN 10 PCs · DSW-B1 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.3.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.3.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-B1</span><span class="hc-val active">10.3.0.2 · prio 105</span></div><div class="hc-row"><span class="hc-key">DSW-B2</span><span class="hc-val">10.3.0.3</span></div></div>
+        <div class="hsrp-card standby"><div class="hc-head">Gr.3 — VLAN 20 Phones · DSW-B2 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.4.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.4.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-B1</span><span class="hc-val">10.4.0.2</span></div><div class="hc-row"><span class="hc-key">DSW-B2</span><span class="hc-val active">10.4.0.3 · prio 105</span></div></div>
+        <div class="hsrp-card standby"><div class="hc-head">Gr.4 — VLAN 30 Servers · DSW-B2 ACTIVE</div><div class="hc-row"><span class="hc-key">Subnet</span><span class="hc-val">10.5.0.0/24</span></div><div class="hc-row"><span class="hc-key">VIP</span><span class="hc-val active">10.5.0.1</span></div><div class="hc-row"><span class="hc-key">DSW-B1</span><span class="hc-val">10.5.0.2</span></div><div class="hc-row"><span class="hc-key">DSW-B2</span><span class="hc-val active">10.5.0.3 · prio 105</span></div></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">HSRP CONFIG — DSW-B1 complete example</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Gr.1 VLAN 99 — active:</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">interface vlan</span> <span class="st">99</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.0.0.18 255.255.255.240</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 1 ip</span> <span class="ip">10.0.0.17</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 1 priority</span> <span class="st">105</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 1 preempt</span>
+
+<span class="cm">! Gr.2 VLAN 10 — active:</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">interface vlan</span> <span class="st">10</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.3.0.2 255.255.255.0</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 2 ip</span> <span class="ip">10.3.0.1</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 2 priority</span> <span class="st">105</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 2 preempt</span>
+
+<span class="cm">! Gr.3 VLAN 20 — standby (B2 is active, no priority, no preempt):</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">interface vlan</span> <span class="st">20</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.4.0.2 255.255.255.0</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 3 ip</span> <span class="ip">10.4.0.1</span>
+
+<span class="cm">! Gr.4 VLAN 30 — standby (B2 is active):</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">interface vlan</span> <span class="st">30</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">ip address</span> <span class="ip">10.5.0.2 255.255.255.0</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby version</span> <span class="st">2</span>
+<span class="pr">DSW-B1(config-if)#</span> <span class="kw">standby 4 ip</span> <span class="ip">10.5.0.1</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 4 ══════════════════════════════════════════════ -->
+    <div id="p4" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 04</span>
+        <h2>Rapid Spanning Tree</h2>
+        <span class="section-badge">RAPID PVST+</span>
+      </div>
+      <div class="info-box good"><strong>HSRP-STP alignment:</strong> the root bridge of each VLAN coincides with the active HSRP router. This avoids suboptimal routing (traffic crossing the wrong switch).</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">RAPID PVST+ + PRIORITY + PORTFAST</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Enable Rapid PVST+ on all distribution and access switches:</span>
+<span class="pr">(config)#</span> <span class="kw">spanning-tree mode rapid-pvst</span>
+
+<span class="cm">! DSW-A1 — root for VLAN 10,99 | secondary for 20,40:</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">10,99</span> <span class="kw">priority</span> <span class="st">0</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">20,40</span> <span class="kw">priority</span> <span class="st">4096</span>
+
+<span class="cm">! DSW-A2 — root for VLAN 20,40 | secondary for 10,99:</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">20,40</span> <span class="kw">priority</span> <span class="st">0</span>
+<span class="pr">DSW-A2(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">10,99</span> <span class="kw">priority</span> <span class="st">4096</span>
+
+<span class="cm">! DSW-B1 — root for VLAN 10,99 | secondary for 20,30:</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">10,99</span> <span class="kw">priority</span> <span class="st">0</span>
+<span class="pr">DSW-B1(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">20,30</span> <span class="kw">priority</span> <span class="st">4096</span>
+
+<span class="cm">! DSW-B2 — root for VLAN 20,30 | secondary for 10,99:</span>
+<span class="pr">DSW-B2(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">20,30</span> <span class="kw">priority</span> <span class="st">0</span>
+<span class="pr">DSW-B2(config)#</span> <span class="kw">spanning-tree vlan</span> <span class="st">10,99</span> <span class="kw">priority</span> <span class="st">4096</span>
+
+<span class="cm">! PortFast + BPDU Guard on ports facing end hosts:</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/1</span>
+<span class="pr">(config-if)#</span> <span class="kw">spanning-tree portfast</span>
+<span class="pr">(config-if)#</span> <span class="kw">spanning-tree bpduguard enable</span>
+
+<span class="cm">! Special case ASW-A1 F0/2 (trunk to WLC1):</span>
+<span class="pr">(config-if)#</span> <span class="kw">spanning-tree portfast trunk</span>
+<span class="pr">(config-if)#</span> <span class="kw">spanning-tree bpduguard enable</span>
+
+<span class="cm">! Verify:</span>
+<span class="pr">#</span> <span class="kw">show spanning-tree vlan</span> <span class="st">10</span>   <span class="cm">! 'This bridge is the root'</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 5 ══════════════════════════════════════════════ -->
+    <div id="p5" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 05</span>
+        <h2>OSPF & Static Routes</h2>
+        <span class="section-badge">SINGLE AREA 0</span>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">OSPF — R1 (interface config mode)</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">R1(config)#</span> <span class="kw">router ospf</span> <span class="st">1</span>
+<span class="pr">R1(config-router)#</span> <span class="kw">router-id</span> <span class="ip">10.0.0.76</span>
+<span class="pr">R1(config-router)#</span> <span class="kw">passive-interface loopback0</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface loopback0</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">ip ospf</span> <span class="st">1</span> <span class="kw">area</span> <span class="st">0</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface range g0/0-1</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">ip ospf</span> <span class="st">1</span> <span class="kw">area</span> <span class="st">0</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">ip ospf network point-to-point</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">OSPF — DSW-A1 (network command + passive SVIs)</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">DSW-A1(config)#</span> <span class="kw">router ospf</span> <span class="st">1</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">router-id</span> <span class="ip">10.0.0.79</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">passive-interface loopback0</span>
+<span class="cm">! Passive SVIs — except VLAN 99 (used for adjacencies between the DSWs):</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">passive-interface vlan</span> <span class="st">10</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">passive-interface vlan</span> <span class="st">20</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">passive-interface vlan</span> <span class="st">40</span>  <span class="cm">! vlan 30 on Office B</span>
+<span class="cm">! NETWORK with /32 wildcard for each interface:</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.0.0.46</span> <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! G1/1/1</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.0.0.62</span> <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! G1/1/2</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.0.0.79</span> <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! Loopback0</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.0.0.2</span>  <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! VLAN 99 SVI</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.1.0.2</span>  <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! VLAN 10 SVI</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.2.0.2</span>  <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! VLAN 20 SVI</span>
+<span class="pr">DSW-A1(config-router)#</span> <span class="kw">network</span> <span class="ip">10.6.0.2</span>  <span class="ip">0.0.0.0</span> <span class="kw">area</span> <span class="st">0</span>  <span class="cm">! VLAN 40 SVI</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface range g1/1/1-2</span>
+<span class="pr">DSW-A1(config-if-range)#</span> <span class="kw">ip ospf network point-to-point</span>
+
+<span class="cm">! Verify:</span>
+<span class="pr">#</span> <span class="kw">show ip ospf neighbor</span>
+<span class="pr">#</span> <span class="kw">show ip interface brief | exclude unassigned</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">DEFAULT ROUTE + FLOATING + ASBR</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Primary — recursive (next hop only):</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip route</span> <span class="ip">0.0.0.0 0.0.0.0 203.0.113.1</span>
+
+<span class="cm">! Floating — AD 2 (default is 1), via ISP-B:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip route</span> <span class="ip">0.0.0.0 0.0.0.0 203.0.113.5</span> <span class="st">2</span>
+
+<span class="cm">! R1 as ASBR — advertises the default route via OSPF:</span>
+<span class="pr">R1(config)#</span> <span class="kw">router ospf</span> <span class="st">1</span>
+<span class="pr">R1(config-router)#</span> <span class="kw">default-information originate</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 6 ══════════════════════════════════════════════ -->
+    <div id="p6" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 06</span>
+        <h2>DHCP / DNS / NTP / SNMP / Syslog</h2>
+        <span class="section-badge">IP SERVICES</span>
+      </div>
+      <h3>DHCP — Pools and Relay</h3>
+      <table class="data-table">
+        <tr><th>Pool</th><th>Subnet</th><th>Default Router</th><th>Client</th><th>Option 43</th></tr>
+        <tr><td class="mono hi">A-Mgmt</td><td class="cyan">10.0.0.0/28</td><td class="mono">10.0.0.1</td><td>LWAP1</td><td>10.0.0.7 (optional)</td></tr>
+        <tr><td class="mono hi">A-PC</td><td class="cyan">10.1.0.0/24</td><td class="mono">10.1.0.1</td><td>PC1, PC2</td><td>—</td></tr>
+        <tr><td class="mono hi">A-Phone</td><td class="cyan">10.2.0.0/24</td><td class="mono">10.2.0.1</td><td>Phone1/2</td><td>—</td></tr>
+        <tr><td class="mono hi">B-Mgmt</td><td class="cyan">10.0.0.16/28</td><td class="mono">10.0.0.17</td><td>LWAP2</td><td class="green">10.0.0.7 ★ required</td></tr>
+        <tr><td class="mono hi">B-PC</td><td class="cyan">10.3.0.0/24</td><td class="mono">10.3.0.1</td><td>PC3</td><td>—</td></tr>
+        <tr><td class="mono hi">B-Phone</td><td class="cyan">10.4.0.0/24</td><td class="mono">10.4.0.1</td><td>Phone3</td><td>—</td></tr>
+        <tr><td class="mono hi">Wi-Fi</td><td class="cyan">10.6.0.0/24</td><td class="mono">10.6.0.1</td><td>Laptop1/2</td><td>—</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">DHCP CONFIG + RELAY</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Excluded — first 10 usable addresses of each subnet:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.0.0.1  10.0.0.10</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.1.0.1  10.1.0.10</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.2.0.1  10.2.0.10</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.0.0.17 10.0.0.26</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.3.0.1  10.3.0.10</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.4.0.1  10.4.0.10</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp excluded-address</span> <span class="ip">10.6.0.1  10.6.0.10</span>
+
+<span class="cm">! Example pool — A-PC:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip dhcp pool</span> <span class="st">A-PC</span>
+<span class="pr">R1(dhcp-config)#</span> <span class="kw">network</span> <span class="ip">10.1.0.0 255.255.255.0</span>
+<span class="pr">R1(dhcp-config)#</span> <span class="kw">default-router</span> <span class="ip">10.1.0.1</span>
+<span class="pr">R1(dhcp-config)#</span> <span class="kw">domain-name</span> <span class="st">jeremysitlab.com</span>
+<span class="pr">R1(dhcp-config)#</span> <span class="kw">dns-server</span> <span class="ip">10.5.0.4</span>
+
+<span class="cm">! B-Mgmt — option 43 required for LWAP2:</span>
+<span class="pr">R1(dhcp-config)#</span> <span class="kw">option 43 ip</span> <span class="ip">10.0.0.7</span>
+
+<span class="cm">! DHCP relay on every distribution switch (SVI of each VLAN):</span>
+<span class="pr">DSW-A1(config)#</span> <span class="kw">interface vlan</span> <span class="st">10</span>
+<span class="pr">DSW-A1(config-if)#</span> <span class="kw">ip helper-address</span> <span class="ip">10.0.0.76</span>
+<span class="cm">! Repeat for VLAN 20, 40, 99 on A1/A2 and VLAN 10,20,30,99 on B1/B2</span></pre>
+      </div>
+
+      <h3>DNS — Records on SRV1 (Packet Tracer GUI)</h3>
+      <p>SRV1 configured as a DNS server from the GUI: tab <strong>Services → DNS</strong>. The DNS service must be switched on manually.</p>
+      <table class="data-table">
+        <tr><th>Type</th><th>Name</th><th>Value</th></tr>
+        <tr><td class="mono">A record</td><td class="mono">google.com</td><td class="mono">172.253.62.100</td></tr>
+        <tr><td class="mono">A record</td><td class="mono">youtube.com</td><td class="mono">152.250.31.93</td></tr>
+        <tr><td class="mono">A record</td><td class="mono">jeremysitlab.com</td><td class="mono">66.235.200.145</td></tr>
+        <tr><td class="mono">CNAME</td><td class="mono">www.jeremysitlab.com</td><td class="mono">jeremysitlab.com</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">DNS + ip domain-name on all devices</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! On all 13 devices (R1, CSW1/2, DSW-A1/A2/B1/B2, ASW-A1÷A3/B1÷B3):</span>
+<span class="pr">(config)#</span> <span class="kw">ip domain name</span> <span class="st">jeremysitlab.com</span>
+<span class="pr">(config)#</span> <span class="kw">ip name-server</span> <span class="ip">10.5.0.4</span>
+
+<span class="cm">! DNS test from PC1:</span>
+<span class="pr">PC1></span> <span class="kw">ping google.com</span>    <span class="cm">! ping fails (no NAT yet), but DNS resolves</span>
+<span class="pr">PC1></span> <span class="kw">ping jeremysitlab.com</span>
+<span class="pr">PC1></span> <span class="kw">ping www.jeremysitlab.com</span>  <span class="cm">! CNAME → jeremysitlab.com → 66.235.200.145</span></pre>
+      </div>
+
+      <h3>NTP — Hierarchy with MD5 Authentication</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">NTP MASTER + CLIENT</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! R1 — stratum 5 master + external sync:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ntp master</span> <span class="st">5</span>
+<span class="pr">R1(config)#</span> <span class="kw">ntp server</span> <span class="ip">216.239.35.0</span>
+<span class="pr">R1(config)#</span> <span class="kw">ntp authentication-key</span> <span class="st">1</span> <span class="kw">md5</span> <span class="st">ccna</span>
+<span class="pr">R1(config)#</span> <span class="kw">ntp trusted-key</span> <span class="st">1</span>
+
+<span class="cm">! All switches — authenticated client:</span>
+<span class="pr">(config)#</span> <span class="kw">ntp authentication-key</span> <span class="st">1</span> <span class="kw">md5</span> <span class="st">ccna</span>
+<span class="pr">(config)#</span> <span class="kw">ntp trusted-key</span> <span class="st">1</span>
+<span class="pr">(config)#</span> <span class="kw">ntp server</span> <span class="ip">10.0.0.76</span> <span class="kw">key</span> <span class="st">1</span>
+<span class="cm">! Note: on real IOS also add "ntp authenticate" to enforce authentication (it was not part of the lab solution)</span></pre>
+      </div>
+
+      <h3>SNMP and Syslog</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">SNMP + SYSLOG</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! SNMP — read-only (GET yes, SET no):</span>
+<span class="pr">(config)#</span> <span class="kw">snmp-server community</span> <span class="st">SNMPSTRING</span> <span class="kw">ro</span>
+
+<span class="cm">! Syslog — debugging level (0-7) to SRV1, buffer 8192:</span>
+<span class="pr">(config)#</span> <span class="kw">logging</span> <span class="ip">10.5.0.4</span>
+<span class="pr">(config)#</span> <span class="kw">logging trap debugging</span>
+<span class="pr">(config)#</span> <span class="kw">logging buffered</span> <span class="st">8192</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 7 ══════════════════════════════════════════════ -->
+    <div id="p7" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 07</span>
+        <h2>FTP / SSH / NAT</h2>
+        <span class="section-badge">IP SERVICES</span>
+      </div>
+
+      <h3>FTP — Upgrade IOS 15.1 → 15.5</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">FTP IOS UPGRADE — FULL PROCEDURE</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! File names are examples: use the ones shown in SRV1 → Services → FTP and in show flash:</span>
+<span class="cm">! Step 1 — FTP credentials:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip ftp username</span> <span class="st">cisco</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip ftp password</span> <span class="st">cisco</span>
+
+<span class="cm">! Step 2 — copy from SRV1 to flash:</span>
+<span class="pr">R1#</span> <span class="kw">copy ftp: flash:</span>
+  Address or name of remote host: <span class="ip">10.5.0.4</span>
+  Source filename: <span class="st">c2900-universalk9-mz.SPA.155-3.M4a.bin</span>
+  Destination filename: <span class="cm">[Enter]</span>
+
+<span class="cm">! Step 3 — verify:</span>
+<span class="pr">R1#</span> <span class="kw">show flash:</span>
+
+<span class="cm">! Step 4 — configure boot system:</span>
+<span class="pr">R1(config)#</span> <span class="kw">boot system flash:</span> <span class="st">c2900-universalk9-mz.SPA.155-3.M4a.bin</span>
+
+<span class="cm">! Step 5 — ESSENTIAL: save BEFORE the reload:</span>
+<span class="pr">R1#</span> <span class="kw">write</span>
+
+<span class="cm">! Step 6 — reboot:</span>
+<span class="pr">R1#</span> <span class="kw">reload</span>
+
+<span class="cm">! Step 7 — check the version (must show 15.5):</span>
+<span class="pr">R1#</span> <span class="kw">show version</span>
+
+<span class="cm">! Step 8 — delete the old IOS:</span>
+<span class="pr">R1#</span> <span class="kw">delete flash:</span> <span class="st">c2900-universalk9-mz.SPA.151-4.M4.bin</span></pre>
+      </div>
+
+      <h3>NAT — Static and Dynamic PAT</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">STATIC NAT + PAT POOL + FAILOVER TEST</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Static NAT — SRV1 reachable from the outside:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip nat inside source static</span> <span class="ip">10.5.0.4 203.0.113.113</span>
+
+<span class="cm">! Define inside/outside:</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface range g0/0-1</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">ip nat inside</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface range g0/0/0, g0/1/0</span>
+<span class="pr">R1(config-if-range)#</span> <span class="kw">ip nat outside</span>
+
+<span class="cm">! Dynamic PAT — ACL 2 (specific order!):</span>
+<span class="pr">R1(config)#</span> <span class="kw">access-list 2 permit</span> <span class="ip">10.1.0.0 0.0.0.255</span>  <span class="cm">! A-PCs</span>
+<span class="pr">R1(config)#</span> <span class="kw">access-list 2 permit</span> <span class="ip">10.2.0.0 0.0.0.255</span>  <span class="cm">! A-Phones</span>
+<span class="pr">R1(config)#</span> <span class="kw">access-list 2 permit</span> <span class="ip">10.3.0.0 0.0.0.255</span>  <span class="cm">! B-PCs</span>
+<span class="pr">R1(config)#</span> <span class="kw">access-list 2 permit</span> <span class="ip">10.4.0.0 0.0.0.255</span>  <span class="cm">! B-Phones</span>
+<span class="pr">R1(config)#</span> <span class="kw">access-list 2 permit</span> <span class="ip">10.6.0.0 0.0.0.255</span>  <span class="cm">! Wi-Fi</span>
+
+<span class="cm">! Public IP pool /29:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip nat pool POOL1</span> <span class="ip">203.0.113.200 203.0.113.207</span> <span class="kw">netmask</span> <span class="ip">255.255.255.248</span>
+<span class="pr">R1(config)#</span> <span class="kw">ip nat inside source list</span> <span class="st">2</span> <span class="kw">pool POOL1 overload</span>
+
+<span class="cm">! ISP failover test:</span>
+<span class="pr">R1(config)#</span> <span class="kw">interface g0/0/0</span>
+<span class="pr">R1(config-if)#</span> <span class="kw">shutdown</span>
+<span class="pr">R1(config)#</span> <span class="kw">router ospf</span> <span class="st">1</span>
+<span class="pr">R1(config-router)#</span> <span class="kw">no default-information originate</span>
+<span class="pr">R1(config-router)#</span> <span class="kw">default-information originate</span>  <span class="cm">! force re-advertisement</span></pre>
+      </div>
+
+      <h3>SSH v2</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">SSH v2 + ACL VTY</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="pr">(config)#</span> <span class="kw">crypto key generate rsa</span>
+How many bits in the modulus [512]: <span class="st">4096</span>
+<span class="pr">(config)#</span> <span class="kw">ip ssh version</span> <span class="st">2</span>
+
+<span class="cm">! ACL — only the Office A PCs subnet may use SSH:</span>
+<span class="pr">(config)#</span> <span class="kw">access-list 1 permit</span> <span class="ip">10.1.0.0 0.0.0.255</span>
+
+<span class="pr">(config)#</span> <span class="kw">line vty</span> <span class="st">0 15</span>
+<span class="pr">(config-line)#</span> <span class="kw">access-class</span> <span class="st">1</span> <span class="kw">in</span>
+<span class="pr">(config-line)#</span> <span class="kw">transport input ssh</span>
+<span class="pr">(config-line)#</span> <span class="kw">login local</span>
+<span class="pr">(config-line)#</span> <span class="kw">logging synchronous</span>
+
+</pre>
+      </div>
+      <div class="info-box good"><strong>SSH test:</strong> PC1 (10.1.0.x — ACL permits) → connection OK. PC3 (10.3.0.x — ACL denies) → "Connection refused by remote host".</div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">SSH TEST</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! From PC1 (permitted):</span>
+<span class="pr">PC1></span> <span class="kw">ping</span> <span class="ip">10.0.0.76</span>
+<span class="pr">PC1></span> <span class="kw">ssh -l cisco</span> <span class="ip">10.0.0.76</span>
+  Password: <span class="st">ccna</span>           <span class="cm">! login OK</span>
+<span class="pr">PC3></span> <span class="kw">ssh -l cisco</span> <span class="ip">10.0.0.76</span>
+  <span class="cm">! % Connection refused by remote host</span></pre>
+      </div>
+
+      <h3>CDP → LLDP</h3>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">CDP/LLDP — all devices</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! R1, CSW1/2, DSW-A1/A2/B1/B2:</span>
+<span class="pr">(config)#</span> <span class="kw">no cdp run</span>
+<span class="pr">(config)#</span> <span class="kw">lldp run</span>
+
+<span class="cm">! Access switches (ASW-A1÷A3, ASW-B1÷B3) — also no lldp transmit on F0/1:</span>
+<span class="pr">(config)#</span> <span class="kw">no cdp run</span>
+<span class="pr">(config)#</span> <span class="kw">lldp run</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/1</span>
+<span class="pr">(config-if)#</span> <span class="kw">no lldp transmit</span>   <span class="cm">! no point sending LLDP towards end hosts</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 8 ══════════════════════════════════════════════ -->
+    <div id="p8" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 08</span>
+        <h2>Security Features</h2>
+        <span class="section-badge">LAYER 2/3 SECURITY</span>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">EXTENDED ACL — OfficeA_to_OfficeB</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Applied on the VLAN 10 SVI of DSW-A1 and DSW-A2 (inbound — close to the source):</span>
+<span class="pr">(config)#</span> <span class="kw">ip access-list extended</span> <span class="st">OfficeA_to_OfficeB</span>
+<span class="pr">(config-ext-nacl)#</span> <span class="kw">permit icmp</span> <span class="ip">10.1.0.0 0.0.0.255 10.3.0.0 0.0.0.255</span>
+<span class="pr">(config-ext-nacl)#</span> <span class="kw">deny ip</span> <span class="ip">10.1.0.0 0.0.0.255 10.3.0.0 0.0.0.255</span>
+<span class="pr">(config-ext-nacl)#</span> <span class="kw">permit ip any any</span>
+<span class="pr">(config)#</span> <span class="kw">interface vlan</span> <span class="st">10</span>
+<span class="pr">(config-if)#</span> <span class="kw">ip access-group OfficeA_to_OfficeB in</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">PORT SECURITY + DHCP SNOOPING + DAI</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Port Security — F0/1 of every access switch:</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/1</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport port-security</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport port-security violation restrict</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport port-security mac-address sticky</span>
+<span class="pr">(config-if)#</span> <span class="kw">switchport port-security maximum</span> <span class="st">2</span>  <span class="cm">! ASW-A2/A3/B2 only (PC + phone)</span>
+
+<span class="cm">! DHCP Snooping — Office A:</span>
+<span class="pr">(config)#</span> <span class="kw">ip dhcp snooping</span>
+<span class="pr">(config)#</span> <span class="kw">ip dhcp snooping vlan</span> <span class="st">10,20,40,99</span>  <span class="cm">! Office B: 10,20,30,99</span>
+<span class="pr">(config)#</span> <span class="kw">no ip dhcp snooping information option</span>  <span class="cm">! disable option 82</span>
+<span class="pr">(config)#</span> <span class="kw">interface range g0/1-2</span>
+<span class="pr">(config-if-range)#</span> <span class="kw">ip dhcp snooping trust</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/1</span>
+<span class="pr">(config-if)#</span> <span class="kw">ip dhcp snooping limit rate</span> <span class="st">15</span>
+<span class="pr">(config)#</span> <span class="kw">interface f0/2</span>  <span class="cm">! ASW-A1 only (WLC1)</span>
+<span class="pr">(config-if)#</span> <span class="kw">ip dhcp snooping limit rate</span> <span class="st">100</span>
+
+<span class="cm">! DAI — Dynamic ARP Inspection:</span>
+<span class="pr">(config)#</span> <span class="kw">ip arp inspection vlan</span> <span class="st">10,20,40,99</span>  <span class="cm">! Office B: 10,20,30,99</span>
+<span class="pr">(config)#</span> <span class="kw">ip arp inspection validate dst-mac src-mac ip</span>
+<span class="pr">(config)#</span> <span class="kw">interface range g0/1-2</span>
+<span class="pr">(config-if-range)#</span> <span class="kw">ip arp inspection trust</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 9 ══════════════════════════════════════════════ -->
+    <div id="p9" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 09</span>
+        <h2>IPv6</h2>
+        <span class="section-badge">3 METODI</span>
+      </div>
+      <table class="data-table">
+        <tr><th>Device</th><th>Interface</th><th>IPv6 Address</th><th>Method</th></tr>
+        <tr><td class="hi">R1</td><td class="mono">G0/0/0</td><td class="cyan">2001:db8:a::2/64</td><td>Manual</td></tr>
+        <tr><td class="hi">R1</td><td class="mono">G0/1/0</td><td class="cyan">2001:db8:b::2/64</td><td>Manual</td></tr>
+        <tr><td class="hi">R1</td><td class="mono">G0/0</td><td class="cyan">2001:db8:a1::/64</td><td>EUI-64</td></tr>
+        <tr><td class="hi">R1</td><td class="mono">G0/1</td><td class="cyan">2001:db8:a2::/64</td><td>EUI-64</td></tr>
+        <tr><td class="hi">CSW1</td><td class="mono">G1/0/1</td><td class="cyan">2001:db8:a1::/64</td><td>EUI-64</td></tr>
+        <tr><td class="hi">CSW2</td><td class="mono">G1/0/1</td><td class="cyan">2001:db8:a2::/64</td><td>EUI-64</td></tr>
+        <tr><td class="hi">CSW1/2</td><td class="mono">Port-Channel1</td><td class="mono" style="color:var(--text3)">link-local only</td><td>ipv6 enable</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-block-header"><span class="code-block-title">IPv6 CONFIG + STATIC ROUTES</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+        <pre><span class="cm">! Enable IPv6 routing (mandatory!):</span>
+<span class="pr">(config)#</span> <span class="kw">ipv6 unicast-routing</span>
+
+<span class="cm">! Manual address (full):</span>
+<span class="pr">(config-if)#</span> <span class="kw">ipv6 address</span> <span class="st">2001:db8:a::2/64</span>
+
+<span class="cm">! EUI-64 (interface ID generated automatically from the MAC):</span>
+<span class="pr">(config-if)#</span> <span class="kw">ipv6 address</span> <span class="st">2001:db8:a1::/64</span> <span class="kw">eui-64</span>
+
+<span class="cm">! Link-local only (no GUA):</span>
+<span class="pr">(config-if)#</span> <span class="kw">ipv6 enable</span>
+
+<span class="cm">! IPv6 default route — recursive (next hop only):</span>
+<span class="pr">R1(config)#</span> <span class="kw">ipv6 route ::/0</span> <span class="st">2001:db8:a::1</span>
+
+<span class="cm">! Floating — fully-specified (exit interface + next-hop) + AD 2:</span>
+<span class="pr">R1(config)#</span> <span class="kw">ipv6 route ::/0 g0/1/0</span> <span class="st">2001:db8:b::1</span> <span class="st">2</span></pre>
+      </div>
+    </div>
+
+    <!-- ══ PARTE 10 ══════════════════════════════════════════════ -->
+    <div id="p10" class="section">
+      <div class="section-header">
+        <span class="section-num">PART 10</span>
+        <h2>Wireless LAN — WLC GUI</h2>
+        <span class="section-badge">WPA2-PSK/AES</span>
+      </div>
+      <div class="info-box"><strong>WLC access:</strong> https://10.0.0.7 — credentials admin / adminPW12. Configured through the browser from PC1.</div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title">Dynamic Interface — Wi-Fi</div>
+          <div style="margin-top:10px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Name</span><span style="color:var(--amber);font-family:var(--mono)">Wi-Fi</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">VLAN ID</span><span style="color:var(--amber);font-family:var(--mono)">40</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Port</span><span style="color:var(--amber);font-family:var(--mono)">1</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">IP</span><span style="color:var(--amber);font-family:var(--mono)">10.6.0.2/24</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">GW</span><span style="color:var(--amber);font-family:var(--mono)">10.6.0.1</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text3);font-family:var(--mono)">DHCP</span><span style="color:var(--amber);font-family:var(--mono)">10.0.0.76</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">WLAN — Wi-Fi</div>
+          <div style="margin-top:10px;font-size:12px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">SSID</span><span style="color:var(--green2);font-family:var(--mono)">Wi-Fi</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">WLAN ID</span><span style="color:var(--green2);font-family:var(--mono)">1</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Interface</span><span style="color:var(--green2);font-family:var(--mono)">Wi-Fi (VLAN 40)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3);font-family:var(--mono)">Security</span><span style="color:var(--green2);font-family:var(--mono)">WPA2-PSK/AES</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--text3);font-family:var(--mono)">PSK</span><span style="color:var(--green2);font-family:var(--mono)">cisco123</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box good"><strong>Verification:</strong> LWAP1 and LWAP2 are visible under MONITOR → Access Points. Laptop1 is associated with the Wi-Fi SSID, WPA2-PSK, AES. PT note: wireless clients will lease an IP from the Management pool instead of the Wi-Fi pool — a known Packet Tracer behaviour.</div>
+    </div>
+
+    <!-- ══ SKILLS MAP ══════════════════════════════════════════════ -->
+    <div id="skills" class="section">
+      <div class="section-header">
+        <span class="section-num">REF</span>
+        <h2>Skills Map CCNA 200-301</h2>
+        <span class="section-badge">32 SKILLS</span>
+      </div>
+      <div class="pills">
+        <span class="pill pill-cyan">1.0 Fundamentals</span>
+        <span class="pill pill-blue">2.0 Network Access</span>
+        <span class="pill pill-green">3.0 IP Connectivity</span>
+        <span class="pill pill-amber">4.0 IP Services</span>
+        <span class="pill pill-red">5.0 Security</span>
+      </div>
+      <table class="data-table">
+        <tr><th>Skill</th><th>Domain</th><th>Part</th></tr>
+        <tr><td>Device Baseline (hostname, secret type5/9, user, console)</td><td><span class="pill pill-cyan" style="font-size:9px">1.0</span></td><td class="mono">01</td></tr>
+        <tr><td>VLANs, 802.1Q Trunking, VTP v2</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">02</td></tr>
+        <tr><td>EtherChannel L2 — PAgP (Desirable) and LACP (Active)</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">02</td></tr>
+        <tr><td>EtherChannel L3 — PAgP routed (no switchport)</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">03</td></tr>
+        <tr><td>HSRP v2 — VIP, priority 105, preempt, 8 groups in total</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">03</td></tr>
+        <tr><td>Inter-VLAN Routing via SVIs (multilayer switch)</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">03</td></tr>
+        <tr><td>Rapid PVST+ — priority 0/4096, HSRP-STP alignment</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">04</td></tr>
+        <tr><td>PortFast + BPDU Guard (including portfast trunk towards the WLC)</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">04</td></tr>
+        <tr><td>OSPF Single-Area — router-id, passive-interface, network /32</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">05</td></tr>
+        <tr><td>OSPF P2P network type, ASBR, default-information originate</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">05</td></tr>
+        <tr><td>Static Route recursive — Floating Route (custom AD)</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">05</td></tr>
+        <tr><td>DHCP Server — pool, excluded, domain-name, option 43</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>DHCP Relay Agent — ip helper-address on SVIs</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>DNS — A record, CNAME on SRV1 (Packet Tracer GUI)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>NTP master stratum 5 + client with MD5 authentication</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>SNMP community read-only (RO)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>Syslog — logging trap debugging, buffered 8192</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">06</td></tr>
+        <tr><td>FTP — upgrade IOS (credentials, copy, boot system, delete)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">07</td></tr>
+        <tr><td>Static NAT (inside local → inside global)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">07</td></tr>
+        <tr><td>Dynamic PAT pool-based (ACL + pool + overload)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">07</td></tr>
+        <tr><td>SSH v2 — RSA 4096, ip ssh version, VTY transport</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">07</td></tr>
+        <tr><td>CDP disabled / LLDP enabled (no lldp transmit on F0/1)</td><td><span class="pill pill-amber" style="font-size:9px">4.0</span></td><td class="mono">07</td></tr>
+        <tr><td>Extended ACL named — inter-subnet filtering, applied in</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">08</td></tr>
+        <tr><td>Standard ACL — applied to the VTY lines (access-class)</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">07</td></tr>
+        <tr><td>Port Security — max MAC, restrict, sticky learning</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">08</td></tr>
+        <tr><td>DHCP Snooping — trust, rate limit, no option 82</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">08</td></tr>
+        <tr><td>Dynamic ARP Inspection — validate dst/src/ip, trust</td><td><span class="pill pill-red" style="font-size:9px">5.0</span></td><td class="mono">08</td></tr>
+        <tr><td>IPv6 Addressing — manual, EUI-64, ipv6 enable (link-local)</td><td><span class="pill pill-cyan" style="font-size:9px">1.0</span></td><td class="mono">09</td></tr>
+        <tr><td>IPv6 Unicast-routing, Static Route recursive + fully-specified</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">09</td></tr>
+        <tr><td>IPv6 Floating Static Route (custom AD)</td><td><span class="pill pill-green" style="font-size:9px">3.0</span></td><td class="mono">09</td></tr>
+        <tr><td>Wireless LAN — WLC GUI, Dynamic Interface, WLAN, WPA2-PSK/AES</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">10</td></tr>
+        <tr><td>CAPWAP — LWAP in local mode, tunnelling to WLC1</td><td><span class="pill pill-blue" style="font-size:9px">2.0</span></td><td class="mono">10</td></tr>
+      </table>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const labels = {
+    home:'HOME', p1:'PART 01', p2:'PART 02', p3:'PART 03', p4:'PART 04',
+    p5:'PART 05', p6:'PART 06', p7:'PART 07', p8:'PART 08', p9:'PART 09',
+    p10:'PART 10', skills:'SKILLS MAP'
+  };
+  document.getElementById('topbar-section').textContent = labels[id] || id.toUpperCase();
+  const items = document.querySelectorAll('.nav-item');
+  const map = ['home','p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','skills'];
+  const idx = map.indexOf(id);
+  if (idx >= 0) items[idx].classList.add('active');
+  if (window.innerWidth <= 900) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+  window.scrollTo(0,0);
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+</script>
+</body>
+</html>

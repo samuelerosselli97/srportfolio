@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA Mega Lab — Network Topology</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07090f;font-family:'Share Tech Mono',monospace;color:#c8d8f0;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+
+/* ── TOPBAR ── */
+#topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:44px;
+  background:#0a0d18;border-bottom:1px solid #1a2840;
+  flex-shrink:0;
+}
+.tb-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:1px}
+.tb-sub{font-size:10px;color:#3a5070;margin-left:12px;letter-spacing:2px}
+.tb-tags{display:flex;gap:8px}
+.tag{font-size:9px;padding:3px 8px;border-radius:2px;border:1px solid;letter-spacing:1px}
+.tag-cyan{color:#00e5ff;border-color:rgba(0,229,255,.35);background:rgba(0,229,255,.08)}
+.tag-green{color:#00ff88;border-color:rgba(0,255,136,.35);background:rgba(0,255,136,.08)}
+.tag-amber{color:#ffb300;border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.08)}
+
+/* ── LEGEND ── */
+#legend{
+  display:flex;align-items:center;gap:20px;
+  padding:6px 20px;height:32px;
+  background:#080b16;border-bottom:1px solid #131e30;
+  flex-shrink:0;font-size:10px;color:#4a6a8a;letter-spacing:1px;
+  flex-wrap:wrap;
+}
+.leg{display:flex;align-items:center;gap:6px}
+.leg-line{width:24px;height:2px;border-radius:1px}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{flex:1;position:relative;overflow:hidden}
+svg#topo{width:100%;height:100%;cursor:default}
+
+/* ── DEVICE PANEL — desktop ── */
+#panel-overlay{
+  position:fixed;inset:0;
+  z-index:200;
+  pointer-events:none;
+  visibility:hidden;
+}
+#panel-overlay.open{ visibility:visible; }
+
+#panel{
+  position:fixed;
+  right:16px;top:16px;bottom:16px;
+  width:300px;
+  background:#09111e;
+  border:1px solid #1a2840;
+  border-radius:6px;
+  display:flex;flex-direction:column;
+  z-index:201;
+  pointer-events:auto;
+  font-size:11px;
+  box-shadow:0 8px 40px rgba(0,0,0,.8);
+  overflow:hidden;
+}
+#panel-header{
+  padding:12px 16px;
+  background:#0d1828;
+  border-bottom:1px solid #1a2840;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+#panel-icon{font-size:22px;margin-right:10px}
+#panel-name{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#fff}
+#panel-type{font-size:9px;color:#3a6080;letter-spacing:2px;margin-top:2px}
+#panel-close{
+  background:none;border:none;color:#3a5070;cursor:pointer;
+  font-size:20px;padding:4px 8px;border-radius:2px;
+  transition:color .15s;line-height:1;flex-shrink:0;
+}
+#panel-close:hover{color:#fff}
+#panel-body{
+  flex:1;
+  padding:14px 16px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.panel-section{margin-bottom:14px}
+.panel-section-title{
+  font-size:9px;letter-spacing:3px;color:#2a4a6a;
+  text-transform:uppercase;margin-bottom:8px;
+  padding-bottom:4px;border-bottom:1px solid #131e30;
+}
+.panel-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  gap:10px;
+}
+.panel-row:last-child{border:none}
+.pk{color:#3a6080;font-size:10px;white-space:nowrap;flex-shrink:0}
+.pv{color:#c8d8f0;font-size:10px;text-align:right;word-break:break-word}
+.pv.ip{color:#ffb300}
+.pv.green{color:#00c96e}
+.pv.cyan{color:#00e5ff}
+.pv.red{color:#ff6060}
+.pv.purple{color:#cc88ff}
+
+/* ── MOBILE: bottom sheet ── */
+@media(max-width:700px){
+  #panel{
+    right:0;left:0;bottom:0;top:auto;
+    width:100%;
+    border-radius:12px 12px 0 0;
+    max-height:70vh;
+    min-height:200px;
+  }
+  /* drag handle */
+  #panel-header::before{
+    content:'';
+    display:block;
+    width:36px;height:4px;
+    background:#2a4a6a;border-radius:2px;
+    position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  }
+  #panel-header{ position:relative; padding-top:20px; }
+  #panel-body{ font-size:12px; padding:12px 16px 24px; }
+  .pk{ font-size:11px; }
+  .pv{ font-size:11px; }
+  .panel-section-title{ font-size:10px; }
+  /* slide up animation */
+  #panel{ transform:translateY(100%); transition:transform .3s cubic-bezier(.25,.8,.25,1); }
+  #panel-overlay.open #panel{ transform:translateY(0); }
+  #panel-overlay.open{ pointer-events:auto; }
+  /* dim background */
+  #panel-overlay::before{
+    content:'';
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.5);
+    z-index:-1;
+  }
+}
+
+/* ── ZOOM CONTROLS ── */
+#zoom-ctrl{
+  position:absolute;left:16px;bottom:16px;
+  display:flex;flex-direction:column;gap:4px;
+  z-index:100;
+}
+.zb{
+  width:32px;height:32px;
+  background:#0a111e;border:1px solid #1a2840;
+  color:#7a9cc0;font-size:16px;cursor:pointer;
+  border-radius:3px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.zb:hover{background:#0d1828;color:#00e5ff;border-color:#00e5ff}
+
+/* ── TOOLTIP ── */
+#tooltip{
+  position:absolute;
+  background:#0d1828;border:1px solid #1a2840;
+  padding:6px 10px;border-radius:3px;
+  font-size:10px;color:#c8d8f0;
+  pointer-events:none;display:none;z-index:200;
+  white-space:nowrap;
+}
+
+/* ── INSTRUCTIONS ── */
+#hint{
+  position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
+  font-size:9px;color:#1e3050;letter-spacing:2px;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div style="display:flex;align-items:center">
+    <a href="../ccna-mega-lab.html" style="color:#3a6080;text-decoration:none;margin-right:14px;font-size:10px;letter-spacing:1px">← PROJECT</a>
+    <span class="tb-title">CCNA MEGA LAB</span>
+    <span class="tb-sub">NETWORK TOPOLOGY</span>
+  </div>
+  <div class="tb-tags">
+    <span class="tag tag-cyan">THREE-TIER LAN</span>
+    <span class="tag tag-green">SCORE 100%</span>
+    <span class="tag tag-amber">13 DEVICES</span>
+  </div>
+</div>
+
+<div id="legend">
+  <span style="color:#4a6a8a;letter-spacing:2px;font-size:9px">LINK TYPE:</span>
+  <div class="leg"><div class="leg-line" style="background:#ff4444;opacity:.8"></div><span>WAN / ISP</span></div>
+  <div class="leg"><div class="leg-line" style="background:#00e5ff"></div><span>L3 Trunk / Routed</span></div>
+  <div class="leg"><div class="leg-line" style="background:#8888cc;border-top:2px dashed #8888cc;background:none"></div><span>L3 EtherChannel</span></div>
+  <div class="leg"><div class="leg-line" style="background:#2a6a9a"></div><span>L2 Trunk</span></div>
+  <div class="leg"><div class="leg-line" style="background:#cc88ff;border-top:2px dashed #cc88ff;background:none"></div><span>L2 EtherChannel</span></div>
+  <div class="leg"><div class="leg-line" style="background:#1a4a2a"></div><span>Access Port</span></div>
+  <span style="margin-left:8px;color:#2a4060">· CLICK DEVICE FOR DETAILS · SCROLL TO ZOOM · DRAG TO PAN</span>
+</div>
+
+<div id="canvas-wrap">
+  <svg id="topo" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow-cyan">
+        <feGaussianBlur stdDeviation="3" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-green">
+        <feGaussianBlur stdDeviation="4" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="shadow">
+        <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity=".5"/>
+      </filter>
+      <marker id="arr-wan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#ff4444" opacity=".7"/>
+      </marker>
+    </defs>
+
+    <!-- ── BACKGROUND ZONES ── -->
+    <!-- Internet cloud -->
+    <ellipse cx="620" cy="72" rx="130" ry="38" fill="none" stroke="#2a1010" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="620" y="68" text-anchor="middle" fill="#2a1010" font-family="'Share Tech Mono',monospace" font-size="9" letter-spacing="3">INTERNET</text>
+
+    <!-- Office A zone -->
+    <rect x="40" y="310" width="480" height="330" rx="8"
+      fill="rgba(0,40,80,.07)" stroke="#0a2040" stroke-width="1"/>
+    <text x="55" y="332" fill="#0a2a4a" font-family="'Share Tech Mono',monospace" font-size="10" letter-spacing="3">OFFICE A</text>
+
+    <!-- Office B zone -->
+    <rect x="680" y="310" width="480" height="330" rx="8"
+      fill="rgba(0,40,80,.07)" stroke="#0a2040" stroke-width="1"/>
+    <text x="695" y="332" fill="#0a2a4a" font-family="'Share Tech Mono',monospace" font-size="10" letter-spacing="3">OFFICE B</text>
+
+    <!-- ── LINKS ── -->
+    <!-- ISP links -->
+    <line x1="500" y1="95" x2="560" y2="72" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="5,3" opacity=".7"/>
+    <line x1="500" y1="95" x2="680" y2="72" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="5,3" opacity=".7"/>
+
+    <!-- IP labels on ISP links -->
+    <text x="510" y="80" fill="#5a2020" font-family="'Share Tech Mono',monospace" font-size="8">203.0.113.2</text>
+    <text x="590" y="70" fill="#5a2020" font-family="'Share Tech Mono',monospace" font-size="8">203.0.113.6</text>
+
+    <!-- R1 → CSW1 -->
+    <line x1="460" y1="138" x2="280" y2="218" stroke="#00e5ff" stroke-width="2" opacity=".7"/>
+    <text x="340" y="173" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="8">.33/30</text>
+    <text x="330" y="183" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="8">.34/30</text>
+
+    <!-- R1 → CSW2 -->
+    <line x1="540" y1="138" x2="720" y2="218" stroke="#00e5ff" stroke-width="2" opacity=".7"/>
+    <text x="640" y="175" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="8">.37/30</text>
+    <text x="648" y="185" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="8">.38/30</text>
+
+    <!-- CSW1 ↔ CSW2 L3 EtherChannel -->
+    <line x1="320" y1="228" x2="680" y2="228" stroke="#8888cc" stroke-width="2.5" stroke-dasharray="8,4" opacity=".9"/>
+    <text x="500" y="220" text-anchor="middle" fill="#5555aa" font-family="'Share Tech Mono',monospace" font-size="8">L3 EtherChannel PAgP — .41/.42 /30</text>
+
+    <!-- CSW1 → DSW-A1 -->
+    <line x1="238" y1="248" x2="168" y2="348" stroke="#00e5ff" stroke-width="1.5" opacity=".5"/>
+    <text x="180" y="305" fill="#1a4a5a" font-family="'Share Tech Mono',monospace" font-size="7.5">.45/.46</text>
+    <!-- CSW1 → DSW-A2 -->
+    <line x1="268" y1="248" x2="338" y2="348" stroke="#00e5ff" stroke-width="1.5" opacity=".5"/>
+    <text x="318" y="302" fill="#1a4a5a" font-family="'Share Tech Mono',monospace" font-size="7.5">.49/.50</text>
+    <!-- CSW2 → DSW-B1 -->
+    <line x1="732" y1="248" x2="842" y2="348" stroke="#00e5ff" stroke-width="1.5" opacity=".5"/>
+    <text x="800" y="303" fill="#1a4a5a" font-family="'Share Tech Mono',monospace" font-size="7.5">.69/.70</text>
+    <!-- CSW2 → DSW-B2 -->
+    <line x1="762" y1="248" x2="1012" y2="348" stroke="#00e5ff" stroke-width="1.5" opacity=".5"/>
+    <text x="912" y="302" fill="#1a4a5a" font-family="'Share Tech Mono',monospace" font-size="7.5">.73/.74</text>
+    <!-- CSW2 → DSW-A1 cross -->
+    <line x1="700" y1="248" x2="168" y2="348" stroke="#00e5ff" stroke-width="1" opacity=".25" stroke-dasharray="3,4"/>
+    <!-- CSW2 → DSW-A2 cross -->
+    <line x1="718" y1="248" x2="338" y2="348" stroke="#00e5ff" stroke-width="1" opacity=".25" stroke-dasharray="3,4"/>
+    <!-- CSW1 → DSW-B1 cross -->
+    <line x1="300" y1="248" x2="842" y2="348" stroke="#00e5ff" stroke-width="1" opacity=".25" stroke-dasharray="3,4"/>
+    <!-- CSW1 → DSW-B2 cross -->
+    <line x1="318" y1="248" x2="1012" y2="348" stroke="#00e5ff" stroke-width="1" opacity=".25" stroke-dasharray="3,4"/>
+
+    <!-- DSW-A1 ↔ DSW-A2 L2 EtherChannel PAgP -->
+    <line x1="208" y1="368" x2="298" y2="368" stroke="#cc88ff" stroke-width="2.5" stroke-dasharray="7,3" opacity=".8"/>
+    <text x="253" y="360" text-anchor="middle" fill="#8855aa" font-family="'Share Tech Mono',monospace" font-size="7.5">PAgP Po1</text>
+
+    <!-- DSW-B1 ↔ DSW-B2 L2 EtherChannel LACP -->
+    <line x1="882" y1="368" x2="972" y2="368" stroke="#cc88ff" stroke-width="2.5" stroke-dasharray="7,3" opacity=".8"/>
+    <text x="927" y="360" text-anchor="middle" fill="#8855aa" font-family="'Share Tech Mono',monospace" font-size="7.5">LACP Po1</text>
+
+    <!-- DSW-A1 → ASW-A1/A2/A3 trunks -->
+    <line x1="148" y1="398" x2="98" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="168" y1="398" x2="248" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <!-- DSW-A2 → ASW-A1/A2/A3 trunks -->
+    <line x1="318" y1="398" x2="98" y2="488" stroke="#2a6a9a" stroke-width="1.5" opacity=".4" stroke-dasharray="3,3"/>
+    <line x1="338" y1="398" x2="248" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="355" y1="398" x2="408" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="158" y1="398" x2="408" y2="488" stroke="#2a6a9a" stroke-width="1.5" opacity=".4" stroke-dasharray="3,3"/>
+
+    <!-- Trunk label Sede A -->
+    <text x="155" y="447" fill="#1a4a6a" font-family="'Share Tech Mono',monospace" font-size="7.5">VLAN 10,20,40,99</text>
+    <text x="155" y="456" fill="#1a3a5a" font-family="'Share Tech Mono',monospace" font-size="7">native 1000 · noneg</text>
+
+    <!-- DSW-B1 → ASW-B1/B2/B3 trunks -->
+    <line x1="822" y1="398" x2="762" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="842" y1="398" x2="912" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <!-- DSW-B2 → ASW-B1/B2/B3 trunks -->
+    <line x1="992" y1="398" x2="762" y2="488" stroke="#2a6a9a" stroke-width="1.5" opacity=".4" stroke-dasharray="3,3"/>
+    <line x1="1012" y1="398" x2="912" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="1025" y1="398" x2="1072" y2="488" stroke="#2a6a9a" stroke-width="2" opacity=".8"/>
+    <line x1="862" y1="398" x2="1072" y2="488" stroke="#2a6a9a" stroke-width="1.5" opacity=".4" stroke-dasharray="3,3"/>
+
+    <!-- Trunk label Sede B -->
+    <text x="870" y="447" fill="#1a4a6a" font-family="'Share Tech Mono',monospace" font-size="7.5">VLAN 10,20,30,99</text>
+    <text x="870" y="456" fill="#1a3a5a" font-family="'Share Tech Mono',monospace" font-size="7">native 1000 · noneg</text>
+
+    <!-- Access ports → end hosts -->
+    <!-- ASW-A1 → LWAP1 -->
+    <line x1="78" y1="518" x2="68" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <!-- ASW-A1 → WLC1 trunk -->
+    <line x1="98" y1="518" x2="178" y2="575" stroke="#2a6a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <!-- ASW-A2 → Phone1+PC1 -->
+    <line x1="238" y1="518" x2="208" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <line x1="258" y1="518" x2="278" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <!-- ASW-A3 → Phone2+PC2 -->
+    <line x1="398" y1="518" x2="368" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <line x1="418" y1="518" x2="438" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+
+    <!-- ASW-B1 → LWAP2 -->
+    <line x1="742" y1="518" x2="732" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <!-- ASW-B2 → Phone3+PC3 -->
+    <line x1="892" y1="518" x2="862" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <line x1="912" y1="518" x2="932" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+    <!-- ASW-B3 → SRV1 -->
+    <line x1="1062" y1="518" x2="1062" y2="575" stroke="#1a4a2a" stroke-width="1.5"/>
+
+    <!-- HSRP virtual links (dashed) -->
+    <!-- HSRP label A -->
+    <text x="253" y="420" text-anchor="middle" fill="#4a2a7a" font-family="'Share Tech Mono',monospace" font-size="7.5">HSRP Gr.1,2 VIP .1 | Gr.3,4 VIP .1</text>
+
+    <!-- ══ DEVICES ══ -->
+
+    <!-- ISP-A -->
+    <g class="device" data-id="ispa" transform="translate(490,50)" style="cursor:pointer">
+      <rect x="-28" y="-18" width="56" height="36" rx="4" fill="#160808" stroke="#ff4444" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="16">🌐</text>
+      <text x="0" y="11" text-anchor="middle" fill="#cc4444" font-family="'Share Tech Mono',monospace" font-size="8">ISP-A</text>
+      <text x="0" y="22" text-anchor="middle" fill="#442222" font-family="'Share Tech Mono',monospace" font-size="7">203.0.113.1</text>
+    </g>
+
+    <!-- ISP-B -->
+    <g class="device" data-id="ispb" transform="translate(710,50)" style="cursor:pointer">
+      <rect x="-28" y="-18" width="56" height="36" rx="4" fill="#160808" stroke="#ff4444" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="16">🌐</text>
+      <text x="0" y="11" text-anchor="middle" fill="#cc4444" font-family="'Share Tech Mono',monospace" font-size="8">ISP-B</text>
+      <text x="0" y="22" text-anchor="middle" fill="#442222" font-family="'Share Tech Mono',monospace" font-size="7">203.0.113.5</text>
+    </g>
+
+    <!-- R1 -->
+    <g class="device" data-id="r1" transform="translate(500,110)" style="cursor:pointer">
+      <rect x="-44" y="-28" width="88" height="56" rx="5" fill="#071520" stroke="#00e5ff" stroke-width="2" filter="url(#glow-cyan)"/>
+      <text x="0" y="-9" text-anchor="middle" font-size="22">🔀</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00e5ff" font-family="'Rajdhani',sans-serif" font-size="14" font-weight="700">R1</text>
+      <text x="0" y="22" text-anchor="middle" fill="#2a6a8a" font-family="'Share Tech Mono',monospace" font-size="7.5">ISR2900 · IOS 15.5</text>
+    </g>
+
+    <!-- CSW1 -->
+    <g class="device" data-id="csw1" transform="translate(270,228)" style="cursor:pointer">
+      <rect x="-50" y="-22" width="100" height="44" rx="4" fill="#071520" stroke="#00e5ff" stroke-width="1.8"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="18">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00e5ff" font-family="'Rajdhani',sans-serif" font-size="13" font-weight="700">CSW1</text>
+      <text x="0" y="20" text-anchor="middle" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="7">Cat3650 · Lo:.77</text>
+    </g>
+
+    <!-- CSW2 -->
+    <g class="device" data-id="csw2" transform="translate(730,228)" style="cursor:pointer">
+      <rect x="-50" y="-22" width="100" height="44" rx="4" fill="#071520" stroke="#00e5ff" stroke-width="1.8"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="18">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00e5ff" font-family="'Rajdhani',sans-serif" font-size="13" font-weight="700">CSW2</text>
+      <text x="0" y="20" text-anchor="middle" fill="#1a5a6a" font-family="'Share Tech Mono',monospace" font-size="7">Cat3650 · Lo:.78</text>
+    </g>
+
+    <!-- DSW-A1 -->
+    <g class="device" data-id="dswa1" transform="translate(168,373)" style="cursor:pointer">
+      <rect x="-46" y="-22" width="92" height="44" rx="4" fill="#071520" stroke="#00b8d4" stroke-width="1.5"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="16">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00b8d4" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="700">DSW-A1</text>
+      <text x="0" y="20" text-anchor="middle" fill="#0a4050" font-family="'Share Tech Mono',monospace" font-size="7">HSRP active 1,2</text>
+    </g>
+
+    <!-- DSW-A2 -->
+    <g class="device" data-id="dswa2" transform="translate(338,373)" style="cursor:pointer">
+      <rect x="-46" y="-22" width="92" height="44" rx="4" fill="#071520" stroke="#00b8d4" stroke-width="1.5"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="16">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00b8d4" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="700">DSW-A2</text>
+      <text x="0" y="20" text-anchor="middle" fill="#0a4050" font-family="'Share Tech Mono',monospace" font-size="7">HSRP active 3,4</text>
+    </g>
+
+    <!-- DSW-B1 -->
+    <g class="device" data-id="dswb1" transform="translate(842,373)" style="cursor:pointer">
+      <rect x="-46" y="-22" width="92" height="44" rx="4" fill="#071520" stroke="#00b8d4" stroke-width="1.5"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="16">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00b8d4" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="700">DSW-B1</text>
+      <text x="0" y="20" text-anchor="middle" fill="#0a4050" font-family="'Share Tech Mono',monospace" font-size="7">HSRP active 1,2</text>
+    </g>
+
+    <!-- DSW-B2 -->
+    <g class="device" data-id="dswb2" transform="translate(1012,373)" style="cursor:pointer">
+      <rect x="-46" y="-22" width="92" height="44" rx="4" fill="#071520" stroke="#00b8d4" stroke-width="1.5"/>
+      <text x="0" y="-6" text-anchor="middle" font-size="16">🖥</text>
+      <text x="0" y="10" text-anchor="middle" fill="#00b8d4" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="700">DSW-B2</text>
+      <text x="0" y="20" text-anchor="middle" fill="#0a4050" font-family="'Share Tech Mono',monospace" font-size="7">HSRP active 3,4</text>
+    </g>
+
+    <!-- ASW-A1 -->
+    <g class="device" data-id="aswa1" transform="translate(88,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-A1</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .4/28</text>
+    </g>
+
+    <!-- ASW-A2 -->
+    <g class="device" data-id="aswa2" transform="translate(248,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-A2</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .5/28</text>
+    </g>
+
+    <!-- ASW-A3 -->
+    <g class="device" data-id="aswa3" transform="translate(408,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-A3</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .6/28</text>
+    </g>
+
+    <!-- ASW-B1 -->
+    <g class="device" data-id="aswb1" transform="translate(752,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-B1</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .20/28</text>
+    </g>
+
+    <!-- ASW-B2 -->
+    <g class="device" data-id="aswb2" transform="translate(912,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-B2</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .21/28</text>
+    </g>
+
+    <!-- ASW-B3 -->
+    <g class="device" data-id="aswb3" transform="translate(1072,503)" style="cursor:pointer">
+      <rect x="-38" y="-18" width="76" height="36" rx="3" fill="#050c16" stroke="#1a3a50" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🔌</text>
+      <text x="0" y="11" text-anchor="middle" fill="#3a7a9a" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="700">ASW-B3</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">Cat2960 · .22/28</text>
+    </g>
+
+    <!-- End Hosts -->
+    <!-- LWAP1 -->
+    <g class="device" data-id="lwap1" transform="translate(68,590)" style="cursor:pointer">
+      <circle r="18" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-3" text-anchor="middle" font-size="14">📡</text>
+      <text x="0" y="13" text-anchor="middle" fill="#2a5a3a" font-family="'Share Tech Mono',monospace" font-size="7">LWAP1</text>
+    </g>
+
+    <!-- WLC1 -->
+    <g class="device" data-id="wlc1" transform="translate(178,590)" style="cursor:pointer">
+      <rect x="-30" y="-18" width="60" height="36" rx="3" fill="#060e14" stroke="#2a4a7a" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">📶</text>
+      <text x="0" y="11" text-anchor="middle" fill="#2a4a7a" font-family="'Share Tech Mono',monospace" font-size="7.5">WLC1</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a3a" font-family="'Share Tech Mono',monospace" font-size="6.5">10.0.0.7</text>
+    </g>
+
+    <!-- Phone1 -->
+    <g class="device" data-id="phone1" transform="translate(208,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">📞</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">Ph1 V20</text>
+    </g>
+
+    <!-- PC1 -->
+    <g class="device" data-id="pc1" transform="translate(278,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">💻</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">PC1 V10</text>
+    </g>
+
+    <!-- Phone2 -->
+    <g class="device" data-id="phone2" transform="translate(368,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">📞</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">Ph2 V20</text>
+    </g>
+
+    <!-- PC2 -->
+    <g class="device" data-id="pc2" transform="translate(438,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">💻</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">PC2 V10</text>
+    </g>
+
+    <!-- Laptop1 (wireless) -->
+    <g data-id="laptop1" transform="translate(65,630)" style="cursor:default">
+      <text x="0" y="0" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="6.5">Laptop1</text>
+      <text x="0" y="10" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="6">VLAN 40 (WiFi)</text>
+    </g>
+
+    <!-- LWAP2 -->
+    <g class="device" data-id="lwap2" transform="translate(732,590)" style="cursor:pointer">
+      <circle r="18" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-3" text-anchor="middle" font-size="14">📡</text>
+      <text x="0" y="13" text-anchor="middle" fill="#2a5a3a" font-family="'Share Tech Mono',monospace" font-size="7">LWAP2</text>
+    </g>
+
+    <!-- Phone3 -->
+    <g class="device" data-id="phone3" transform="translate(862,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">📞</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">Ph3 V20</text>
+    </g>
+
+    <!-- PC3 -->
+    <g class="device" data-id="pc3" transform="translate(932,590)" style="cursor:pointer">
+      <circle r="16" fill="#060e14" stroke="#1a4a2a" stroke-width="1"/>
+      <text x="0" y="-2" text-anchor="middle" font-size="13">💻</text>
+      <text x="0" y="12" text-anchor="middle" fill="#1a4a2a" font-family="'Share Tech Mono',monospace" font-size="6.5">PC3 V10</text>
+    </g>
+
+    <!-- SRV1 -->
+    <g class="device" data-id="srv1" transform="translate(1062,590)" style="cursor:pointer">
+      <rect x="-28" y="-18" width="56" height="36" rx="3" fill="#060e14" stroke="#2a5a3a" stroke-width="1.2"/>
+      <text x="0" y="-4" text-anchor="middle" font-size="14">🖥</text>
+      <text x="0" y="11" text-anchor="middle" fill="#2a6a4a" font-family="'Share Tech Mono',monospace" font-size="7.5">SRV1</text>
+      <text x="0" y="21" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="6.5">10.5.0.4</text>
+    </g>
+
+    <!-- Laptop2 -->
+    <g data-id="laptop2" transform="translate(730,620)" style="cursor:default">
+      <text x="0" y="0" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="6.5">Laptop2</text>
+      <text x="0" y="10" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="6">VLAN 40 (WiFi)</text>
+    </g>
+
+    <!-- VLAN subnet labels in zones -->
+    <text x="253" y="640" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="7.5">
+      DHCP pool A-PC: 10.1.0.0/24 · A-Phone: 10.2.0.0/24 · Wi-Fi: 10.6.0.0/24 · Mgmt: 10.0.0.0/28
+    </text>
+    <text x="912" y="640" text-anchor="middle" fill="#0a2a1a" font-family="'Share Tech Mono',monospace" font-size="7.5">
+      DHCP pool B-PC: 10.3.0.0/24 · B-Phone: 10.4.0.0/24 · Servers: 10.5.0.0/24 · Mgmt: 10.0.0.16/28
+    </text>
+
+  </svg>
+
+  <!-- PANEL OVERLAY + PANEL -->
+  <div id="panel-overlay">
+    <div id="panel">
+      <div id="panel-header">
+        <div style="display:flex;align-items:center">
+          <span id="panel-icon"></span>
+          <div>
+            <div id="panel-name"></div>
+            <div id="panel-type"></div>
+          </div>
+        </div>
+        <button id="panel-close" onclick="closePanel()">✕</button>
+      </div>
+      <div id="panel-body"></div>
+    </div>
+  </div>
+
+  <!-- ZOOM -->
+  <div id="zoom-ctrl">
+    <button class="zb" onclick="zoom(1.2)">+</button>
+    <button class="zb" onclick="zoom(0.833)">−</button>
+    <button class="zb" onclick="resetView()" style="font-size:11px;letter-spacing:0">FIT</button>
+  </div>
+
+  <div id="tooltip"></div>
+  <div id="hint">CLICK DEVICE FOR DETAILS · SCROLL TO ZOOM · DRAG TO PAN</div>
+</div>
+
+<script>
+// ── DEVICE DATA ──────────────────────────────────────────────────────────────
+const DEVICES = {
+  ispa:{
+    icon:'🌐', name:'ISP-A', type:'INTERNET SERVICE PROVIDER',
+    sections:[
+      {title:'Connessione',rows:[
+        ['Interface to R1','G0/0/0 (R1)'],
+        ['Subnet','203.0.113.0/30'],
+        ['IP ISP-A','203.0.113.1'],
+        ['IP R1 G0/0/0','203.0.113.2 (DHCP)'],
+        ['Role','Primary Internet link'],
+      ]}
+    ]
+  },
+  ispb:{
+    icon:'🌐', name:'ISP-B', type:'INTERNET SERVICE PROVIDER',
+    sections:[
+      {title:'Connessione',rows:[
+        ['Interface to R1','G0/1/0 (R1)'],
+        ['Subnet','203.0.113.4/30'],
+        ['IP ISP-B','203.0.113.5'],
+        ['IP R1 G0/1/0','203.0.113.6 (DHCP)'],
+        ['Role','Floating route AD 2'],
+      ]}
+    ]
+  },
+  r1:{
+    icon:'🔀', name:'R1', type:'CISCO ISR 2900 · IOS 15.5',
+    sections:[
+      {title:'Interfaces',rows:[
+        ['G0/0/0 (ISP-A)','203.0.113.2/30 — DHCP','ip'],
+        ['G0/1/0 (ISP-B)','203.0.113.6/30 — DHCP','ip'],
+        ['G0/0 (CSW1)','10.0.0.33/30','ip'],
+        ['G0/1 (CSW2)','10.0.0.37/30','ip'],
+        ['Loopback0','10.0.0.76/32','ip'],
+      ]},
+      {title:'Routing',rows:[
+        ['Default route primary','ip route 0.0.0.0/0 203.0.113.1'],
+        ['Default route floating','ip route 0.0.0.0/0 203.0.113.5 AD:2'],
+        ['OSPF','Process 1 · Area 0 · ASBR'],
+        ['OSPF Router-ID','10.0.0.76'],
+        ['default-information originate','★ advertises the default route via OSPF'],
+      ]},
+      {title:'Services',rows:[
+        ['DHCP Server','7 pools — relay target: lo0'],
+        ['NAT static','10.5.0.4 → 203.0.113.113'],
+        ['PAT pool','POOL1: 203.0.113.200-207/29'],
+        ['NTP Master','Stratum 5 · auth MD5 key 1'],
+        ['SSH v2','RSA 4096 · ACL 1 (A-PCs only)'],
+        ['FTP upgrade','IOS 15.1 → 15.5 from SRV1'],
+      ]},
+      {title:'Security',rows:[
+        ['Enable secret','Type 5 (MD5)'],
+        ['Username','cisco / ccna'],
+        ['Console','login local · timeout 30 · log sync'],
+        ['VTY','SSH only · access-class 1 in'],
+        ['CDP/LLDP','no cdp run / lldp run'],
+      ]}
+    ]
+  },
+  csw1:{
+    icon:'🖥', name:'CSW1', type:'CORE SWITCH — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces',rows:[
+        ['G1/0/1 → R1','10.0.0.34/30','ip'],
+        ['Port-Channel1 → CSW2','10.0.0.41/30 (L3 EtherChannel PAgP)','ip'],
+        ['G1/1/1 → DSW-A1','10.0.0.45/30','ip'],
+        ['G1/1/2 → DSW-A2','10.0.0.49/30','ip'],
+        ['G1/1/3 → DSW-B1','10.0.0.53/30','ip'],
+        ['G1/1/4 → DSW-B2','10.0.0.57/30','ip'],
+        ['Loopback0','10.0.0.77/32','ip'],
+      ]},
+      {title:'OSPF',rows:[
+        ['Router-ID','10.0.0.77'],
+        ['Area','0 — NETWORK cmd with /32'],
+        ['P2P','G1/0/1 · G1/1/1-4'],
+        ['Passive','Loopback0'],
+      ]},
+      {title:'Security',rows:[
+        ['Enable secret','Type 9 (scrypt)'],
+        ['Username','cisco / ccna (scrypt)'],
+        ['Unused ports','G1/0/4-24 shutdown'],
+      ]}
+    ]
+  },
+  csw2:{
+    icon:'🖥', name:'CSW2', type:'CORE SWITCH — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces',rows:[
+        ['G1/0/1 → R1','10.0.0.38/30','ip'],
+        ['Port-Channel1 → CSW1','10.0.0.42/30 (L3 EtherChannel PAgP)','ip'],
+        ['G1/1/1 → DSW-A1','10.0.0.61/30','ip'],
+        ['G1/1/2 → DSW-A2','10.0.0.65/30','ip'],
+        ['G1/1/3 → DSW-B1','10.0.0.69/30','ip'],
+        ['G1/1/4 → DSW-B2','10.0.0.73/30','ip'],
+        ['Loopback0','10.0.0.78/32','ip'],
+      ]},
+      {title:'OSPF',rows:[
+        ['Router-ID','10.0.0.78'],
+        ['Area','0 — NETWORK cmd with /32'],
+        ['P2P','G1/0/1 · G1/1/1-4'],
+        ['Passive','Loopback0'],
+      ]},
+      {title:'Security',rows:[
+        ['Enable secret','Type 9 (scrypt)'],
+        ['Unused ports','G1/0/4-24 shutdown'],
+      ]}
+    ]
+  },
+  dswa1:{
+    icon:'🖥', name:'DSW-A1', type:'DISTRIBUTION SWITCH A — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces (uplink)',rows:[
+        ['G1/1/1 → CSW1','10.0.0.46/30','ip'],
+        ['G1/1/2 → CSW2','10.0.0.62/30','ip'],
+        ['Loopback0','10.0.0.79/32','ip'],
+      ]},
+      {title:'SVIs — HSRP ACTIVE (Gr.1,2)',rows:[
+        ['VLAN 99 Mgmt','10.0.0.2/28 · VIP 10.0.0.1 · prio 105','ip'],
+        ['VLAN 10 PCs','10.1.0.2/24 · VIP 10.1.0.1 · prio 105','ip'],
+        ['VLAN 20 Phones','10.2.0.2/24 · VIP 10.2.0.1 (standby)','ip'],
+        ['VLAN 40 Wi-Fi','10.6.0.2/24 · VIP 10.6.0.1 (standby)','ip'],
+      ]},
+      {title:'Layer 2 (towards ASW)',rows:[
+        ['Trunk G1/0/1-3','VLAN 10,20,40,99 · native 1000 · noneg'],
+        ['PortChannel1','PAgP Desirable with DSW-A2'],
+        ['STP','Root VLAN 10,99 (prio 0) · Secondary 20,40 (prio 4096)'],
+      ]},
+      {title:'Services',rows:[
+        ['DHCP Relay','ip helper-address 10.0.0.76 on all SVIs'],
+        ['OSPF','Router-ID .79 · passive VLAN 10,20,40 · P2P G1/1/1-2'],
+        ['VTP','Server · JeremysITLab · v2'],
+        ['ACL','OfficeA_to_OfficeB applied IN on the VLAN 10 SVI'],
+      ]}
+    ]
+  },
+  dswa2:{
+    icon:'🖥', name:'DSW-A2', type:'DISTRIBUTION SWITCH A — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces (uplink)',rows:[
+        ['G1/1/1 → CSW1','10.0.0.50/30','ip'],
+        ['G1/1/2 → CSW2','10.0.0.66/30','ip'],
+        ['Loopback0','10.0.0.80/32','ip'],
+      ]},
+      {title:'SVIs — HSRP ACTIVE (Gr.3,4)',rows:[
+        ['VLAN 99 Mgmt','10.0.0.3/28 · VIP 10.0.0.1 (standby)','ip'],
+        ['VLAN 10 PCs','10.1.0.3/24 · VIP 10.1.0.1 (standby)','ip'],
+        ['VLAN 20 Phones','10.2.0.3/24 · VIP 10.2.0.1 · prio 105','ip'],
+        ['VLAN 40 Wi-Fi','10.6.0.3/24 · VIP 10.6.0.1 · prio 105','ip'],
+      ]},
+      {title:'Layer 2',rows:[
+        ['Trunk G1/0/1-3','VLAN 10,20,40,99 · native 1000 · noneg'],
+        ['PortChannel1','PAgP Desirable with DSW-A1'],
+        ['STP','Root VLAN 20,40 (prio 0) · Secondary 10,99 (prio 4096)'],
+      ]},
+      {title:'Services',rows:[
+        ['DHCP Relay','ip helper-address 10.0.0.76'],
+        ['OSPF','Router-ID .80 · passive VLAN 10,20,40'],
+        ['ACL','OfficeA_to_OfficeB IN on the VLAN 10 SVI'],
+      ]}
+    ]
+  },
+  dswb1:{
+    icon:'🖥', name:'DSW-B1', type:'DISTRIBUTION SWITCH B — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces (uplink)',rows:[
+        ['G1/1/1 → CSW1','10.0.0.54/30','ip'],
+        ['G1/1/2 → CSW2','10.0.0.70/30','ip'],
+        ['Loopback0','10.0.0.81/32','ip'],
+      ]},
+      {title:'SVIs — HSRP ACTIVE (Gr.1,2)',rows:[
+        ['VLAN 99 Mgmt','10.0.0.18/28 · VIP 10.0.0.17 · prio 105','ip'],
+        ['VLAN 10 PCs','10.3.0.2/24 · VIP 10.3.0.1 · prio 105','ip'],
+        ['VLAN 20 Phones','10.4.0.2/24 · VIP 10.4.0.1 (standby)','ip'],
+        ['VLAN 30 Servers','10.5.0.2/24 · VIP 10.5.0.1 (standby)','ip'],
+      ]},
+      {title:'Layer 2',rows:[
+        ['Trunk G1/0/1-3','VLAN 10,20,30,99 · native 1000 · noneg'],
+        ['PortChannel1','LACP Active with DSW-B2'],
+        ['STP','Root VLAN 10,99 (prio 0) · Secondary 20,30 (prio 4096)'],
+        ['VTP','Server · JeremysITLab · v2'],
+      ]},
+      {title:'Services',rows:[
+        ['DHCP Relay','ip helper-address 10.0.0.76'],
+        ['OSPF','Router-ID .81 · passive VLAN 10,20,30'],
+      ]}
+    ]
+  },
+  dswb2:{
+    icon:'🖥', name:'DSW-B2', type:'DISTRIBUTION SWITCH B — CATALYST 3650 L3',
+    sections:[
+      {title:'Routed Interfaces (uplink)',rows:[
+        ['G1/1/1 → CSW1','10.0.0.58/30','ip'],
+        ['G1/1/2 → CSW2','10.0.0.74/30','ip'],
+        ['Loopback0','10.0.0.82/32','ip'],
+      ]},
+      {title:'SVIs — HSRP ACTIVE (Gr.3,4)',rows:[
+        ['VLAN 99 Mgmt','10.0.0.19/28 · VIP 10.0.0.17 (standby)','ip'],
+        ['VLAN 10 PCs','10.3.0.3/24 · VIP 10.3.0.1 (standby)','ip'],
+        ['VLAN 20 Phones','10.4.0.3/24 · VIP 10.4.0.1 · prio 105','ip'],
+        ['VLAN 30 Servers','10.5.0.3/24 · VIP 10.5.0.1 · prio 105','ip'],
+      ]},
+      {title:'Layer 2',rows:[
+        ['Trunk G1/0/1-3','VLAN 10,20,30,99 · native 1000 · noneg'],
+        ['PortChannel1','LACP Active with DSW-B1'],
+        ['STP','Root VLAN 20,30 (prio 0) · Secondary 10,99 (prio 4096)'],
+      ]},
+      {title:'Services',rows:[
+        ['DHCP Relay','ip helper-address 10.0.0.76'],
+        ['OSPF','Router-ID .82 · passive VLAN 10,20,30'],
+      ]}
+    ]
+  },
+  aswa1:{
+    icon:'🔌', name:'ASW-A1', type:'ACCESS SWITCH A — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.4/28','ip'],
+        ['Default Gateway','10.0.0.1 (HSRP VIP)','ip'],
+        ['VTP','Client · JeremysITLab · v2'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → LWAP1','Access VLAN 99 · noneg · PortFast · BPDU Guard'],
+        ['F0/2 → WLC1','Trunk VLAN 40,99 · native 99 · noneg · PortFast trunk'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,40,99 · native 1000 · noneg'],
+        ['F0/3-24','shutdown (unused)'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security F0/1','max 1 · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,40,99 · G0/1-2 trust · F0/1: 15pps · F0/2: 100pps'],
+        ['DAI','VLAN 10,20,40,99 · G0/1-2 trust · validate dst/src/ip'],
+        ['Rapid PVST+','spanning-tree mode rapid-pvst'],
+        ['Enable secret','Type 5 (MD5)'],
+      ]}
+    ]
+  },
+  aswa2:{
+    icon:'🔌', name:'ASW-A2', type:'ACCESS SWITCH A — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.5/28','ip'],
+        ['Default Gateway','10.0.0.1','ip'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → Phone1+PC1','Access VLAN 10 + Voice VLAN 20 · noneg'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,40,99 · native 1000'],
+        ['F0/2-24','shutdown'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security','max 2 (PC+Phone) · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,40,99 · trust G0/1-2 · F0/1: 15pps'],
+        ['DAI','VLAN 10,20,40,99 · trust G0/1-2'],
+      ]}
+    ]
+  },
+  aswa3:{
+    icon:'🔌', name:'ASW-A3', type:'ACCESS SWITCH A — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.6/28','ip'],
+        ['Default Gateway','10.0.0.1','ip'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → Phone2+PC2','Access VLAN 10 + Voice VLAN 20 · noneg'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,40,99 · native 1000'],
+        ['F0/2-24','shutdown'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security','max 2 · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,40,99 · trust G0/1-2'],
+        ['DAI','validate dst/src/ip'],
+      ]}
+    ]
+  },
+  aswb1:{
+    icon:'🔌', name:'ASW-B1', type:'ACCESS SWITCH B — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.20/28','ip'],
+        ['Default Gateway','10.0.0.17 (HSRP VIP)','ip'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → LWAP2','Access VLAN 99 · noneg · PortFast · BPDU Guard'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,30,99 · native 1000 · noneg'],
+        ['F0/2-24','shutdown'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security','max 1 · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,30,99 · trust G0/1-2 · F0/1: 15pps'],
+        ['DAI','VLAN 10,20,30,99 · trust G0/1-2'],
+      ]}
+    ]
+  },
+  aswb2:{
+    icon:'🔌', name:'ASW-B2', type:'ACCESS SWITCH B — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.21/28','ip'],
+        ['Default Gateway','10.0.0.17','ip'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → Phone3+PC3','Access VLAN 10 + Voice VLAN 20 · noneg'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,30,99 · native 1000'],
+        ['F0/2-24','shutdown'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security','max 2 · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,30,99'],
+        ['DAI','validate dst/src/ip'],
+      ]}
+    ]
+  },
+  aswb3:{
+    icon:'🔌', name:'ASW-B3', type:'ACCESS SWITCH B — CATALYST 2960 L2',
+    sections:[
+      {title:'Management',rows:[
+        ['VLAN 99 SVI','10.0.0.22/28','ip'],
+        ['Default Gateway','10.0.0.17','ip'],
+      ]},
+      {title:'Ports',rows:[
+        ['F0/1 → SRV1','Access VLAN 30 (Servers) · noneg · PortFast · BPDU Guard'],
+        ['G0/1-2 → DSW','Trunk VLAN 10,20,30,99 · native 1000'],
+        ['F0/2-24','shutdown'],
+      ]},
+      {title:'Security',rows:[
+        ['Port Security','max 1 · restrict · sticky'],
+        ['DHCP Snooping','VLAN 10,20,30,99'],
+        ['DAI','validate dst/src/ip'],
+      ]}
+    ]
+  },
+  wlc1:{
+    icon:'📶', name:'WLC1', type:'WIRELESS LAN CONTROLLER',
+    sections:[
+      {title:'Management',rows:[
+        ['IP Address','10.0.0.7','ip'],
+        ['Subnet','10.0.0.0/28 (VLAN 99)','ip'],
+        ['Default GW','10.0.0.1 (HSRP VIP)','ip'],
+        ['Credenziali GUI','admin / adminPW12'],
+        ['Access','https://10.0.0.7 from PC1'],
+      ]},
+      {title:'Dynamic Interface — Wi-Fi',rows:[
+        ['Name','Wi-Fi'],
+        ['VLAN','40'],
+        ['Port','1'],
+        ['IP','10.6.0.2/24','ip'],
+        ['GW','10.6.0.1','ip'],
+        ['DHCP Server','10.0.0.76 (R1 Loopback)','ip'],
+      ]},
+      {title:'WLAN',rows:[
+        ['SSID','Wi-Fi'],
+        ['WLAN ID','1'],
+        ['Interface','Wi-Fi (VLAN 40)'],
+        ['Security','WPA2-PSK / AES'],
+        ['PSK','cisco123'],
+        ['Protocollo','CAPWAP (no FlexConnect)'],
+      ]},
+      {title:'Access Points',rows:[
+        ['LWAP1','Office A — associato','green'],
+        ['LWAP2','Office B — associato via option 43','green'],
+      ]}
+    ]
+  },
+  lwap1:{
+    icon:'📡', name:'LWAP1', type:'LIGHTWEIGHT ACCESS POINT — OFFICE A',
+    sections:[
+      {title:'Configuration',rows:[
+        ['Mode','Local mode (CAPWAP — no FlexConnect)'],
+        ['WLC','10.0.0.7 (WLC1)','ip'],
+        ['Switch port','ASW-A1 F0/1 · Access VLAN 99'],
+        ['VLAN Management','99 — IP via pool A-Mgmt','ip'],
+        ['Wireless clients','VLAN 40 (Wi-Fi) — tunnelato a WLC1'],
+        ['Discovery WLC','Local broadcast (same segment)'],
+      ]}
+    ]
+  },
+  lwap2:{
+    icon:'📡', name:'LWAP2', type:'LIGHTWEIGHT ACCESS POINT — OFFICE B',
+    sections:[
+      {title:'Configuration',rows:[
+        ['Mode','Local mode (CAPWAP)'],
+        ['WLC','10.0.0.7 (WLC1 in Office A)','ip'],
+        ['Switch port','ASW-B1 F0/1 · Access VLAN 99'],
+        ['VLAN Management','99 — IP via pool B-Mgmt','ip'],
+        ['Discovery WLC','DHCP Option 43: 10.0.0.7 (unicast across offices)'],
+        ['Wireless clients','VLAN 40 tunnelled to WLC1'],
+      ]}
+    ]
+  },
+  pc1:{
+    icon:'💻', name:'PC1', type:'END HOST — OFFICE A',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','10 (PCs)'],
+        ['IP','DHCP pool A-PC — 10.1.0.11+/24','ip'],
+        ['Default GW','10.1.0.1 (HSRP VIP)','ip'],
+        ['DNS Server','10.5.0.4 (SRV1)','ip'],
+        ['Switch','ASW-A2 F0/1 — Access VLAN 10'],
+      ]},
+      {title:'Tests performed',rows:[
+        ['ping 10.0.0.76','OK (OSPF)','green'],
+        ['ping jeremysitlab.com','OK (DNS + NAT)','green'],
+        ['ssh -l cisco R1','OK (ACL 1 permits A-PCs)','green'],
+      ]}
+    ]
+  },
+  pc2:{
+    icon:'💻', name:'PC2', type:'END HOST — OFFICE A',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','10 (PCs)'],
+        ['IP','DHCP pool A-PC — 10.1.0.x/24','ip'],
+        ['Default GW','10.1.0.1','ip'],
+        ['Switch','ASW-A3 F0/1 — Access VLAN 10'],
+      ]}
+    ]
+  },
+  pc3:{
+    icon:'💻', name:'PC3', type:'END HOST — OFFICE B',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','10 (PCs)'],
+        ['IP','DHCP pool B-PC — 10.3.0.x/24','ip'],
+        ['Default GW','10.3.0.1','ip'],
+        ['Switch','ASW-B2 F0/1 — Access VLAN 10'],
+      ]},
+      {title:'Tests',rows:[
+        ['ping 10.0.0.76','OK','green'],
+        ['ssh -l cisco R1','REFUSED (ACL 1 denies B-PCs)','red'],
+      ]}
+    ]
+  },
+  phone1:{
+    icon:'📞', name:'Phone1', type:'IP PHONE — OFFICE A',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','20 (Phones — Voice VLAN)'],
+        ['IP','DHCP pool A-Phone — 10.2.0.x/24','ip'],
+        ['Default GW','10.2.0.1','ip'],
+        ['Switch','ASW-A2 F0/1 — Access VLAN 10 + Voice VLAN 20'],
+      ]}
+    ]
+  },
+  phone2:{
+    icon:'📞', name:'Phone2', type:'IP PHONE — OFFICE A',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','20 (Phones)'],
+        ['IP','DHCP pool A-Phone — 10.2.0.x/24','ip'],
+        ['Switch','ASW-A3 F0/1 — Voice VLAN 20'],
+      ]}
+    ]
+  },
+  phone3:{
+    icon:'📞', name:'Phone3', type:'IP PHONE — OFFICE B',
+    sections:[
+      {title:'Network',rows:[
+        ['VLAN','20 (Phones)'],
+        ['IP','DHCP pool B-Phone — 10.4.0.x/24','ip'],
+        ['Default GW','10.4.0.1','ip'],
+        ['Switch','ASW-B2 F0/1 — Voice VLAN 20'],
+      ]}
+    ]
+  },
+  srv1:{
+    icon:'🖥', name:'SRV1', type:'SERVER — OFFICE B (VLAN 30)',
+    sections:[
+      {title:'Network (GUI Packet Tracer)',rows:[
+        ['IP Address','10.5.0.4/24','ip'],
+        ['Default Gateway','10.5.0.1 (HSRP VIP Gr.4)','ip'],
+        ['Switch','ASW-B3 F0/1 — Access VLAN 30'],
+        ['External NAT','203.0.113.113 (static NAT on R1)','ip'],
+      ]},
+      {title:'Active services',rows:[
+        ['DNS','google.com · youtube.com · jeremysitlab.com · CNAME www','green'],
+        ['FTP','IOS image for the R1 upgrade','green'],
+        ['Syslog','receives from all 13 devices','green'],
+        ['SNMP','community SNMPSTRING RO','green'],
+      ]},
+      {title:'DNS Record',rows:[
+        ['google.com','172.253.62.100 (A record)','ip'],
+        ['youtube.com','152.250.31.93 (A record)','ip'],
+        ['jeremysitlab.com','66.235.200.145 (A record)','ip'],
+        ['www.jeremysitlab.com','→ jeremysitlab.com (CNAME)','cyan'],
+      ]}
+    ]
+  },
+};
+
+// ── PANEL ───────────────────────────────────────────────────────────────────
+function openPanel(id) {
+  const d = DEVICES[id]; if(!d) return;
+  document.getElementById('panel-icon').textContent = d.icon+' ';
+  document.getElementById('panel-name').textContent = d.name;
+  document.getElementById('panel-type').textContent = d.type;
+  let html = '';
+  for(const sec of d.sections) {
+    html += `<div class="panel-section"><div class="panel-section-title">${sec.title}</div>`;
+    for(const r of sec.rows) {
+      const cls = r[2] ? `pv ${r[2]}` : 'pv';
+      html += `<div class="panel-row"><span class="pk">${r[0]}</span><span class="${cls}">${r[1]}</span></div>`;
+    }
+    html += '</div>';
+  }
+  document.getElementById('panel-body').innerHTML = html;
+  document.getElementById('panel-body').scrollTop = 0;
+  document.getElementById('panel-overlay').classList.add('open');
+}
+function closePanel() {
+  document.getElementById('panel-overlay').classList.remove('open');
+}
+
+// Click devices
+document.querySelectorAll('.device').forEach(g => {
+  g.addEventListener('click', e => {
+    e.stopPropagation();
+    const id = g.dataset.id;
+    openPanel(id);
+    // Glow effect
+    document.querySelectorAll('.device rect, .device circle').forEach(el => {
+      el.style.filter = '';
+    });
+    g.querySelectorAll('rect, circle').forEach(el => {
+      el.style.filter = 'url(#glow-cyan)';
+    });
+  });
+  g.addEventListener('mouseenter', () => {
+    const id = g.dataset.id;
+    const d = DEVICES[id]; if(!d) return;
+    const tip = document.getElementById('tooltip');
+    tip.textContent = d.name + ' — ' + d.type;
+    tip.style.display = 'block';
+  });
+  g.addEventListener('mousemove', e => {
+    const tip = document.getElementById('tooltip');
+    tip.style.left = (e.clientX + 12) + 'px';
+    tip.style.top = (e.clientY - 28) + 'px';
+  });
+  g.addEventListener('mouseleave', () => {
+    document.getElementById('tooltip').style.display = 'none';
+  });
+});
+
+document.getElementById('topo').addEventListener('click', () => {
+  closePanel();
+  document.querySelectorAll('.device rect, .device circle').forEach(el => el.style.filter = '');
+});
+
+// Close panel when clicking the overlay background (mobile dim area)
+document.getElementById('panel-overlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('panel-overlay')) closePanel();
+});
+
+// ── PAN & ZOOM ──────────────────────────────────────────────────────────────
+const svg = document.getElementById('topo');
+let vx=0, vy=0, vw=1200, vh=700;
+let dragging=false, lastX=0, lastY=0;
+
+function applyView() {
+  svg.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+}
+applyView();
+
+function zoom(factor) {
+  const cx = vx + vw/2, cy = vy + vh/2;
+  vw *= factor; vh *= factor;
+  vx = cx - vw/2; vy = cy - vh/2;
+  applyView();
+}
+function resetView() {
+  vx=0; vy=0; vw=1200; vh=700; applyView();
+}
+
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = svg.getBoundingClientRect();
+  const mx = vx + (e.clientX - rect.left) / rect.width * vw;
+  const my = vy + (e.clientY - rect.top) / rect.height * vh;
+  const factor = e.deltaY > 0 ? 1.1 : 0.909;
+  vw *= factor; vh *= factor;
+  vx = mx - (e.clientX - rect.left) / rect.width * vw;
+  vy = my - (e.clientY - rect.top) / rect.height * vh;
+  applyView();
+}, {passive:false});
+
+svg.addEventListener('mousedown', e => {
+  if(e.target.closest('.device')) return;
+  dragging=true; lastX=e.clientX; lastY=e.clientY;
+  svg.style.cursor='grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  const rect = svg.getBoundingClientRect();
+  const dx = (e.clientX - lastX) / rect.width * vw;
+  const dy = (e.clientY - lastY) / rect.height * vh;
+  vx -= dx; vy -= dy;
+  lastX = e.clientX; lastY = e.clientY;
+  applyView();
+});
+window.addEventListener('mouseup', () => {
+  dragging=false; svg.style.cursor='default';
+});
+
+// Touch pan/zoom
+let touches = [];
+svg.addEventListener('touchstart', e => { touches = [...e.touches]; }, {passive:true});
+svg.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if(e.touches.length === 1 && touches.length === 1) {
+    const rect = svg.getBoundingClientRect();
+    const dx = (e.touches[0].clientX - touches[0].clientX) / rect.width * vw;
+    const dy = (e.touches[0].clientY - touches[0].clientY) / rect.height * vh;
+    vx -= dx; vy -= dy;
+  } else if(e.touches.length === 2 && touches.length === 2) {
+    const d0 = Math.hypot(touches[0].clientX-touches[1].clientX, touches[0].clientY-touches[1].clientY);
+    const d1 = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    const factor = d0/d1;
+    const cx = vx+vw/2, cy = vy+vh/2;
+    vw *= factor; vh *= factor;
+    vx = cx-vw/2; vy = cy-vh/2;
+  }
+  touches = [...e.touches];
+  applyView();
+}, {passive:false});
+</script>
+</body>
+</html>
