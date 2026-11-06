@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA Mega Lab — Samuele Rosselli</title>
+<meta name="description" content="Enterprise three-tier network built in Cisco Packet Tracer: VLANs, HSRP, OSPF, NAT, DHCP, ACLs, DAI, IPv6 and wireless — with interactive topology and traffic-flow visualisations.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{colors:{'cyber-blue':'#00a8ff','cyber-green':'#00ff9d','cyber-orange':'#ff5e00','dark-bg':'#0a0a0f','dark-card':'#15151f'},fontFamily:{sans:['Inter','sans-serif'],mono:['Roboto Mono','monospace']}}}}
+</script>
+<style>
+html,body{background:#0a0a0f;color:#e5e7eb;overflow-x:hidden}
+.cyber-grid{background-image:linear-gradient(rgba(0,168,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(0,168,255,.08) 1px,transparent 1px);background-size:40px 40px}
+.cyber-border{border:1px solid rgba(0,168,255,.3)}
+.tool-card{transition:all .3s ease}
+.tool-card:hover{transform:translateY(-6px);box-shadow:0 15px 30px rgba(0,168,255,.25);border-color:#00a8ff}
+</style>
+</head>
+<body class="font-sans">
+
+<nav class="fixed w-full bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-800">
+  <div class="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+    <a href="index.html#portfolio" class="flex items-center text-cyber-blue hover:text-cyber-green transition-colors"><i data-feather="arrow-left" class="mr-2 w-4 h-4"></i> Back to portfolio</a>
+    <span class="font-mono text-sm text-gray-500 hidden sm:block">S.Rosselli</span>
+  </div>
+</nav>
+
+<header class="cyber-grid pt-28 pb-16">
+  <div class="container mx-auto px-6 max-w-4xl">
+    <p class="font-mono text-cyber-green text-sm mb-3">CISCO · PACKET TRACER · CCNA 200-301</p>
+    <h1 class="text-3xl sm:text-5xl font-bold mb-5">CCNA <span class="text-cyber-blue">Mega Lab</span></h1>
+    <p class="text-lg text-gray-300 mb-8">An enterprise network I configured from scratch in Cisco Packet Tracer: two offices, a redundant core, dual-ISP Internet access and every major CCNA topic, from VLANs and HSRP to OSPF, NAT, DHCP snooping, IPv6 and wireless. Completed with a <span class="text-cyber-green font-semibold">100%</span> score on the lab's automated grading.</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="cyber-border rounded-lg p-4 text-center"><div class="text-2xl font-bold text-cyber-blue">10</div><div class="text-xs text-gray-400 font-mono">LAB PARTS</div></div>
+      <div class="cyber-border rounded-lg p-4 text-center"><div class="text-2xl font-bold text-cyber-blue">13</div><div class="text-xs text-gray-400 font-mono">NETWORK DEVICES</div></div>
+      <div class="cyber-border rounded-lg p-4 text-center"><div class="text-2xl font-bold text-cyber-blue">2</div><div class="text-xs text-gray-400 font-mono">OFFICES + CORE</div></div>
+      <div class="cyber-border rounded-lg p-4 text-center"><div class="text-2xl font-bold text-cyber-green">100%</div><div class="text-xs text-gray-400 font-mono">LAB SCORE</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-6 max-w-4xl pb-20">
+
+  <section class="py-12">
+    <h2 class="text-2xl font-bold text-cyber-blue mb-6">What I configured</h2>
+    <div class="grid sm:grid-cols-2 gap-4 text-gray-300">
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">Layer 2</h3><p class="text-sm">802.1Q trunks with a dedicated native VLAN and DTP disabled, VTPv2, PAgP and LACP EtherChannels, Rapid PVST+ with root bridges aligned to HSRP, PortFast and BPDU Guard.</p></div>
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">Layer 3</h3><p class="text-sm">Routed EtherChannel between core switches, SVIs, HSRPv2 with 8 groups, single-area OSPF (router IDs, passive SVIs, point-to-point links), recursive and floating static routes, R1 as ASBR.</p></div>
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">IP services</h3><p class="text-sm">DHCP server with relay agents, DNS, NTP with MD5 authentication, SNMP, Syslog, FTP-based IOS upgrade, static NAT and pool-based PAT with ISP failover testing.</p></div>
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">Security</h3><p class="text-sm">SSHv2 with RSA 4096 restricted by ACL, extended ACL between offices, Port Security, DHCP Snooping, Dynamic ARP Inspection, hashed secrets (type 5 and type 9).</p></div>
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">IPv6</h3><p class="text-sm">Manual, EUI-64 and link-local addressing, IPv6 default routes including a floating route.</p></div>
+      <div class="cyber-border rounded-lg p-5"><h3 class="font-semibold text-cyber-green mb-2">Wireless</h3><p class="text-sm">WLC with a dynamic interface and a WPA2-PSK WLAN, lightweight APs in CAPWAP local mode, DHCP option 43 for cross-site AP discovery.</p></div>
+    </div>
+  </section>
+
+  <section class="py-6">
+    <h2 class="text-2xl font-bold text-cyber-blue mb-2">Interactive project files</h2>
+    <p class="text-gray-400 mb-6">Three tools I built to document and explain the lab.</p>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="ccna-lab/topology.html" class="tool-card cyber-border rounded-lg p-6 bg-dark-card block">
+        <i data-feather="share-2" class="text-cyber-blue mb-3" style="width:32px;height:32px"></i>
+        <h3 class="font-semibold text-lg mb-2">Topology viewer</h3>
+        <p class="text-sm text-gray-400 mb-3">Click any device for its interfaces, IP addressing, HSRP, OSPF and security settings. Zoom and pan, mobile-friendly.</p>
+        <span class="text-cyber-blue text-sm">Open →</span>
+      </a>
+      <a href="ccna-lab/traffic-flow.html" class="tool-card cyber-border rounded-lg p-6 bg-dark-card block">
+        <i data-feather="activity" class="text-cyber-green mb-3" style="width:32px;height:32px"></i>
+        <h3 class="font-semibold text-lg mb-2">Traffic flow walkthrough</h3>
+        <p class="text-sm text-gray-400 mb-3">Nine animated scenarios (DHCP, NAT, ACLs, HSRP failover, CAPWAP…) showing how packets move hop by hop.</p>
+        <span class="text-cyber-green text-sm">Open →</span>
+      </a>
+      <a href="ccna-lab/reference.html" class="tool-card cyber-border rounded-lg p-6 bg-dark-card block">
+        <i data-feather="terminal" class="text-cyber-orange mb-3" style="width:32px;height:32px"></i>
+        <h3 class="font-semibold text-lg mb-2">Config reference</h3>
+        <p class="text-sm text-gray-400 mb-3">All ten lab parts with the CLI commands, IP tables and a map of the skills to the CCNA exam domains.</p>
+        <span class="text-cyber-orange text-sm">Open →</span>
+      </a>
+    </div>
+    <p class="mt-6 text-sm"><a href="ccna-lab/CCNA_MegaLab_Report.docx" download class="text-cyber-blue hover:text-cyber-green inline-flex items-center"><i data-feather="download" class="mr-2 w-4 h-4"></i> Technical report (Word, 28 pages)</a></p>
+  </section>
+
+  <section class="py-10">
+    <h2 class="text-2xl font-bold text-cyber-blue mb-4">Credits & transparency</h2>
+    <div class="cyber-border rounded-lg p-6 text-gray-300 text-sm space-y-3">
+      <p>The lab scenario, topology, instructions and automated grading come from <strong class="text-white">Jeremy's IT Lab</strong> (CCNA Mega Lab, Packet Tracer activity). All device configuration was done by me and checked by the lab's grader.</p>
+      <p>The report and the three interactive pages were produced with AI assistance (Claude) from my lab configuration. The traffic animations are explanatory illustrations built from the configs, not a packet-level simulation.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="py-8 border-t border-gray-800 text-center text-gray-500 text-sm">&copy; 2026 Samuele Rosselli</footer>
+<script>feather.replace();</script>
+</body>
+</html>
