@@ -929,6 +929,27 @@ nav .container {
         </div>
     </div>
 </div>
+                <!-- Project: CCNA Mega Lab -->
+<div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('ccnaMegaLab')">
+    <div class="h-48 bg-gradient-to-br from-cyber-green/30 to-cyber-blue/30 flex items-center justify-center">
+        <i data-feather="activity" class="text-cyber-green" style="width: 64px; height: 64px;"></i>
+    </div>
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xl font-semibold text-cyber-green">CCNA Mega Lab</h3>
+            <span class="project-badge"><i data-feather="file-text" style="width: 14px; height: 14px;"></i> Project</span>
+        </div>
+        <p class="text-gray-400 mb-4">Enterprise three-tier network in Cisco Packet Tracer: VLANs, HSRP, OSPF, NAT, ACLs, DAI, IPv6 and wireless, with interactive topology and traffic-flow visualisations.</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Cisco IOS</span>
+            <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">OSPF &amp; HSRP</span>
+            <span class="px-3 py-1 bg-cyber-green/20 text-cyber-green rounded-full text-sm">Network Security</span>
+        </div>
+        <div class="text-cyber-green hover:text-cyber-blue flex items-center">
+            <span>Click to view details</span><i data-feather="arrow-right" class="ml-2"></i>
+        </div>
+    </div>
+</div>
                 
                 <!-- Project 3: Trading System -->
                 <div class="project-card bg-dark-bg cyber-border rounded-lg overflow-hidden" data-aos="fade-up" onclick="openModal('tradingSystem')">
@@ -1600,6 +1621,21 @@ nav .container {
         'Router subinterfaces with dot1q encapsulation',
         '/25 subnetting with last-usable-address gateways',
         'Verification with ping and show commands'
+    ]
+},
+            ccnaMegaLab: {
+    title: 'CCNA Mega Lab — Enterprise Network',
+    description: 'Configured a complete enterprise network in Cisco Packet Tracer: two offices, a redundant core, dual-ISP Internet access and every major CCNA topic, completed with a 100% score on the lab\'s automated grading. The scenario and topology come from Jeremy\'s IT Lab; all device configuration is my own work. I also built an interactive topology viewer, a traffic-flow walkthrough and a configuration reference.',
+    link: 'ccna-mega-lab.html',
+    linkText: 'View Full Project',
+    color: 'cyber-green',
+    type: 'html',
+    highlights: [
+        '802.1Q trunks, VTPv2, PAgP/LACP EtherChannels, Rapid PVST+ aligned with HSRP',
+        'HSRPv2 (8 groups) and single-area OSPF with R1 as ASBR',
+        'DHCP relay, DNS, NTP with MD5, SNMP, Syslog, static NAT and PAT with ISP failover',
+        'SSHv2, extended ACLs, Port Security, DHCP Snooping, Dynamic ARP Inspection',
+        'IPv6 addressing and routing, WLC with lightweight APs (CAPWAP)'
     ]
 },
             tradingSystem: {
